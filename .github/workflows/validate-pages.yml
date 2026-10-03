@@ -1,0 +1,30 @@
+name: Validar versão pública
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, feat/10-pages-underconstruction]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Dependências de validação
+        run: |
+          python -m pip install -r requirements-pages.txt pip-audit==2.10.1
+          python -m playwright install --with-deps chromium
+      - name: Auditoria de dependências
+        run: python -m pip_audit -r requirements-pages.txt
+      - name: Sintaxe e pacote público
+        run: |
+          node --check site/motion.js
+          node --check site/public-preview.js
+          python tools/build_pages_release.py
+          git diff --check
+      - name: Navegação, animação e exclusão de drafts
+        run: python tests/test_pages_release.py
