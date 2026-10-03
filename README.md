@@ -1,5 +1,36 @@
 # Soberania Labs — V8.5.6
 
+## Edição pública: quatro dobras e Em construção
+
+A fonte selecionada para publicação fica em `site/`. O rascunho da raiz não é
+enviado ao GitHub Pages. O pacote público contém somente as quatro dobras,
+citação, rodapé e nove imagens aprovadas; não inclui os produtos em preparação.
+
+Validação: instalar `requirements-pages.txt`, executar
+`python tools/build_pages_release.py` e `python tests/test_pages_release.py`.
+JavaScript nativo, sem dependências de runtime ou compilação. A auditoria de
+dependências cobre o Playwright usado na validação; não há banco ou segredos.
+
+Publicação: depois da revisão e homologação do PR, criar uma tag **anotada**
+`vMAJOR.MINOR.PATCH` no SHA de merge de `main` e enviá-la. Iniciar o workflow
+`pages.yml` a partir de `main` com `release_tag` igual a essa tag. O ambiente
+Pages permite somente esse contexto; o checkout da aplicação usa a tag
+imutável selecionada. O workflow confirma
+que a tag aponta para um commit integrado em `main`, valida o site e publica
+exclusivamente `.pages-release/`. O arquivo `release.json` identifica o SHA no ar.
+Não há deploy automático por push de branch ou tag. O dispatch exige uma tag anotada.
+
+Verificação: abrir `https://selvalabs.github.io/SoberaniaHome/`, conferir
+`release.json`, quatro seções, imagens, índice, leitura e animação no rodapé.
+Rollback: preservar as tags anteriores. O alvo anterior é `v0.1.2`
+(`600d985f863592a53365d368d72cfc9aa8f2d244`), que usa a estrutura antiga da
+raiz e não pode ser publicado pelo novo workflow sem uma adaptação. Se for
+necessário restaurá-lo, abrir uma issue/PR de rollback que promove a fonte
+daquele SHA para `site/`, validar, homologar e publicar uma nova tag anotada.
+Esse rollback restaura também a edição antiga com quinze seções: confirmar o
+impacto antes de autorizar. Releases posteriores com `site/` podem ser
+republicadas por dispatch da respectiva tag, sempre com autorização e preflight.
+
 ## Execução local
 
 Para abrir a landing page, sirva este diretório como arquivos estáticos. Por

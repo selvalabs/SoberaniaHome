@@ -1,9 +1,12 @@
 name: Publicar no GitHub Pages
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Tag anotada de uma release revisada e integrada em main'
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -23,6 +26,39 @@ jobs:
     steps:
       - name: Baixar código
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_tag || github.ref }}
+          fetch-depth: 0
+
+      - name: Identidade e preflight da release
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
+          WORKFLOW_REF: ${{ github.ref }}
+        run: |
+          set -euo pipefail
+          test "$WORKFLOW_REF" = refs/heads/main
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          test "$(git cat-file -t "refs/tags/$RELEASE_TAG")" = tag
+          test "$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}")" = "$(git rev-parse HEAD)"
+          git merge-base --is-ancestor HEAD origin/main
+          test -z "$(git status --porcelain)"
+          echo "GitHub Pages / selvalabs.github.io/SoberaniaHome / $(git rev-parse HEAD) / $RELEASE_TAG"
+          df -h .
+          echo 'Site estático: sem banco, migração, credenciais de aplicação ou VPS. Checkout limpo; rollback por tag anterior.'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Validar e empacotar a release
+        run: |
+          python -m pip install -r requirements-pages.txt pip-audit==2.10.1
+          python -m playwright install --with-deps chromium
+          python -m pip_audit -r requirements-pages.txt
+          node --check site/motion.js
+          node --check site/public-preview.js
+          python tools/build_pages_release.py
+          python tests/test_pages_release.py
 
       - name: Configurar Pages
         uses: actions/configure-pages@v5
@@ -32,7 +68,7 @@ jobs:
       - name: Enviar site estático
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: .pages-release
 
       - name: Publicar
         id: deployment
