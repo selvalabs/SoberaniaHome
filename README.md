@@ -12,10 +12,13 @@ JavaScript nativo, sem dependências de runtime ou compilação. A auditoria de
 dependências cobre o Playwright usado na validação; não há banco ou segredos.
 
 Publicação: depois da revisão e homologação do PR, criar uma tag **anotada**
-`vMAJOR.MINOR.PATCH` no SHA de merge de `main` e enviá-la. O workflow confirma
+`vMAJOR.MINOR.PATCH` no SHA de merge de `main` e enviá-la. Iniciar o workflow
+`pages.yml` a partir de `main` com `release_tag` igual a essa tag. O ambiente
+Pages permite somente esse contexto; o checkout da aplicação usa a tag
+imutável selecionada. O workflow confirma
 que a tag aponta para um commit integrado em `main`, valida o site e publica
 exclusivamente `.pages-release/`. O arquivo `release.json` identifica o SHA no ar.
-Não há deploy por push de branch. Um dispatch manual exige uma tag anotada.
+Não há deploy automático por push de branch ou tag. O dispatch exige uma tag anotada.
 
 Verificação: abrir `https://selvalabs.github.io/SoberaniaHome/`, conferir
 `release.json`, quatro seções, imagens, índice, leitura e animação no rodapé.
