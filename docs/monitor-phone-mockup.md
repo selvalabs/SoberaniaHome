@@ -6,9 +6,9 @@ Base: 45ebfbbba3dd99fa64d62e6b5047901535568ef7
 
 ## Resultado
 
-A interface usa a apresentação clássica de conversa do WhatsApp para Android: cabeçalho verde, ícones de chamada, avatar, papel de parede com desenhos, balão recebido com horário e compositor com emoji/anexo/câmera/microfone. O texto de produção foi mantido integralmente. A apresentação usa parágrafos contínuos, saudação em linha própria, rótulos de endereço/data/horário/motivo destacados e tipografia de conversa. O cabeçalho mostra apenas o contato, com avatar padrão e ícones alinhados.
+A interface usa a apresentação clássica de conversa do WhatsApp para Android: cabeçalho verde, ícones de chamada, avatar, papel de parede com desenhos, balão recebido com horário e compositor com emoji/anexo/câmera/microfone. O texto de produção foi mantido integralmente. A apresentação preserva exatamente as quebras e os dois negritos do envio, sem acrescentar destaque aos rótulos. Roboto local em 16px/21px mantém a escala em celulares; emojis coloridos Noto em assets locais substituem o fallback do Windows. O avatar usa a logo real do produto, encontrada em src/monitor_comunitario/web/static/favicon.png do civic-utility-monitor-public. Os emojis Noto são abertos e não são os desenhos proprietários do WhatsApp; permanece uma reconstrução. Licenças e fontes em demos/monitor-whatsapp/assets.
 
-Mockup de conversa no WhatsApp, com a mensagem construída pelo renderer em produção. O asset atual é assets/portfolio-monitor-whatsapp-v5.png; a fonte editável está em demos/monitor-whatsapp. O SVG anterior permanece preservado, mas não é a vista usada na prévia local.
+Mockup de conversa no WhatsApp, com a mensagem construída pelo renderer em produção. O asset atual é assets/portfolio-monitor-whatsapp-v6.png; a fonte editável está em demos/monitor-whatsapp. O SVG anterior permanece preservado, mas não é a vista usada na prévia local.
 
 O texto foi gerado com as funções build_notification_message, resident_notification_details, registered_address e safe_notice_cause extraídas em leitura do container em produção. O dispatcher envia exatamente título + duas quebras de linha + corpo, sem reescrever. A marca Civic, as orientações da Celesc, a redação, os emojis e os marcadores de negrito foram preservados. Nome, endereço, município, data, horário e motivo são fixtures fictícias. Não foi lida uma conversa real de morador nem enviado WhatsApp.
 
@@ -25,7 +25,7 @@ Foram usados hostname/id/pwd/realpath/df, docker ps e inspect de serviços do Mo
 
 ## Integração e prévia
 
-A integração local permanece sobre os rascunhos não publicados das issues 12–15. Só a vista Avisos da galeria monitor muda para o PNG de WhatsApp, com moldura de telefone e legenda indicando texto de produção e dados ilustrativos. O link Ver conversa abre o documento completo. URLs do script/CSS são versionadas em monitor-whatsapp-17-6. Config/content/app estão presentes na pasta pública.
+A integração local permanece sobre os rascunhos não publicados das issues 12–15. Só a vista Avisos da galeria monitor muda para o PNG de WhatsApp, com moldura de telefone e legenda indicando texto de produção e dados ilustrativos. O link Ver conversa abre o documento completo. URLs do script/CSS são versionadas em monitor-whatsapp-17-7. Config/content/app estão presentes na pasta pública.
 
 O módulo monitor-preview.js abre Avisos somente com ?projeto=monitor&vista=avisos. Este PR contém a imagem, a demonstração editável, o módulo e esta documentação; não incorpora os outros rascunhos da home.
 
