@@ -143,8 +143,8 @@
       const staticScene=!enabled||(isMobile&&s.kind==='journal');
       s.static=staticScene;
       const h=enabled?s.frame.offsetHeight:Math.max(vh-mast,1);
-      let units=s.kind==='words'?.34:s.kind==='knowledge'?.66:s.kind==='horizontal'?.68:s.kind==='process'?.72:s.kind==='editor'?.66:.79;
-      if(!isMobile)units=s.kind==='words'?.40:s.kind==='horizontal'?.8:.78;
+      let units=s.kind==='words'?.34:s.kind==='knowledge'?.66:s.kind==='horizontal'?1.02:s.kind==='process'?.72:s.kind==='editor'?.66:.79;
+      if(!isMobile)units=s.kind==='words'?.40:s.kind==='horizontal'?1.20:.78;
       const holdSteps=s.kind==='process'?2:0;
       s.visualFraction=(s.count-1)/(s.count-1+holdSteps);
       let run=Math.round((s.count-1+holdSteps)*Math.max(500,h)*units);
@@ -422,16 +422,7 @@
       const s=activeScene;
 
       if(s.kind==='horizontal'){
-        const sp=clamp(s.v/(s.count-1));
-        const dir=s.el.dataset.direction==='reverse'?-1:1;
-        // Scene motion changes the leaf's attitude, never its global route.
-        // Position remains a direct continuous function of document scroll.
-        const kick=bell(.055,.39,sp);
-        const tumble=smoother(range(.07,.31,sp));
-        t.rz+=dir*(205*tumble+42*kick);
-        t.ry+=dir*180*tumble;
-        t.rx-=dir*58*Math.sin(tumble*Math.PI);
-        t.scale*=mix(1,mobile()?1.05:1.10,kick);
+        // Broad pendular motion is applied below with a continuous entry/exit.
         mode='horizontal-gust';depth='front';
       }else if(s.kind==='spiral'){
         const sp=clamp(s.v/(s.count-1));
@@ -485,8 +476,15 @@
       const weight=enter*leave;
       if(weight<=0)continue;
       const progress=clamp((y-s.g.start)/Math.max(1,s.g.run));
-      const centre=mast+(h-mast)*(.48+.065*Math.sin(progress*Math.PI*2));
+      const phase=progress*Math.PI*2;
+      const dir=s.el.dataset.direction==='reverse'?-1:1;
+      const sway=Math.sin(phase);
+      const centre=mast+(h-mast)*(.48+.065*sway);
       t.y=mix(t.y,centre,weight);
+      t.x=mix(t.x,w*(.5+dir*(mobile()?.08:.11)*sway),weight);
+      t.rz+=dir*22*sway*weight;
+      t.ry+=dir*16*Math.sin(phase+.55)*weight;
+      t.rx+=10*Math.cos(phase)*weight;
     }
 
     // Keep the protagonist recoverable in the viewport. The first third is stricter.

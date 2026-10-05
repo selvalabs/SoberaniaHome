@@ -17,16 +17,21 @@ with sync_playwright() as p:
             return page.evaluate('({y:__SL_DEBUG.leaf.y,x:__SL_DEBUG.leaf.x,scroll:scrollY,glow:[...document.querySelectorAll("[data-glow]")].map(e=>[e.dataset.glow,e.style.textShadow])})')
         for scene in scenes:
             maximum=0
+            xs=[]
+            steps=(len(page.locator("#"+scene["id"]+" .portfolio-card").all())-1)
+            assert scene["run"]>steps*max(500,scene["frameHeight"])*.95
             for fraction in [0,.2,.4,.6,.8,1]:
                 pose=at(scene['start']+scene['run']*fraction)
+                xs.append(pose['x'])
                 mast=page.locator('#mast').evaluate('e=>e.offsetHeight')
                 ratio=(pose['y']-mast)/(height-mast)
                 assert .40<ratio<.56,(width,scene['id'],fraction,ratio)
                 maximum=max(maximum,max((float(v[0]) for v in pose['glow']),default=0))
+            assert max(xs)-min(xs)>width*.12,(width,scene['id'],xs)
             assert maximum>.15,(width,scene['id'],maximum)
             for boundary in [scene['start'],scene['end']]:
                 left,right=at(boundary-1),at(boundary+1)
-                assert abs(left['y']-right['y'])<3,(width,scene['id'],left,right)
+                assert abs(left['y']-right['y'])<3 and abs(left['x']-right['x'])<3,(width,scene['id'],left,right)
             y=scene['start']+scene['run']*.43
             original=at(y);at(scene['end']);returned=at(y)
             assert original==returned
