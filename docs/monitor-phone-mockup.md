@@ -13,3 +13,11 @@ A integração não é incluída neste commit porque portfolio.js e seus demais 
 Validação: parse do SVG, nenhuma tag script ou referência externa; node --check do script local; cliques reais nas três vistas em oito viewports, imagem carregada, texto alternativo demonstrativo, scroll estável e ausência de overflow/erros. Inspeção visual mobile e desktop. Não há build, typecheck, lint ou dependências novas para este asset.
 
 Ambiente: prévia local no Wi-Fi, porta 4181. Nenhuma publicação, migração ou operação de VPS. Merge, homologação e release pendentes. Produção permanece em v0.1.3/base SHA; rollback local consiste em servir novamente os arquivos da prévia anterior.
+
+## Correção de carregamento da prévia
+
+Foi corrigido o cache da galeria e do CSS na integração local, usando URLs versionadas com monitor-phone-17-3. A pasta pública agora inclui os três scripts referenciados no HTML que faltavam: config.js, content.js e app.js. O construtor local da prévia foi ajustado para incluí-los.
+
+O módulo monitor-preview.js abre explicitamente a galeria na vista Avisos somente com os parâmetros ?projeto=monitor&vista=avisos. Deve ser incluído após os scripts da galeria e da navegação quando esses rascunhos forem integrados. Funciona em modo animado e leitura; não altera a entrada normal.
+
+Verificação pelo IP Wi-Fi: entrada direta e reload em 390 e 1366px, incluindo reduced motion. Mockup correto e Avisos selecionado; nenhum erro de JavaScript ou recurso script/stylesheet/image faltante. Apenas prévia local; produção permanece sem mudanças.
