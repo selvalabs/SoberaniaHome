@@ -1,0 +1,18 @@
+{
+  "tool": "built-in image_gen.imagegen",
+  "transparent_background": false,
+  "assets": [
+    {
+      "file": "assets/atelie-v1.png",
+      "prompt": "Use case: photorealistic-natural. Asset type: hero photograph for a fictitious Brazilian school of hand weaving, called Entretrama (do not render text). Editorial photograph, landscape composition: a small bright Brazilian artisan studio with a beautiful wooden tabletop loom in foreground, a partly woven textile in natural linen, muted moss green and warm ochre, wool and cotton yarn cones. An adult Brazilian woman casually dressed in a cream linen shirt is seated at the loom, thoughtfully weaving; show believable hands and correctly arranged warp and weft, realistic useful loom construction. Warm window daylight, authentic imperfect materials, quiet tactile atmosphere, high quality magazine photography, not staged stock photography. Wide photograph with beautiful textile detail, no logos, no writing, no watermark. This is an original fictional scene, no recognizable real person."
+    },
+    {
+      "file": "assets/trama-v1.png",
+      "prompt": "Use case: photorealistic-natural. Asset type: detail photograph for a fictitious Brazilian hand weaving school. Close-up editorial photography of hands passing a wooden shuttle through real linen warp on a small tabletop loom. Only hands and forearms, no face, authentic loom mechanics, clearly visible handwoven cotton fabric with simple natural cream, moss green and ochre stripes. Wooden worktable, a few yarn bobbins, natural daylight, shallow depth of field, tactile fibers and grain, quiet workshop atmosphere. Landscape framing, no words, no watermark, no branding. Not crochet, not knitting, no shoes."
+    },
+    {
+      "file": "assets/pecas-v1.png",
+      "prompt": "Use case: product-mockup. Asset type: editorial photograph of finished handmade textiles for a fictitious Brazilian hand weaving school website. Landscape photograph, beautiful natural linen-covered wooden table near a window with three real-looking handwoven cotton and linen pieces: a muted moss green and cream striped table runner with short neat fringe, a small ochre and cream sampler, and an understated wall hanging draped from a wooden dowel in the background. Natural warm daylight, tactile irregular woven fibers, quiet Brazilian artisan studio, restrained magazine art direction, warm off-white, moss, muted ochre. Believable handmade plain-weave fabric, not crochet or knitted. No people, no logos, no words, no watermark. Clearly defined objects, restrained uncluttered scene."
+    }
+  ]
+}
