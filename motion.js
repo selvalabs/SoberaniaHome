@@ -475,6 +475,20 @@
       t.phase=takeoffBlend<.5?releaseEnd.phase:t.phase;
     }
 
+    // Bring lateral chapters through the useful viewport centre. The blend
+    // begins before pinning and ends after it, so boundaries never jump.
+    for(const s of scenes){
+      if(s.kind!=='horizontal'||s.static||!s.g)continue;
+      const transition=(h-mast)*.55;
+      const enter=smoother(clamp((y-(s.g.start-transition))/transition));
+      const leave=1-smoother(clamp((y-s.g.end)/transition));
+      const weight=enter*leave;
+      if(weight<=0)continue;
+      const progress=clamp((y-s.g.start)/Math.max(1,s.g.run));
+      const centre=mast+(h-mast)*(.48+.065*Math.sin(progress*Math.PI*2));
+      t.y=mix(t.y,centre,weight);
+    }
+
     // Keep the protagonist recoverable in the viewport. The first third is stricter.
     const edge=mobile()?17:24;
     t.x=clamp(t.x,-edge,w+edge);
@@ -606,6 +620,22 @@
     return dragMoving;
   }
 
+  const lateralMarks=[...document.querySelectorAll('.sequence[data-kind="horizontal"] h2,.sequence[data-kind="horizontal"] h3,.sequence[data-kind="horizontal"] p,.sequence[data-kind="horizontal"] figcaption')];
+  function renderLateralHighlights(y){
+    const active=enabled&&leaf.opacity>.1&&leaf.occlusionState!=='occluded'&&scenes.some(s=>s.kind==='horizontal'&&!s.static&&s.g&&y>=s.g.start&&y<=s.g.end);
+    const radius=clamp(innerHeight*.22,110,220);
+    const bounds=active?lateralMarks.map(mark=>mark.getBoundingClientRect()):[];
+    lateralMarks.forEach((mark,index)=>{
+      const r=bounds[index];
+      const visible=active&&r.width>0&&r.height>0&&r.bottom>geometry.mast&&r.top<geometry.height&&r.right>0&&r.left<geometry.width&&!mark.closest('[inert],[aria-hidden="true"]');
+      const distance=visible?Math.max(r.top-leaf.y,0,leaf.y-r.bottom):Infinity;
+      const amount=visible?1-smoother(clamp(distance/radius)):0;
+      const hue=(y*.43+index*95)%360;
+      mark.dataset.glow=amount.toFixed(3);
+      mark.style.textShadow=amount<.001?'':`0 0 2px hsl(${hue} 100% 80% / ${amount*.95}),0 0 6px hsl(${hue} 100% 60% / ${amount}),0 0 15px hsl(${(hue+65)%360} 100% 55% / ${amount*.8})`;
+    });
+  }
+
   function updateNav(y){
     const sec=currentSection(y);
     if(sec.id===activeId&&ready)return;
@@ -641,6 +671,7 @@
       }
       moving=renderLeaf(visualY,activeScene,ts)||moving;
     }
+    renderLateralHighlights(visualY);
     if(enabled&&activeScene&&innerWidth===geometry.width&&Math.abs(innerHeight-geometry.height)<2)stableView={id:activeScene.id,progress:scrollProgress(activeScene,visualY)};
     lastY=y;metrics.frames++;metrics.maxFrameMs=Math.max(metrics.maxFrameMs,performance.now()-started);
     if(moving||dirty){raf=requestAnimationFrame(frame);metrics.idle=false;}else metrics.idle=true;
