@@ -1,0 +1,11 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Monitor Comunitário — alerta no WhatsApp</title><link rel="stylesheet" href="styles.css"></head><body>
+<main><div class="phone"><div class="screen">
+<div class="status"><span>13:42</span><span class="island"></span><span>▰ ◔ ▰</span></div>
+<header class="chat-head"><span class="back" aria-hidden="true">‹</span><span class="avatar" aria-hidden="true">C</span><div class="contact"><strong>Monitor Comunitário</strong></div><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="13" height="13" rx="3"/><path d="m15 9 6-3v11l-6-3Z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 3 4 4-2 3c1 3 4 6 7 7l3-2 4 4c-2 4-6 4-11 0S1 6 5 3Z"/></svg><span class="dots" aria-hidden="true">⋮</span></header>
+<div class="chat"><div class="date">HOJE</div><div class="message-bubble"><div id="message-content"></div><span class="message-time">13:42</span></div></div>
+<div class="composer" aria-hidden="true"><span>＋</span><div><span>☺</span><span>Mensagem</span><span>▣</span></div><span class="microphone"><svg viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="13" rx="3"/><path d="M5 10v3a7 7 0 0 0 14 0v-3M12 20v3M8 23h8"/></svg></span></div><div class="home-indicator"></div>
+</div></div><p class="note">Texto do envio em produção · nome, endereço e ocorrência ilustrativos</p></main>
+<script src="message.js"></script><script>
+const content=document.querySelector('#message-content');
+window.MONITOR_MESSAGE.split('\n').forEach(line=>{const p=document.createElement('p');if(!line){p.className='paragraph-space'}else{line.split(/(\*[^*]+\*)/g).forEach(part=>{if(part.startsWith('*')&&part.endsWith('*')){const strong=document.createElement('strong');strong.textContent=part.slice(1,-1);p.append(strong)}else p.append(document.createTextNode(part))})}content.append(p)});
+</script></body></html>
