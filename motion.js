@@ -24,6 +24,7 @@
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
   const mobile=()=>innerWidth<760;
   let requestedReading=false, enabled=false, paused=false, raf=null,lastY=scrollY;
+  let mastScrollDirection=0,mastScrollTravel=0,mastDirectionY=scrollY;
   let controlledScrollTarget=scrollY,controlledScrollVelocity=0,controlledScrollRaf=null,controlledScrollLastTime=null;
   let dirty=true,geometry=null,layoutPending=true,forceSync=true,ready=false,activeId='hero',resizeTimer;
   // Dragging is an intentional, temporary exception to the scroll route. The
@@ -78,7 +79,7 @@
   const processBoard=(s)=>{
     const pieceWidth=s.nodes[0].offsetWidth||160;
     const scale=pieceWidth/processCrop.width;
-    return {scale,centreX:(mobile()?s.g.stage.width*.5:s.g.stage.width*.42),centreY:(mobile()?s.g.stage.height*.45:s.g.stage.height*.5)};
+    return {scale,centreX:(mobile()?s.g.stage.width*.5:s.g.stage.width*.38),centreY:(mobile()?s.g.stage.height*.45:s.g.stage.height*.5)};
   };
   const processTarget=(s,index,layout=processBoard(s))=>{
     const {scale,centreX,centreY}=layout,[originX,originY]=processOrigins[index];
@@ -606,6 +607,16 @@
     return dragMoving;
   }
 
+  function updateMastVisibility(y){
+    const delta=y-mastDirectionY;
+    if(Math.abs(delta)<1)return;
+    const direction=Math.sign(delta);
+    if(direction!==mastScrollDirection){mastScrollDirection=direction;mastScrollTravel=0;}
+    mastScrollTravel+=Math.abs(delta);
+    if(y<96||(direction<0&&mastScrollTravel>=8))els.mast.classList.remove('is-hidden');
+    else if(direction>0&&y>150&&mastScrollTravel>=20)els.mast.classList.add('is-hidden');
+    mastDirectionY=y;
+  }
   function updateNav(y){
     const sec=currentSection(y);
     if(sec.id===activeId&&ready)return;
@@ -623,6 +634,7 @@
     const started=performance.now();
     if(layoutPending)measure(false);
     const y=scrollY;
+    updateMastVisibility(y);
     // No visual playhead: scenes and leaf are a direct projection of scrollY.
     const visualY=clamp(y,0,geometry.maxScroll);
     dirty=false;forceSync=false;let moving=false,activeScene=null;
@@ -725,7 +737,7 @@
   els.flight.addEventListener('pointermove',moveLeafDrag);
   els.flight.addEventListener('pointerup',endLeafDrag);
   els.flight.addEventListener('pointercancel',endLeafDrag);
-  addEventListener('scroll',()=>{if(controlledScrollRaf===null)controlledScrollTarget=scrollY;request();},{passive:true});
+  addEventListener('scroll',()=>{updateMastVisibility(scrollY);if(controlledScrollRaf===null)controlledScrollTarget=scrollY;request();},{passive:true});
   addEventListener('pointerdown',stopControlledScroll,{passive:true});
   addEventListener('touchstart',stopControlledScroll,{passive:true});
   addEventListener('keydown',stopControlledScroll,{passive:true});
