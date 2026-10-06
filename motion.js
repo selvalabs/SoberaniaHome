@@ -1,6 +1,6 @@
 /* Soberania Labs / motion engine
- * The document scroll is the only source of visual progress. Wheel input may be
- * rate-limited before it changes that document scroll; touch and keyboard stay native.
+ * Document scroll is the only source of visual progress. Lateral chapters scale
+ * wheel/touch input directly; keyboard and other chapters retain native scrolling.
  * Geometry is measured on layout changes, never inside the animation renderers.
  * Discontinuous jumps resynchronise; they are not replayed as a high-speed sweep.
  */
@@ -138,13 +138,15 @@
     enabled=mode;root.classList.toggle('motion',enabled);root.dataset.reading=enabled?'false':'true';
     const vh=innerHeight,vw=document.documentElement.clientWidth,mast=els.mast.getBoundingClientRect().height;
     const isMobile=mobile();
+    els.leaf.style.touchAction=isMobile?'pan-y pinch-zoom':'';
     // Pass one writes scene lengths and track gutters only.
     scenes.forEach(s=>{
       const staticScene=!enabled||(isMobile&&s.kind==='journal');
       s.static=staticScene;
+      if(s.kind==='horizontal')s.frame.style.touchAction=staticScene?'':'pan-y pinch-zoom';
       const h=enabled?s.frame.offsetHeight:Math.max(vh-mast,1);
-      let units=s.kind==='words'?.34:s.kind==='knowledge'?.66:s.kind==='horizontal'?.68:s.kind==='process'?.72:s.kind==='editor'?.66:.79;
-      if(!isMobile)units=s.kind==='words'?.40:s.kind==='horizontal'?.8:.78;
+      let units=s.kind==='words'?.34:s.kind==='knowledge'?.66:s.kind==='horizontal'?1.02:s.kind==='process'?.72:s.kind==='editor'?.66:.79;
+      if(!isMobile)units=s.kind==='words'?.40:s.kind==='horizontal'?1.20:.78;
       const holdSteps=s.kind==='process'?2:0;
       s.visualFraction=(s.count-1)/(s.count-1+holdSteps);
       let run=Math.round((s.count-1+holdSteps)*Math.max(500,h)*units);
@@ -422,16 +424,7 @@
       const s=activeScene;
 
       if(s.kind==='horizontal'){
-        const sp=clamp(s.v/(s.count-1));
-        const dir=s.el.dataset.direction==='reverse'?-1:1;
-        // Scene motion changes the leaf's attitude, never its global route.
-        // Position remains a direct continuous function of document scroll.
-        const kick=bell(.055,.39,sp);
-        const tumble=smoother(range(.07,.31,sp));
-        t.rz+=dir*(205*tumble+42*kick);
-        t.ry+=dir*180*tumble;
-        t.rx-=dir*58*Math.sin(tumble*Math.PI);
-        t.scale*=mix(1,mobile()?1.05:1.10,kick);
+        // Broad pendular motion is applied below with a continuous entry/exit.
         mode='horizontal-gust';depth='front';
       }else if(s.kind==='spiral'){
         const sp=clamp(s.v/(s.count-1));
@@ -473,6 +466,29 @@
       t.ry=mix(releaseEnd.ry,t.ry,takeoffBlend);
       t.rz=mix(releaseEnd.rz,t.rz,takeoffBlend);
       t.phase=takeoffBlend<.5?releaseEnd.phase:t.phase;
+    }
+
+    // Bring lateral chapters through the useful viewport centre. The blend
+    // begins before pinning and ends after it, so boundaries never jump.
+    for(const s of scenes){
+      if(s.kind!=='horizontal'||s.static||!s.g)continue;
+      const transition=(h-mast)*.55;
+      const enter=smoother(clamp((y-(s.g.start-transition))/transition));
+      const leave=1-smoother(clamp((y-s.g.end)/transition));
+      const weight=enter*leave;
+      if(weight<=0)continue;
+      const progress=clamp((y-s.g.start)/Math.max(1,s.g.run));
+      const phase=progress*Math.PI*2;
+      const dir=s.el.dataset.direction==='reverse'?-1:1;
+      const sway=Math.sin(phase);
+      const centre=mast+(h-mast)*(.48+.065*sway);
+      t.y=mix(t.y,centre,weight);
+      t.x=mix(t.x,w*(.5+dir*(mobile()?.08:.11)*sway),weight);
+      // A full wind-driven turn; the completed 360° is visually identical
+      // to zero on departure, avoiding a fast backwards unwind.
+      t.rz+=dir*(360*smoother(progress)*enter+28*sway*weight);
+      t.ry+=dir*105*Math.sin(phase)*weight;
+      t.rx+=18*Math.cos(phase)*weight;
     }
 
     // Keep the protagonist recoverable in the viewport. The first third is stricter.
@@ -606,6 +622,22 @@
     return dragMoving;
   }
 
+  const lateralMarks=[...document.querySelectorAll('.sequence[data-kind="horizontal"] h2,.sequence[data-kind="horizontal"] h3,.sequence[data-kind="horizontal"] p,.sequence[data-kind="horizontal"] figcaption')];
+  function renderLateralHighlights(y){
+    const active=enabled&&leaf.opacity>.1&&leaf.occlusionState!=='occluded'&&scenes.some(s=>s.kind==='horizontal'&&!s.static&&s.g&&y>=s.g.start&&y<=s.g.end);
+    const radius=clamp(innerHeight*.22,110,220);
+    const bounds=active?lateralMarks.map(mark=>mark.getBoundingClientRect()):[];
+    lateralMarks.forEach((mark,index)=>{
+      const r=bounds[index];
+      const visible=active&&r.width>0&&r.height>0&&r.bottom>geometry.mast&&r.top<geometry.height&&r.right>0&&r.left<geometry.width&&!mark.closest('[inert],[aria-hidden="true"]');
+      const distance=visible?Math.max(r.top-leaf.y,0,leaf.y-r.bottom):Infinity;
+      const amount=visible?1-smoother(clamp(distance/radius)):0;
+      const hue=(y*.43+index*95)%360;
+      mark.dataset.glow=amount.toFixed(3);
+      mark.style.textShadow=amount<.001?'':`0 0 2px hsl(${hue} 100% 80% / ${amount*.95}),0 0 6px hsl(${hue} 100% 60% / ${amount}),0 0 15px hsl(${(hue+65)%360} 100% 55% / ${amount*.8})`;
+    });
+  }
+
   function updateNav(y){
     const sec=currentSection(y);
     if(sec.id===activeId&&ready)return;
@@ -641,6 +673,7 @@
       }
       moving=renderLeaf(visualY,activeScene,ts)||moving;
     }
+    renderLateralHighlights(visualY);
     if(enabled&&activeScene&&innerWidth===geometry.width&&Math.abs(innerHeight-geometry.height)<2)stableView={id:activeScene.id,progress:scrollProgress(activeScene,visualY)};
     lastY=y;metrics.frames++;metrics.maxFrameMs=Math.max(metrics.maxFrameMs,performance.now()-started);
     if(moving||dirty){raf=requestAnimationFrame(frame);metrics.idle=false;}else metrics.idle=true;
@@ -715,10 +748,101 @@
     if(els.flight.hasPointerCapture?.(e.pointerId))els.flight.releasePointerCapture(e.pointerId);
     request(true);
   }
-  // Scrolling belongs to the browser. The old wheel interceptor accumulated a
-  // target and kept issuing scrollTo calls after input stopped, which felt like
-  // dragging a heavy page. Scenes only observe the native scroll position.
-  addEventListener('wheel',stopControlledScroll,{passive:true});
+  // Slow input only while a lateral chapter is pinned. No queued target or
+  // post-gesture animation: leaf, glow and cards observe the same document y.
+  function lateralSceneAt(y){
+    return enabled&&!paused&&!reduced.matches?scenes.find(s=>s.kind==='horizontal'&&!s.static&&s.g&&y>=s.g.start-1&&y<=s.g.end+1):null;
+  }
+  function lateralDestination(s,current,delta,horizontal,flowDirection=delta){
+    const target=current+delta,edge=target>s.g.end?s.g.end:target<s.g.start?s.g.start:null;
+    if(edge===null)return {y:clamp(target,0,geometry.maxScroll),flow:false};
+    const overflow=target-edge;
+    const verticalRemainder=horizontal?overflow*s.g.travel/Math.max(1,s.g.run)*.45/.55:overflow;
+    return {y:clamp(edge+verticalRemainder,0,geometry.maxScroll),flow:true,direction:Math.sign(flowDirection)};
+  }
+  const gestureControl='button,a,input,textarea,select,[contenteditable="true"],dialog';
+  addEventListener('wheel',event=>{
+    stopControlledScroll();
+    const s=lateralSceneAt(scrollY);
+    if(!s||event.ctrlKey||event.target.closest?.(gestureControl)||!event.cancelable)return;
+    const unit=event.deltaMode===1?16:event.deltaMode===2?innerHeight:1;
+    const horizontal=Math.abs(event.deltaX)>Math.abs(event.deltaY)*1.2;
+    const dir=s.el.dataset.direction==='reverse'?-1:1;
+    const input=horizontal?event.deltaX*unit*dir:event.deltaY*unit;
+    const delta=horizontal?input*s.g.run/Math.max(1,s.g.travel)*.55:input*.45;
+    if(!delta)return;
+    event.preventDefault();
+    const destination=lateralDestination(s,scrollY,delta,horizontal,input);
+    scrollTo({top:destination.y,behavior:'instant'});request(true);
+  },{passive:false});
+  let lateralMouse=null,suppressLateralClick=false;
+  function releaseLateralMouse(){
+    const gesture=lateralMouse;lateralMouse=null;
+    root.removeAttribute('data-lateral-dragging');
+    if(gesture?.scene.frame.hasPointerCapture?.(gesture.pointerId))gesture.scene.frame.releasePointerCapture(gesture.pointerId);
+  }
+  scenes.filter(s=>s.kind==='horizontal').forEach(s=>{
+    s.frame.addEventListener('pointerdown',event=>{
+      suppressLateralClick=false;
+      if(event.pointerType!=='mouse'||event.button!==0||lateralSceneAt(scrollY)!==s||event.target.closest?.(gestureControl))return;
+      event.preventDefault();stopControlledScroll();
+      lateralMouse={scene:s,pointerId:event.pointerId,startX:event.clientX,lastX:event.clientX,moved:false,flow:false};
+      s.frame.setPointerCapture?.(event.pointerId);
+    });
+    s.frame.addEventListener('dragstart',event=>{
+      if(lateralSceneAt(scrollY)===s&&!event.target.closest?.(gestureControl))event.preventDefault();
+    });
+  });
+  document.addEventListener('pointermove',event=>{
+    const gesture=lateralMouse,s=gesture?.scene;
+    if(!gesture||event.pointerId!==gesture.pointerId)return;
+    if(!(event.buttons&1)||(!gesture.flow&&lateralSceneAt(scrollY)!==s)){releaseLateralMouse();return;}
+    if(!gesture.moved&&Math.abs(event.clientX-gesture.startX)<8)return;
+    gesture.moved=true;suppressLateralClick=true;
+    root.dataset.lateralDragging='true';event.preventDefault();
+    const dir=s.el.dataset.direction==='reverse'?-1:1;
+    const input=(gesture.lastX-event.clientX)*dir;
+    const delta=gesture.flow?input*.55:input*s.g.run/Math.max(1,s.g.travel)*.55;
+    gesture.lastX=event.clientX;
+    const destination=gesture.flow?{y:clamp(scrollY+delta,0,geometry.maxScroll)}:lateralDestination(s,scrollY,delta,true,input);
+    if(destination.flow)gesture.flow=true;
+    scrollTo({top:destination.y,behavior:'instant'});request(true);
+  });
+  document.addEventListener('pointerup',event=>{if(event.pointerId===lateralMouse?.pointerId)releaseLateralMouse();});
+  document.addEventListener('pointercancel',()=>{releaseLateralMouse();suppressLateralClick=false;});
+  addEventListener('blur',()=>{releaseLateralMouse();suppressLateralClick=false;});
+  document.addEventListener('click',event=>{
+    if(!suppressLateralClick)return;
+    suppressLateralClick=false;event.preventDefault();event.stopImmediatePropagation();
+  },true);
+  // Bind at document level so the floating leaf cannot swallow the swipe.
+  let lateralTouch=null;
+  document.addEventListener('touchstart',event=>{
+    const s=lateralSceneAt(scrollY);
+    if(innerWidth>=760||!s||event.touches.length!==1||event.target.closest?.(gestureControl)||(!s.frame.contains(event.target)&&!els.flight.contains(event.target))){lateralTouch=null;return;}
+    const point=event.touches[0];
+    lateralTouch={scene:s,x:point.clientX,y:point.clientY,lastX:point.clientX,lastY:point.clientY,axis:null,flow:false};
+  },{passive:true});
+  document.addEventListener('touchmove',event=>{
+    const gesture=lateralTouch,s=gesture?.scene;
+    if(!gesture||event.touches.length!==1||(!gesture.flow&&lateralSceneAt(scrollY)!==s)||!event.cancelable){lateralTouch=null;return;}
+    const point=event.touches[0],dx=gesture.x-point.clientX,dy=gesture.y-point.clientY;
+    if(!gesture.axis){
+      if(Math.max(Math.abs(dx),Math.abs(dy))<10)return;
+      gesture.axis=Math.abs(dx)>Math.abs(dy)*1.15?'x':'y';
+    }
+    event.preventDefault();stopControlledScroll();
+    const horizontal=gesture.axis==='x',dir=s.el.dataset.direction==='reverse'?-1:1;
+    const input=horizontal?(gesture.lastX-point.clientX)*dir:gesture.lastY-point.clientY;
+    const delta=gesture.flow?input*.55:horizontal?input*s.g.run/Math.max(1,s.g.travel)*.55:input*.55;
+    gesture.lastX=point.clientX;gesture.lastY=point.clientY;
+    const destination=gesture.flow?{y:clamp(scrollY+delta,0,geometry.maxScroll)}:lateralDestination(s,scrollY,delta,horizontal,input);
+    if(destination.flow)gesture.flow=true;
+    scrollTo({top:destination.y,behavior:'instant'});request(true);
+  },{passive:false});
+  const releaseLateralTouch=()=>{lateralTouch=null;};
+  document.addEventListener('touchend',releaseLateralTouch,{passive:true});
+  document.addEventListener('touchcancel',releaseLateralTouch,{passive:true});
   // Bind to the flight wrapper so the generous invisible hit-area and the
   // visible sprite both start the same gesture.
   els.flight.addEventListener('pointerdown',beginLeafDrag);

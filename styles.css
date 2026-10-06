@@ -777,3 +777,7 @@ html[data-leaf-occluded="1"] #espiral{z-index:48}
   #hero .text-actions{margin-top:10px}
   #hero .hero-bottom{display:none}
 }
+
+/* Mouse drag in the pinned lateral galleries. */
+.motion .sequence[data-kind="horizontal"] .track-viewport{cursor:grab}
+html[data-lateral-dragging="true"],html[data-lateral-dragging="true"] *{cursor:grabbing!important;user-select:none!important}
