@@ -15,3 +15,7 @@ Validação: teste dedicado de trajeto na prévia Wi-Fi em 320×640/390×844/136
 Sem backend/migração, merge, release/tag, deploy ou VPS/mirror. Reversão pelo commit anterior. Produção v0.1.3 preservada.
 
 Desktop: arrasto lateral de mouse com botão esquerdo nas duas galerias, ganho0,55 e sentidos respeitados. Captura do ponteiro mantém o gesto; cursor grab/grabbing e seleção desativada durante arrasto. Limiar8px distingue movimento de clique; controles/links excluídos, arrasto próprio da folha preservado. Teste real de mouse na branch e no Wi-Fi passou nos dois sentidos das duas galerias, soltura/idle/controles. Regressões de wheel/mobile do mesmo teste passaram; sintaxe/diff passaram.
+
+Quando um gesto horizontal ultrapassa o fim da galeria, o restante cruza o limite e vira rolagem da página para baixo; além do início, segue para cima. Mouse mantido continua essa passagem em y; no toque, o restante do próprio swipe segue verticalmente e o próximo swipe já rola o conteúdo da página. Trackpad horizontal e roda também entregam o excesso ao fluxo vertical. Cliques/botões e limites da página preservados.
+
+Novo teste de fluxo: extrapolação nos dois limites das duas galerias por roda, mouse mantido e toque CDP; continuação vertical e próximo scroll da página passaram na prévia Wi-Fi.

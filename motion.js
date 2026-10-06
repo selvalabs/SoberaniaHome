@@ -753,6 +753,13 @@
   function lateralSceneAt(y){
     return enabled&&!paused&&!reduced.matches?scenes.find(s=>s.kind==='horizontal'&&!s.static&&s.g&&y>=s.g.start-1&&y<=s.g.end+1):null;
   }
+  function lateralDestination(s,current,delta,horizontal,flowDirection=delta){
+    const target=current+delta,edge=target>s.g.end?s.g.end:target<s.g.start?s.g.start:null;
+    if(edge===null)return {y:clamp(target,0,geometry.maxScroll),flow:false};
+    const overflow=target-edge;
+    const verticalRemainder=horizontal?overflow*s.g.travel/Math.max(1,s.g.run)*.45/.55:overflow;
+    return {y:clamp(edge+verticalRemainder,0,geometry.maxScroll),flow:true,direction:Math.sign(flowDirection)};
+  }
   const gestureControl='button,a,input,textarea,select,[contenteditable="true"],dialog';
   addEventListener('wheel',event=>{
     stopControlledScroll();
@@ -761,11 +768,12 @@
     const unit=event.deltaMode===1?16:event.deltaMode===2?innerHeight:1;
     const horizontal=Math.abs(event.deltaX)>Math.abs(event.deltaY)*1.2;
     const dir=s.el.dataset.direction==='reverse'?-1:1;
-    const delta=horizontal?event.deltaX*unit*dir*s.g.run/Math.max(1,s.g.travel)*.55:event.deltaY*unit*.45;
+    const input=horizontal?event.deltaX*unit*dir:event.deltaY*unit;
+    const delta=horizontal?input*s.g.run/Math.max(1,s.g.travel)*.55:input*.45;
     if(!delta)return;
     event.preventDefault();
-    const next=horizontal?clamp(scrollY+delta,s.g.start,s.g.end):clamp(scrollY+delta,0,geometry.maxScroll);
-    scrollTo({top:next,behavior:'instant'});request(true);
+    const destination=lateralDestination(s,scrollY,delta,horizontal,input);
+    scrollTo({top:destination.y,behavior:'instant'});request(true);
   },{passive:false});
   let lateralMouse=null,suppressLateralClick=false;
   function releaseLateralMouse(){
@@ -778,7 +786,7 @@
       suppressLateralClick=false;
       if(event.pointerType!=='mouse'||event.button!==0||lateralSceneAt(scrollY)!==s||event.target.closest?.(gestureControl))return;
       event.preventDefault();stopControlledScroll();
-      lateralMouse={scene:s,pointerId:event.pointerId,startX:event.clientX,lastX:event.clientX,moved:false};
+      lateralMouse={scene:s,pointerId:event.pointerId,startX:event.clientX,lastX:event.clientX,moved:false,flow:false};
       s.frame.setPointerCapture?.(event.pointerId);
     });
     s.frame.addEventListener('dragstart',event=>{
@@ -788,14 +796,17 @@
   document.addEventListener('pointermove',event=>{
     const gesture=lateralMouse,s=gesture?.scene;
     if(!gesture||event.pointerId!==gesture.pointerId)return;
-    if(!(event.buttons&1)||lateralSceneAt(scrollY)!==s){releaseLateralMouse();return;}
+    if(!(event.buttons&1)||(!gesture.flow&&lateralSceneAt(scrollY)!==s)){releaseLateralMouse();return;}
     if(!gesture.moved&&Math.abs(event.clientX-gesture.startX)<8)return;
     gesture.moved=true;suppressLateralClick=true;
     root.dataset.lateralDragging='true';event.preventDefault();
     const dir=s.el.dataset.direction==='reverse'?-1:1;
-    const delta=(gesture.lastX-event.clientX)*dir*s.g.run/Math.max(1,s.g.travel)*.55;
+    const input=(gesture.lastX-event.clientX)*dir;
+    const delta=gesture.flow?input*.55:input*s.g.run/Math.max(1,s.g.travel)*.55;
     gesture.lastX=event.clientX;
-    scrollTo({top:clamp(scrollY+delta,s.g.start,s.g.end),behavior:'instant'});request(true);
+    const destination=gesture.flow?{y:clamp(scrollY+delta,0,geometry.maxScroll)}:lateralDestination(s,scrollY,delta,true,input);
+    if(destination.flow)gesture.flow=true;
+    scrollTo({top:destination.y,behavior:'instant'});request(true);
   });
   document.addEventListener('pointerup',event=>{if(event.pointerId===lateralMouse?.pointerId)releaseLateralMouse();});
   document.addEventListener('pointercancel',()=>{releaseLateralMouse();suppressLateralClick=false;});
@@ -810,11 +821,11 @@
     const s=lateralSceneAt(scrollY);
     if(innerWidth>=760||!s||event.touches.length!==1||event.target.closest?.(gestureControl)||(!s.frame.contains(event.target)&&!els.flight.contains(event.target))){lateralTouch=null;return;}
     const point=event.touches[0];
-    lateralTouch={scene:s,x:point.clientX,y:point.clientY,lastX:point.clientX,lastY:point.clientY,axis:null};
+    lateralTouch={scene:s,x:point.clientX,y:point.clientY,lastX:point.clientX,lastY:point.clientY,axis:null,flow:false};
   },{passive:true});
   document.addEventListener('touchmove',event=>{
     const gesture=lateralTouch,s=gesture?.scene;
-    if(!gesture||event.touches.length!==1||lateralSceneAt(scrollY)!==s||!event.cancelable){lateralTouch=null;return;}
+    if(!gesture||event.touches.length!==1||(!gesture.flow&&lateralSceneAt(scrollY)!==s)||!event.cancelable){lateralTouch=null;return;}
     const point=event.touches[0],dx=gesture.x-point.clientX,dy=gesture.y-point.clientY;
     if(!gesture.axis){
       if(Math.max(Math.abs(dx),Math.abs(dy))<10)return;
@@ -822,10 +833,12 @@
     }
     event.preventDefault();stopControlledScroll();
     const horizontal=gesture.axis==='x',dir=s.el.dataset.direction==='reverse'?-1:1;
-    const delta=horizontal?(gesture.lastX-point.clientX)*dir*s.g.run/Math.max(1,s.g.travel)*.55:(gesture.lastY-point.clientY)*.55;
+    const input=horizontal?(gesture.lastX-point.clientX)*dir:gesture.lastY-point.clientY;
+    const delta=gesture.flow?input*.55:horizontal?input*s.g.run/Math.max(1,s.g.travel)*.55:input*.55;
     gesture.lastX=point.clientX;gesture.lastY=point.clientY;
-    const next=horizontal?clamp(scrollY+delta,s.g.start,s.g.end):clamp(scrollY+delta,0,geometry.maxScroll);
-    scrollTo({top:next,behavior:'instant'});request(true);
+    const destination=gesture.flow?{y:clamp(scrollY+delta,0,geometry.maxScroll)}:lateralDestination(s,scrollY,delta,horizontal,input);
+    if(destination.flow)gesture.flow=true;
+    scrollTo({top:destination.y,behavior:'instant'});request(true);
   },{passive:false});
   const releaseLateralTouch=()=>{lateralTouch=null;};
   document.addEventListener('touchend',releaseLateralTouch,{passive:true});
