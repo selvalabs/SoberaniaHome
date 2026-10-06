@@ -3,6 +3,9 @@
     const projects=window.SLLandingPages, prefix=figure.dataset.imagePrefix || 'screens/';
     if(!projects?.length) return;
     if(figure.closest('#laboratorio')){
+      const card=figure.closest('.landing-project');
+      card?.querySelector('.card-meta .work-status')?.remove();
+      card?.querySelector('.card-tail')?.remove();
       const rail=document.createElement('div');
       rail.className='landing-phone-rail';
       // Native snap competes with each wheel/drag update and pulls the rail back.
