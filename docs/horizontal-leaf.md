@@ -1,12 +1,15 @@
-# Folha nas cenas laterais
-Issue #25, branch fix/25-horizontal-leaf, base 45ebfbbba3dd99fa64d62e6b5047901535568ef7.
-Trajeto vertical na faixa central do viewport útil (41,5–54,5%), com blend de 55% da altura útil antes/depois do pin. Função de scroll determinística, sem animação de tempo nem alteração de layout.
-Glow reage à distância vertical entre texto e folha, sem penalidade pelo deslocamento horizontal do card. Cards ocultos/inertes não recebem glow. Leitura/reduced motion desativam o efeito.
-PR aplica o trajeto e glow lateral à base limpa; rascunho integrado usa o renderHighlights pré-existente da issue12 com o mesmo critério lateral. Outros drafts não incluídos.
-Sem dependências/backend/migração. Sem merge/release/tag/deploy/VPS/mirror. Reversão pelo commit anterior. Produção v0.1.3 preservada.
+# Folha e gestos nas galerias laterais
 
-Validação: teste dedicado em base limpa e prévia integrada em 320×640, 390×844, 1366×900; duas cenas, centro, glow, continuidade ±1px, reversão, idle, leitura e reduced motion passaram. Inspeção visual desktop e sintaxe/diff passaram. Teste usa DOM pronto/estado pronto, pois load completo aguarda conteúdo embutido independente do motion. Sem auditoria/build completo novo, nenhuma dependência alterada.
+Issue #25; branch fix/25-horizontal-leaf; base 45ebfbbba3dd99fa64d62e6b5047901535568ef7.
 
-Refinamento: balanço lateral de um ciclo por galeria, amplitude 8% no celular/11% no desktop e inclinação suave acompanhando o pêndulo. Retirado giro rápido de 205°/180° concentrado no início da galeria. Percurso de scroll aumentado 50% (unidades 1,02 mobile/1,20 desktop), reduzindo a velocidade por gesto em cerca de um terço. Centro/glow e transições contínuas mantidos.
+A folha percorre a faixa central útil (41,5–54,5%), com balanço horizontal de um ciclo por galeria (8% mobile/11% desktop), giro completo de 360° progressivo e virada em profundidade até 105°. A saída mantém a volta completa visualmente equivalente a zero, sem desfazer o giro depressa. Aproximação/saída contínuas em 55% da altura útil antes/depois do pin.
 
-Validação do refinamento: teste dedicado passou novamente na branch e no Wi-Fi em três viewports; verificou amplitude do balanço, percurso mais longo e continuidade em x/y, além de glow, reversão, idle e leitura/reduced motion. Sintaxe e diff check passaram.
+Percurso de scroll aumentado 50% (unidades 1,02 mobile/1,20 desktop). Dentro das galerias, wheel vertical tem ganho 0,45 e toque vertical 0,55. Toque/trackpad horizontal converte deslocamento em scroll documental com ganho 0,55 da distância dos cards, respeitando o sentido da galeria e seus limites. Sem alvo acumulado nem animação após soltar o gesto. Fora das galerias, rolagem nativa; controles e multitouch não são interceptados. Leitura/reduced motion desativam os efeitos e a conversão.
+
+Gestos de toque tratados no documento para incluir a folha sobreposta ao mockup. Touch-action permite pan vertical e pinch; controles continuam clicáveis. Gesto vertical pode sair da dobra.
+
+Glow alinhado à distância vertical entre textos/legendas e folha; sem penalidade pela posição horizontal dos cards, respeitando cards ocultos. Base limpa tem renderLateralHighlights; rascunho integrado mantém renderHighlights da issue12 com o mesmo critério lateral. Outros drafts não incluídos.
+
+Validação: teste dedicado de trajeto na prévia Wi-Fi em 320×640/390×844/1366×900, centro/glow/amplitude/percurso/continuidade em x/y/reversão/idle/leitura/reduced motion passaram. Novo teste de input na branch e na prévia: wheel real 200px → 90px nas galerias, wheel nativo fora, giro >250°, touch CDP horizontal nos dois sentidos em ambas galerias e toque vertical desacelerado passaram. Controles por tap e saída vertical no Wi-Fi passaram. Sintaxe/diff passaram. Sem novas dependências; build/auditoria completa não repetidos.
+
+Sem backend/migração, merge, release/tag, deploy ou VPS/mirror. Reversão pelo commit anterior. Produção v0.1.3 preservada.

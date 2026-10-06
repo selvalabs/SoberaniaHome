@@ -1,6 +1,6 @@
 /* Soberania Labs / motion engine
- * The document scroll is the only source of visual progress. Wheel input may be
- * rate-limited before it changes that document scroll; touch and keyboard stay native.
+ * Document scroll is the only source of visual progress. Lateral chapters scale
+ * wheel/touch input directly; keyboard and other chapters retain native scrolling.
  * Geometry is measured on layout changes, never inside the animation renderers.
  * Discontinuous jumps resynchronise; they are not replayed as a high-speed sweep.
  */
@@ -138,10 +138,12 @@
     enabled=mode;root.classList.toggle('motion',enabled);root.dataset.reading=enabled?'false':'true';
     const vh=innerHeight,vw=document.documentElement.clientWidth,mast=els.mast.getBoundingClientRect().height;
     const isMobile=mobile();
+    els.leaf.style.touchAction=isMobile?'pan-y pinch-zoom':'';
     // Pass one writes scene lengths and track gutters only.
     scenes.forEach(s=>{
       const staticScene=!enabled||(isMobile&&s.kind==='journal');
       s.static=staticScene;
+      if(s.kind==='horizontal')s.frame.style.touchAction=staticScene?'':'pan-y pinch-zoom';
       const h=enabled?s.frame.offsetHeight:Math.max(vh-mast,1);
       let units=s.kind==='words'?.34:s.kind==='knowledge'?.66:s.kind==='horizontal'?1.02:s.kind==='process'?.72:s.kind==='editor'?.66:.79;
       if(!isMobile)units=s.kind==='words'?.40:s.kind==='horizontal'?1.20:.78;
@@ -482,9 +484,11 @@
       const centre=mast+(h-mast)*(.48+.065*sway);
       t.y=mix(t.y,centre,weight);
       t.x=mix(t.x,w*(.5+dir*(mobile()?.08:.11)*sway),weight);
-      t.rz+=dir*22*sway*weight;
-      t.ry+=dir*16*Math.sin(phase+.55)*weight;
-      t.rx+=10*Math.cos(phase)*weight;
+      // A full wind-driven turn; the completed 360° is visually identical
+      // to zero on departure, avoiding a fast backwards unwind.
+      t.rz+=dir*(360*smoother(progress)*enter+28*sway*weight);
+      t.ry+=dir*105*Math.sin(phase)*weight;
+      t.rx+=18*Math.cos(phase)*weight;
     }
 
     // Keep the protagonist recoverable in the viewport. The first third is stricter.
@@ -744,10 +748,51 @@
     if(els.flight.hasPointerCapture?.(e.pointerId))els.flight.releasePointerCapture(e.pointerId);
     request(true);
   }
-  // Scrolling belongs to the browser. The old wheel interceptor accumulated a
-  // target and kept issuing scrollTo calls after input stopped, which felt like
-  // dragging a heavy page. Scenes only observe the native scroll position.
-  addEventListener('wheel',stopControlledScroll,{passive:true});
+  // Slow input only while a lateral chapter is pinned. No queued target or
+  // post-gesture animation: leaf, glow and cards observe the same document y.
+  function lateralSceneAt(y){
+    return enabled&&!paused&&!reduced.matches?scenes.find(s=>s.kind==='horizontal'&&!s.static&&s.g&&y>=s.g.start-1&&y<=s.g.end+1):null;
+  }
+  const gestureControl='button,a,input,textarea,select,[contenteditable="true"],dialog';
+  addEventListener('wheel',event=>{
+    stopControlledScroll();
+    const s=lateralSceneAt(scrollY);
+    if(!s||event.ctrlKey||event.target.closest?.(gestureControl)||!event.cancelable)return;
+    const unit=event.deltaMode===1?16:event.deltaMode===2?innerHeight:1;
+    const horizontal=Math.abs(event.deltaX)>Math.abs(event.deltaY)*1.2;
+    const dir=s.el.dataset.direction==='reverse'?-1:1;
+    const delta=horizontal?event.deltaX*unit*dir*s.g.run/Math.max(1,s.g.travel)*.55:event.deltaY*unit*.45;
+    if(!delta)return;
+    event.preventDefault();
+    const next=horizontal?clamp(scrollY+delta,s.g.start,s.g.end):clamp(scrollY+delta,0,geometry.maxScroll);
+    scrollTo({top:next,behavior:'instant'});request(true);
+  },{passive:false});
+  // Bind at document level so the floating leaf cannot swallow the swipe.
+  let lateralTouch=null;
+  document.addEventListener('touchstart',event=>{
+    const s=lateralSceneAt(scrollY);
+    if(innerWidth>=760||!s||event.touches.length!==1||event.target.closest?.(gestureControl)||(!s.frame.contains(event.target)&&!els.flight.contains(event.target))){lateralTouch=null;return;}
+    const point=event.touches[0];
+    lateralTouch={scene:s,x:point.clientX,y:point.clientY,lastX:point.clientX,lastY:point.clientY,axis:null};
+  },{passive:true});
+  document.addEventListener('touchmove',event=>{
+    const gesture=lateralTouch,s=gesture?.scene;
+    if(!gesture||event.touches.length!==1||lateralSceneAt(scrollY)!==s||!event.cancelable){lateralTouch=null;return;}
+    const point=event.touches[0],dx=gesture.x-point.clientX,dy=gesture.y-point.clientY;
+    if(!gesture.axis){
+      if(Math.max(Math.abs(dx),Math.abs(dy))<10)return;
+      gesture.axis=Math.abs(dx)>Math.abs(dy)*1.15?'x':'y';
+    }
+    event.preventDefault();stopControlledScroll();
+    const horizontal=gesture.axis==='x',dir=s.el.dataset.direction==='reverse'?-1:1;
+    const delta=horizontal?(gesture.lastX-point.clientX)*dir*s.g.run/Math.max(1,s.g.travel)*.55:(gesture.lastY-point.clientY)*.55;
+    gesture.lastX=point.clientX;gesture.lastY=point.clientY;
+    const next=horizontal?clamp(scrollY+delta,s.g.start,s.g.end):clamp(scrollY+delta,0,geometry.maxScroll);
+    scrollTo({top:next,behavior:'instant'});request(true);
+  },{passive:false});
+  const releaseLateralTouch=()=>{lateralTouch=null;};
+  document.addEventListener('touchend',releaseLateralTouch,{passive:true});
+  document.addEventListener('touchcancel',releaseLateralTouch,{passive:true});
   // Bind to the flight wrapper so the generous invisible hit-area and the
   // visible sprite both start the same gesture.
   els.flight.addEventListener('pointerdown',beginLeafDrag);
