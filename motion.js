@@ -24,6 +24,7 @@
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
   const mobile=()=>innerWidth<760;
   let requestedReading=false, enabled=false, paused=false, raf=null,lastY=scrollY;
+  let mastScrollDirection=0,mastScrollTravel=0,mastDirectionY=scrollY;
   let controlledScrollTarget=scrollY,controlledScrollVelocity=0,controlledScrollRaf=null,controlledScrollLastTime=null;
   let dirty=true,geometry=null,layoutPending=true,forceSync=true,ready=false,activeId='hero',resizeTimer;
   // Dragging is an intentional, temporary exception to the scroll route. The
@@ -78,7 +79,7 @@
   const processBoard=(s)=>{
     const pieceWidth=s.nodes[0].offsetWidth||160;
     const scale=pieceWidth/processCrop.width;
-    return {scale,centreX:(mobile()?s.g.stage.width*.5:s.g.stage.width*.42),centreY:(mobile()?s.g.stage.height*.45:s.g.stage.height*.5)};
+    return {scale,centreX:(mobile()?s.g.stage.width*.5:s.g.stage.width*.38),centreY:(mobile()?s.g.stage.height*.45:s.g.stage.height*.5)};
   };
   const processTarget=(s,index,layout=processBoard(s))=>{
     const {scale,centreX,centreY}=layout,[originX,originY]=processOrigins[index];
@@ -606,6 +607,16 @@
     return dragMoving;
   }
 
+  function updateMastVisibility(y){
+    const delta=y-mastDirectionY;
+    if(Math.abs(delta)<1)return;
+    const direction=Math.sign(delta);
+    if(direction!==mastScrollDirection){mastScrollDirection=direction;mastScrollTravel=0;}
+    mastScrollTravel+=Math.abs(delta);
+    if(y<96||(direction<0&&mastScrollTravel>=8))els.mast.classList.remove('is-hidden');
+    else if(direction>0&&y>150&&mastScrollTravel>=20)els.mast.classList.add('is-hidden');
+    mastDirectionY=y;
+  }
   function updateNav(y){
     const sec=currentSection(y);
     if(sec.id===activeId&&ready)return;
@@ -614,152 +625,4 @@
   }
   function request(sync=false){
     if(reduced.matches){metrics.idle=true;return;}
-    if(sync)forceSync=true;dirty=true;
-    if(raf===null&&!paused){metrics.idle=false;raf=requestAnimationFrame(frame);}
-  }
-  function frame(ts){
-    raf=null;
-    if(paused||document.hidden){metrics.idle=true;return;}
-    const started=performance.now();
-    if(layoutPending)measure(false);
-    const y=scrollY;
-    // No visual playhead: scenes and leaf are a direct projection of scrollY.
-    const visualY=clamp(y,0,geometry.maxScroll);
-    dirty=false;forceSync=false;let moving=false,activeScene=null;
-    updateNav(y);
-    if(enabled){
-      for(const s of scenes){
-        if(s.static)continue;
-        const raw=visibleProgress(s,visualY)*(s.count-1);s.raw=raw;
-        const inView=s.g.bottom>visualY+geometry.mast&&s.g.top<visualY+geometry.height;
-        if(!inView){const end=visualY>s.g.end?s.count-1:0;if(s.v!==end||Number.isNaN(s.lastV)){s.v=end;renderScene(s);}continue;}
-        if(visualY>=s.g.start-80&&visualY<=s.g.end+80)activeScene=s;
-        if(s.editorLive)continue;
-        if(Math.abs(raw-s.v)>.2)metrics.resynchronisations++;
-        s.v=raw;
-        renderScene(s);
-      }
-      moving=renderLeaf(visualY,activeScene,ts)||moving;
-    }
-    if(enabled&&activeScene&&innerWidth===geometry.width&&Math.abs(innerHeight-geometry.height)<2)stableView={id:activeScene.id,progress:scrollProgress(activeScene,visualY)};
-    lastY=y;metrics.frames++;metrics.maxFrameMs=Math.max(metrics.maxFrameMs,performance.now()-started);
-    if(moving||dirty){raf=requestAnimationFrame(frame);metrics.idle=false;}else metrics.idle=true;
-  }
-  function setReading(value){requestedReading=value;layoutPending=true;request(true);}
-  function remeasure(preserve=false){if(paused){layoutPending=true;return;}measure(preserve);request(true);}
-  function jumpSection(id){const el=document.getElementById(id);if(!el)return;stopControlledScroll();if(layoutPending)measure();const top=docRect(el).top-geometry.mast;scrollTo({top:Math.max(0,top),behavior:'instant'});request(true);}
-  function jumpScene(s,phase){if(typeof s==='string')s=scenes.find(x=>x.id===s);if(!s)return;stopControlledScroll();const p=clamp(phase/(s.count-1));if(s.static){jumpSection(s.id);return;}s.v=p*(s.count-1);scrollTo({top:s.g.start+p*s.g.run,behavior:'instant'});request(true);}
-  scenes.forEach(s=>{
-    s.prev?.addEventListener('click',()=>jumpScene(s,Math.round(s.v)-1));s.next?.addEventListener('click',()=>jumpScene(s,Math.round(s.v)+1));
-  });
-  scenes.filter(s=>s.kind==='process').forEach(s=>{
-    const state=processState(s);
-    const point=e=>{const r=s.stage.getBoundingClientRect();return {x:clamp(e.clientX-r.left,0,r.width),y:clamp(e.clientY-r.top,0,r.height)};};
-    const redraw=()=>{s.lastV=NaN;request(true);};
-    s.nodes.forEach((node,i)=>{
-      node.addEventListener('pointerdown',e=>{
-        if(e.pointerType!=='mouse'||innerWidth<760||s.static||!enabled)return;
-        e.preventDefault();e.stopPropagation();stopControlledScroll();
-        state.dragging=i;state.pointerId=e.pointerId;state.points[i]=point(e);node.setPointerCapture?.(e.pointerId);redraw();
-      });
-      node.addEventListener('pointermove',e=>{
-        if(state.dragging!==i||state.pointerId!==e.pointerId)return;
-        e.preventDefault();state.points[i]=point(e);redraw();
-      });
-      const release=e=>{
-        if(state.dragging!==i||state.pointerId!==e.pointerId)return;
-        const dropped=point(e),target=processTarget(s,i);
-        state.assembled[i]=Math.hypot(dropped.x-target.x,dropped.y-target.y)<Math.min(s.g.stage.width,s.g.stage.height)*.17;
-        state.points[i]=null;state.dragging=-1;state.pointerId=null;state.movedAt=performance.now();
-        if(node.hasPointerCapture?.(e.pointerId))node.releasePointerCapture(e.pointerId);redraw();
-      };
-      node.addEventListener('pointerup',release);node.addEventListener('pointercancel',release);
-      node.addEventListener('click',()=>{
-        if(innerWidth<760||s.static||!enabled)return;
-        if(performance.now()-state.movedAt<280)return;
-        state.assembled[i]=true;redraw();
-      });
-    });
-  });
-  const maxDocumentScroll=()=>Math.max(0,document.documentElement.scrollHeight-innerHeight);
-  const isEditableTarget=target=>target instanceof Element&&Boolean(target.closest('input,textarea,select,[contenteditable="true"]'));
-  function stopControlledScroll(){
-    if(controlledScrollRaf!==null)cancelAnimationFrame(controlledScrollRaf);
-    controlledScrollRaf=null;controlledScrollLastTime=null;controlledScrollVelocity=0;controlledScrollTarget=scrollY;
-  }
-  function beginLeafDrag(e){
-    if(e.pointerType!=='mouse'||e.button!==0||!enabled||reduced.matches||leaf.occlusionState==='occluded')return;
-    e.preventDefault();e.stopPropagation();stopControlledScroll();
-    leafDrag.active=true;leafDrag.returning=false;leafDrag.pointerId=e.pointerId;
-    leafDrag.grabX=e.clientX-leaf.x;leafDrag.grabY=e.clientY-leaf.y;
-    leafDrag.x=leaf.x;leafDrag.y=leaf.y;leafDrag.lastX=e.clientX;leafDrag.lastY=e.clientY;leafDrag.lastAt=performance.now();leafDrag.vx=0;leafDrag.vy=0;
-    root.dataset.leafDragging='1';els.flight.setPointerCapture?.(e.pointerId);request(true);
-  }
-  function moveLeafDrag(e){
-    if(!leafDrag.active||e.pointerId!==leafDrag.pointerId)return;
-    e.preventDefault();
-    const now=performance.now(),dt=Math.max(.008,(now-leafDrag.lastAt)/1000);
-    leafDrag.vx=clamp((e.clientX-leafDrag.lastX)/dt,-1100,1100);
-    leafDrag.vy=clamp((e.clientY-leafDrag.lastY)/dt,-1100,1100);
-    leafDrag.x=clamp(e.clientX-leafDrag.grabX,-70,innerWidth+70);
-    leafDrag.y=clamp(e.clientY-leafDrag.grabY,geometry.mast-50,innerHeight+70);
-    leafDrag.lastX=e.clientX;leafDrag.lastY=e.clientY;leafDrag.lastAt=now;request(true);
-  }
-  function endLeafDrag(e){
-    if(!leafDrag.active||e.pointerId!==leafDrag.pointerId)return;
-    leafDrag.active=false;leafDrag.pointerId=null;
-    leafDrag.releaseX=leafDrag.x-leafDrag.baseX;leafDrag.releaseY=leafDrag.y-leafDrag.baseY;
-    leafDrag.releaseVX=leafDrag.vx;leafDrag.releaseVY=leafDrag.vy;leafDrag.releaseAt=performance.now();
-    leafDrag.returning=Math.hypot(leafDrag.releaseX,leafDrag.releaseY)>.5;
-    if(!leafDrag.returning)root.dataset.leafDragging='0';
-    if(els.flight.hasPointerCapture?.(e.pointerId))els.flight.releasePointerCapture(e.pointerId);
-    request(true);
-  }
-  // Scrolling belongs to the browser. The old wheel interceptor accumulated a
-  // target and kept issuing scrollTo calls after input stopped, which felt like
-  // dragging a heavy page. Scenes only observe the native scroll position.
-  addEventListener('wheel',stopControlledScroll,{passive:true});
-  // Bind to the flight wrapper so the generous invisible hit-area and the
-  // visible sprite both start the same gesture.
-  els.flight.addEventListener('pointerdown',beginLeafDrag);
-  els.flight.addEventListener('pointermove',moveLeafDrag);
-  els.flight.addEventListener('pointerup',endLeafDrag);
-  els.flight.addEventListener('pointercancel',endLeafDrag);
-  addEventListener('scroll',()=>{if(controlledScrollRaf===null)controlledScrollTarget=scrollY;request();},{passive:true});
-  addEventListener('pointerdown',stopControlledScroll,{passive:true});
-  addEventListener('touchstart',stopControlledScroll,{passive:true});
-  addEventListener('keydown',stopControlledScroll,{passive:true});
-  let prevWidth=innerWidth,prevHeight=innerHeight;
-  addEventListener('resize',()=>{
-    if(document.activeElement?.isContentEditable)return;
-    clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{
-      const preserve=Math.abs(innerWidth-prevWidth)>20;
-      if(preserve||Math.abs(innerHeight-prevHeight)>100){prevWidth=innerWidth;prevHeight=innerHeight;remeasure(preserve);}
-      else request();
-    },140);
-  },{passive:true});
-  addEventListener('orientationchange',()=>setTimeout(()=>remeasure(true),220));
-  document.addEventListener('visibilitychange',()=>{if(document.hidden){if(raf!==null)cancelAnimationFrame(raf);raf=null;stopControlledScroll();metrics.idle=true;}else request(true);});
-  reduced.addEventListener('change',()=>{
-    layoutPending=true;
-    if(reduced.matches){
-      if(raf!==null)cancelAnimationFrame(raf);
-      raf=null;stopControlledScroll();dirty=false;metrics.idle=true;
-      measure(false);
-    }else request(true);
-  });
-  observer=new IntersectionObserver(entries=>{for(const entry of entries){entry.isIntersecting?near.add(entry.target):near.delete(entry.target);}request();},{rootMargin:'100px'});
-  scenes.forEach(s=>observer.observe(s.el));
-  // Frame size changes matter; scene scroll distances themselves do not trigger measurement.
-  const observedSizes=new WeakMap();
-  const resizeObserver=new ResizeObserver(entries=>{
-    let changed=false;
-    for(const entry of entries){const r=entry.contentRect,old=observedSizes.get(entry.target);observedSizes.set(entry.target,[r.width,r.height]);if(old&&(Math.abs(old[0]-r.width)>2||Math.abs(old[1]-r.height)>100))changed=true;}
-    if(changed&&ready&&!document.activeElement?.isContentEditable){clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>remeasure(Math.abs(innerWidth-(geometry?.width||innerWidth))>20),160);}
-  });
-  resizeObserver.observe(els.mast);scenes.forEach(s=>resizeObserver.observe(s.frame));
-  function initialise(){measure();request(true);document.dispatchEvent(new Event('sl:ready'));}
-  window.SLMotion={jumpSection,jumpScene,setReading,refresh:()=>remeasure(false),pause:()=>{paused=true;if(raf!==null)cancelAnimationFrame(raf);raf=null;stopControlledScroll();metrics.idle=true;},resume:()=>{paused=false;request(true);},editorLive:value=>{const s=scenes.find(x=>x.kind==='editor');s.editorLive=value;s.el.classList.toggle('editor-live',value);request(true);},request};
-    Object.defineProperty(window,'__SL_DEBUG',{get:()=>({enabled,ready,paused,activeId,metrics:{...metrics},maxScroll:geometry?.maxScroll,scroll:{actual:scrollY,target:controlledScrollTarget,velocity:controlledScrollVelocity,controllerActive:controlledScrollRaf!==null},leaf:{x:leaf.x,y:leaf.y,rotation:leaf.rz,rotateX:leaf.rx,rotateY:leaf.ry,scale:leaf.scale,phase:leaf.phase,mode:leaf.mode,depth:root.dataset.leafDepth||'mid',opacity:leaf.opacity,occlusionState:leaf.occlusionState,occlusionProgress:leaf.occlusionProgress,drag:{active:leafDrag.active,returning:leafDrag.returning,baseX:leafDrag.baseX,baseY:leafDrag.baseY}},scenes:scenes.map(s=>({id:s.id,kind:s.kind,static:s.static,raw:s.raw,visual:s.v,start:s.g?.start,end:s.g?.end,run:s.g?.run,travel:s.g?.travel,lastIndex:s.lastIndex,frameHeight:s.g?.frameHeight}))})});
-  Promise.all([...document.images].map(i=>i.decode?.().catch(()=>{})||Promise.resolve())).then(initialise);
-})();
+    if(sync)f
