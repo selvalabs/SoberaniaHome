@@ -18,7 +18,7 @@ body {margin:0;height:1800px} #laboratorio {margin:100px 20px;width:calc(100% - 
         page.add_script_tag(path=str(ROOT / 'demos/landing-collection/gallery.js'))
         rail = page.locator('.landing-phone-rail')
         phones = page.locator('.landing-phone-screen')
-        page.mouse.move(100, 200)
+        page.mouse.move(100, 120)
         positions = []
         for _ in range(4):
             page.mouse.wheel(0, 25)
@@ -34,7 +34,7 @@ body {margin:0;height:1800px} #laboratorio {margin:100px 20px;width:calc(100% - 
             rail.evaluate('(e,x)=>e.scrollLeft=x',edge)
             page.wait_for_timeout(50)
             box = rail.bounding_box()
-            page.mouse.move(box['x']+50,box['y']+100)
+            page.mouse.move(box['x']+50,box['y']+20)
             y = page.evaluate('scrollY')
             tops = phones.evaluate_all('es=>es.map(e=>e.scrollTop)')
             position = rail.evaluate('e=>e.scrollLeft')
@@ -45,12 +45,25 @@ body {margin:0;height:1800px} #laboratorio {margin:100px 20px;width:calc(100% - 
             assert phones.evaluate_all('es=>es.map(e=>e.scrollTop)') == tops
         rail.evaluate('e=>e.scrollLeft=0')
         page.mouse.move(100,200)
-        page.keyboard.down('Shift')
         page.mouse.wheel(0,150)
-        page.keyboard.up('Shift')
         page.wait_for_timeout(100)
         assert phones.first.evaluate('e=>e.scrollTop') > 0
         assert rail.evaluate('e=>e.scrollLeft') == 0
+        page.keyboard.down('Shift')
+        page.mouse.wheel(0,100)
+        page.keyboard.up('Shift')
+        page.wait_for_timeout(350)
+        assert rail.evaluate('e=>e.scrollLeft') > 0
+        assert phones.nth(1).evaluate('e=>e.scrollTop') == 0
+        rail.evaluate('e=>e.scrollLeft=0')
+        # Internal limits do not leak a vertical wheel into the gallery/page.
+        phones.first.evaluate('e=>e.scrollTop=999999')
+        inner_end=phones.first.evaluate('e=>e.scrollTop')
+        page.mouse.wheel(0,300)
+        page.wait_for_timeout(150)
+        assert phones.first.evaluate('e=>e.scrollTop') == inner_end
+        assert rail.evaluate('e=>e.scrollLeft') == 0
+        assert page.evaluate('scrollY') == 0
         page.mouse.move(170,200)
         page.mouse.down()
         page.mouse.move(70,200,steps=8)

@@ -8,7 +8,7 @@
       // Native snap competes with each wheel/drag update and pulls the rail back.
       rail.style.scrollSnapType='none';
       rail.style.scrollBehavior='auto';
-      rail.setAttribute('aria-label','Oito landing pages em mockups de celular. Role ou arraste para os lados para ver outras páginas. Use Shift mais a roda do mouse para percorrer a tela atual.');
+      rail.setAttribute('aria-label','Oito landing pages em mockups de celular. Role dentro da tela para ler a página. Arraste para os lados ou use Shift mais a roda do mouse para ver outras páginas.');
       projects.forEach(project=>{
         const card=document.createElement('article');
         card.className='landing-phone-card';
@@ -32,17 +32,17 @@
         image.draggable=false;
         image.addEventListener('error',()=>{screen.setAttribute('aria-label',`Prévia indisponível: ${project.name}.`);},{once:true});
         screen.append(image);frame.append(screen);
-        const hint=document.createElement('span');hint.className='landing-phone-scroll-hint';hint.textContent='Roda muda de landing ↔ · Shift + roda percorre a tela ↕';
+        const hint=document.createElement('span');hint.className='landing-phone-scroll-hint';hint.textContent='Role na tela ↕ · Arraste ou Shift + roda ↔';
         card.append(heading,frame,hint);rail.append(card);
       });
       rail.addEventListener('wheel',event=>{
         if(event.ctrlKey||!event.cancelable)return;
         const overPhone=event.target.closest?.('.landing-phone-screen');
         const horizontalInput=Math.abs(event.deltaX)>Math.abs(event.deltaY)*1.15;
-        const unit=event.deltaMode===1?16:event.deltaMode===2?rail.clientWidth:1;
-        if(overPhone&&(event.shiftKey||event.altKey)){
+        const verticalPhone=overPhone&&!event.shiftKey&&(!horizontalInput||event.altKey);
+        const unit=event.deltaMode===1?16:event.deltaMode===2?(verticalPhone?overPhone.clientHeight:rail.clientWidth):1;
+        if(verticalPhone){
           event.preventDefault();event.stopPropagation();
-          // Some platforms convert Shift + wheel into deltaX.
           overPhone.scrollTop+=(event.deltaY||event.deltaX)*unit;return;
         }
         const delta=(horizontalInput?event.deltaX:event.deltaY)*unit;
