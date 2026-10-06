@@ -767,6 +767,43 @@
     const next=horizontal?clamp(scrollY+delta,s.g.start,s.g.end):clamp(scrollY+delta,0,geometry.maxScroll);
     scrollTo({top:next,behavior:'instant'});request(true);
   },{passive:false});
+  let lateralMouse=null,suppressLateralClick=false;
+  function releaseLateralMouse(){
+    const gesture=lateralMouse;lateralMouse=null;
+    root.removeAttribute('data-lateral-dragging');
+    if(gesture?.scene.frame.hasPointerCapture?.(gesture.pointerId))gesture.scene.frame.releasePointerCapture(gesture.pointerId);
+  }
+  scenes.filter(s=>s.kind==='horizontal').forEach(s=>{
+    s.frame.addEventListener('pointerdown',event=>{
+      suppressLateralClick=false;
+      if(event.pointerType!=='mouse'||event.button!==0||lateralSceneAt(scrollY)!==s||event.target.closest?.(gestureControl))return;
+      event.preventDefault();stopControlledScroll();
+      lateralMouse={scene:s,pointerId:event.pointerId,startX:event.clientX,lastX:event.clientX,moved:false};
+      s.frame.setPointerCapture?.(event.pointerId);
+    });
+    s.frame.addEventListener('dragstart',event=>{
+      if(lateralSceneAt(scrollY)===s&&!event.target.closest?.(gestureControl))event.preventDefault();
+    });
+  });
+  document.addEventListener('pointermove',event=>{
+    const gesture=lateralMouse,s=gesture?.scene;
+    if(!gesture||event.pointerId!==gesture.pointerId)return;
+    if(!(event.buttons&1)||lateralSceneAt(scrollY)!==s){releaseLateralMouse();return;}
+    if(!gesture.moved&&Math.abs(event.clientX-gesture.startX)<8)return;
+    gesture.moved=true;suppressLateralClick=true;
+    root.dataset.lateralDragging='true';event.preventDefault();
+    const dir=s.el.dataset.direction==='reverse'?-1:1;
+    const delta=(gesture.lastX-event.clientX)*dir*s.g.run/Math.max(1,s.g.travel)*.55;
+    gesture.lastX=event.clientX;
+    scrollTo({top:clamp(scrollY+delta,s.g.start,s.g.end),behavior:'instant'});request(true);
+  });
+  document.addEventListener('pointerup',event=>{if(event.pointerId===lateralMouse?.pointerId)releaseLateralMouse();});
+  document.addEventListener('pointercancel',()=>{releaseLateralMouse();suppressLateralClick=false;});
+  addEventListener('blur',()=>{releaseLateralMouse();suppressLateralClick=false;});
+  document.addEventListener('click',event=>{
+    if(!suppressLateralClick)return;
+    suppressLateralClick=false;event.preventDefault();event.stopImmediatePropagation();
+  },true);
   // Bind at document level so the floating leaf cannot swallow the swipe.
   let lateralTouch=null;
   document.addEventListener('touchstart',event=>{

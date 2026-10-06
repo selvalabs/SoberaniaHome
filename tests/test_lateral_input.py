@@ -18,6 +18,23 @@ with sync_playwright() as p:
             page.evaluate('(y)=>scrollTo(0,y)',scene['start']+scene['run']*fraction);page.wait_for_timeout(45)
             rotations.append(page.evaluate('__SL_DEBUG.leaf.rotation'))
         assert max(rotations)-min(rotations)>250,(scene['id'],rotations)
+    for scene in scenes:
+        page.evaluate('(y)=>scrollTo(0,y)',scene['start']+scene['run']*.5);page.wait_for_timeout(80)
+        direction=page.locator('#'+scene['id']+' .sequence').get_attribute('data-direction')
+        before=page.evaluate('scrollY')
+        page.mouse.move(1000,300);page.mouse.down();page.mouse.move(840,300,steps=8);page.wait_for_timeout(80)
+        assert page.locator('html').get_attribute('data-lateral-dragging')=='true'
+        page.mouse.up();page.wait_for_timeout(80)
+        delta=page.evaluate('scrollY')-before
+        assert delta*(-1 if direction=='reverse' else 1)>50,(scene['id'],'mouse',delta)
+        assert page.locator('html').get_attribute('data-lateral-dragging') is None
+        stopped=page.evaluate('scrollY');page.wait_for_timeout(180);assert page.evaluate('scrollY')==stopped
+        page.mouse.move(840,300);page.mouse.down();page.mouse.move(1000,300,steps=8);page.mouse.up();page.wait_for_timeout(80)
+        assert abs(page.evaluate('scrollY')-before)<5
+    page.evaluate('SLMotion.jumpScene("trabalho",1)');page.wait_for_timeout(80)
+    page.locator('#trabalho [data-next]').click();page.wait_for_timeout(80)
+    assert page.evaluate('__SL_DEBUG.scenes.find(s=>s.id==="trabalho").lastIndex')==2
+    print('PASS desktop mouse: both galleries/directions, release, idle, controls')
     page.evaluate('scrollTo(0,0)');page.wait_for_timeout(80)
     page.mouse.move(1000,450);page.mouse.wheel(0,200);page.wait_for_timeout(200)
     assert page.evaluate('scrollY')>=190
