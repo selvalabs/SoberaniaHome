@@ -30,21 +30,21 @@ const catmull = (p0: number, p1: number, p2: number, p3: number, t: number) => {
 };
 const mobile = () => window.innerWidth < 760;
 
-// Waypoints oficiais do Leaf Motion 3.0
+// Waypoints oficiais do Leaf Motion 4.0 (Aerodinâmica Natural no terço central)
 interface LeafKey { p: number; x: number; y: number; s: number; rz: number; rx: number; ry: number; phase: string; }
 const leafKeys: LeafKey[] = [
-  { p: 0.00, x: 0.58, y: 0.47, s: 0.82, rz: 88, rx: 22, ry: 34, phase: 'queda' },
-  { p: 0.09, x: 0.64, y: 0.50, s: 0.78, rz: 60, rx: -8, ry: 42, phase: 'deriva' },
-  { p: 0.18, x: 0.47, y: 0.54, s: 0.88, rz: 92, rx: 18, ry: -32, phase: 'queda' },
-  { p: 0.29, x: 0.60, y: 0.57, s: 1.00, rz: 72, rx: -20, ry: 30, phase: 'queda' },
-  { p: 0.40, x: 0.43, y: 0.61, s: 0.82, rz: 104, rx: 14, ry: -38, phase: 'queda' },
-  { p: 0.51, x: 0.62, y: 0.64, s: 1.04, rz: 78, rx: -18, ry: 34, phase: 'queda' },
-  { p: 0.62, x: 0.40, y: 0.68, s: 0.80, rz: 96, rx: 20, ry: -38, phase: 'queda' },
-  { p: 0.71, x: 0.54, y: 0.71, s: 0.94, rz: 76, rx: -12, ry: 28, phase: 'queda' },
-  { p: 0.82, x: 0.52, y: 0.74, s: 1.07, rz: 91, rx: 18, ry: -40, phase: 'espiral' },
-  { p: 0.89, x: 0.62, y: 0.76, s: 0.82, rz: 68, rx: -8, ry: 36, phase: 'queda' },
-  { p: 0.96, x: 0.59, y: 0.79, s: 0.86, rz: 94, rx: 12, ry: -22, phase: 'queda-final' },
-  { p: 1.00, x: 0.54, y: 0.80, s: 0.72, rz: 96, rx: 6, ry: 0, phase: 'pouso' }
+  { p: 0.00, x: 0.58, y: 0.44, s: 0.82, rz: 88, rx: 22, ry: 34, phase: 'queda' },
+  { p: 0.09, x: 0.64, y: 0.46, s: 0.80, rz: 60, rx: -8, ry: 42, phase: 'deriva' },
+  { p: 0.18, x: 0.46, y: 0.48, s: 0.88, rz: 92, rx: 18, ry: -32, phase: 'queda' },
+  { p: 0.29, x: 0.62, y: 0.50, s: 0.98, rz: 72, rx: -20, ry: 30, phase: 'queda' },
+  { p: 0.40, x: 0.42, y: 0.47, s: 0.86, rz: 104, rx: 14, ry: -38, phase: 'queda' },
+  { p: 0.51, x: 0.64, y: 0.52, s: 1.02, rz: 78, rx: -18, ry: 34, phase: 'queda' },
+  { p: 0.62, x: 0.38, y: 0.49, s: 0.84, rz: 96, rx: 20, ry: -38, phase: 'queda' },
+  { p: 0.71, x: 0.56, y: 0.53, s: 0.94, rz: 76, rx: -12, ry: 28, phase: 'queda' },
+  { p: 0.82, x: 0.50, y: 0.54, s: 1.05, rz: 91, rx: 18, ry: -40, phase: 'espiral' },
+  { p: 0.89, x: 0.60, y: 0.58, s: 0.88, rz: 68, rx: -8, ry: 36, phase: 'queda' },
+  { p: 0.95, x: 0.56, y: 0.68, s: 0.84, rz: 94, rx: 12, ry: -22, phase: 'queda-final' },
+  { p: 1.00, x: 0.54, y: 0.80, s: 0.74, rz: 96, rx: 6, ry: 0, phase: 'pouso' }
 ];
 
 const leafGusts = [
@@ -372,30 +372,43 @@ function setupVanillaLeaf(els: any) {
         const releaseEnd = releaseTarget(release.releasePx);
         t = splineKeyTarget(flightP);
 
-        const longSway = Math.sin(flightP * Math.PI * 2.1 + 0.55) * 0.075 + Math.sin(flightP * Math.PI * 4.4 - 0.3) * 0.018;
-        t.x = w * (0.53 + longSway);
         const g = gustAt(flightP), tb = tumbleAt(flightP);
-        const fallStartY = Math.max(releaseEnd.y, h - 22);
-        const finalDockY = clamp(dock.top - maxScroll, mast + 14, h - 54);
-        const fallEndY = Math.max(fallStartY, finalDockY);
-        t.y = mix(fallStartY, fallEndY, smoother(flightP));
 
-        const phase = flightP * Math.PI * 5.5;
-        const amp = (mobile() ? 15 : 25) * (0.88 + 0.12 * Math.sin(flightP * Math.PI * 2.1 + 0.6));
-        t.x += Math.sin(phase) * amp;
-        t.rz += Math.sin(phase + 0.25) * 14 + g.twist + tb.rz;
-        t.ry += Math.sin(phase * 0.78 + 1.15) * 20 + tb.ry;
-        t.rx += Math.cos(phase * 0.61 + 0.4) * 10 + tb.rx;
+        // Aerodinâmica: sustentação (lift) gerada por rajadas + ondulação natural de planar
+        const lift = -Math.abs(g.gx) * (mobile() ? 30 : 50);
+        const flightPhase = flightP * Math.PI * 5.5;
+        const sinkGlide = Math.sin(flightPhase * 0.8) * (mobile() ? 12 : 22);
+
+        // Microflutuação contínua viva (mesmo quando o scroll para)
+        const now = performance.now() * 0.0016;
+        const idleY = Math.sin(now * 2.2) * 3.5;
+        const idleX = Math.cos(now * 1.5) * 2.5;
+        const idleRotZ = Math.sin(now * 1.8) * 2.0;
+
+        // Altitude Y preserva os waypoints confortáveis e adiciona aerodinâmica
+        t.y += lift + sinkGlide + idleY;
+
+        // Dinâmica horizontal e arrasto do vento
+        const swayAmp = (mobile() ? 18 : 28) * (0.85 + 0.15 * Math.sin(flightP * Math.PI * 2.1 + 0.6));
+        t.x += Math.sin(flightPhase) * swayAmp + g.gx * (mobile() ? 32 : 48) + idleX;
+
+        // Inclinação lateral (banking) decorrente da velocidade lateral
+        const lateralVelocity = Math.cos(flightPhase);
+        const bankingAngle = lateralVelocity * (mobile() ? 12 : 18);
+
+        t.rz += Math.sin(flightPhase + 0.25) * 14 + g.twist + tb.rz + bankingAngle + idleRotZ;
+        t.ry += Math.sin(flightPhase * 0.78 + 1.15) * 20 + tb.ry + lateralVelocity * 10;
+        t.rx += Math.cos(flightPhase * 0.61 + 0.4) * 10 + tb.rx;
         t.scale *= 1 + Math.sin(flightP * Math.PI * 2.4 + 0.75) * (mobile() ? 0.018 : 0.028);
 
-        const gustPx = mobile() ? 28 : 42;
-        t.x += g.gx * gustPx;
-
-        const takeoffBlend = smoother(range(0, 0.045, flightP));
+        const takeoffBlend = smoother(range(0, 0.05, flightP));
         if (takeoffBlend < 1) {
-          t.x = mix(releaseEnd.x, t.x, takeoffBlend); t.y = mix(releaseEnd.y, t.y, takeoffBlend);
+          t.x = mix(releaseEnd.x, t.x, takeoffBlend);
+          t.y = mix(releaseEnd.y, t.y, takeoffBlend);
           t.scale = mix(releaseEnd.scale, t.scale, takeoffBlend);
-          t.rx = mix(releaseEnd.rx, t.rx, takeoffBlend); t.ry = mix(releaseEnd.ry, t.ry, takeoffBlend); t.rz = mix(releaseEnd.rz, t.rz, takeoffBlend);
+          t.rx = mix(releaseEnd.rx, t.rx, takeoffBlend);
+          t.ry = mix(releaseEnd.ry, t.ry, takeoffBlend);
+          t.rz = mix(releaseEnd.rz, t.rz, takeoffBlend);
         }
 
         const exitRun = clamp(h * 2.8, 1600, 3000), exitP = clamp((y - release.releasePx) / exitRun);
@@ -454,7 +467,7 @@ function setupVanillaLeaf(els: any) {
 
         // Final approach is driven by the real footer geometry.
         const dockViewportY = geometry.dock.top - y;
-        const startBand = mobile() ? 230 : 320;
+        const startBand = mobile() ? 260 : 360;
         const startLanding = dockViewportY < h + startBand;
         let landPhase = 'none', contactAmt = 0, settleAmt = 0;
         
@@ -465,6 +478,7 @@ function setupVanillaLeaf(els: any) {
           settleAmt = smoother(range(0.82, 1, near));
           
           t.x = mix(t.x, geometry.dock.left, approach);
+          t.y = mix(t.y, dockViewportY, approach);
           t.scale = mix(t.scale, mobile() ? 0.76 : 0.74, approach);
           t.rx = mix(t.rx, mix(16, 7, contactAmt), approach);
           t.ry = mix(t.ry, 0, approach);
@@ -484,15 +498,6 @@ function setupVanillaLeaf(els: any) {
           depth = 'front';
           landPhase = 'rest'; contactAmt = 1; settleAmt = 1;
         }
-
-        // Apply reparenting offset
-        let offsetY = 0;
-        const pileVisible = dockViewportY < h * 0.84 && dockViewportY > geometry.mast - 18;
-        if ((pileVisible && settleAmt > 0.68) || y >= geometry.maxScroll - 1) {
-          offsetY = geometry.dock.top - y;
-        }
-        
-        t.y = t.y - offsetY; // Adjust for the fact that wind-global is fixed, so if offsetY>0 we need to subtract it to simulate sticking to the pile!
       }
     }
 
