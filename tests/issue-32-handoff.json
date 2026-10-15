@@ -1,0 +1,16 @@
+{
+  "issue": "https://github.com/selvalabs/SoberaniaHome/issues/32",
+  "branch": "feat/32-app-interface-previews",
+  "base_sha": "45ebfbbba3dd99fa64d62e6b5047901535568ef7",
+  "resulting_sha": "c0f9aa85ad0320057999a4f84e8b7c563f6fb166",
+  "pr": "https://github.com/selvalabs/SoberaniaHome/pull/33",
+  "pr_status": "draft/open",
+  "merged": false,
+  "release_tag": null,
+  "environment": "local Wi-Fi preview 4181, app-views-1",
+  "checks": "Four images visually reviewed; served preview selectors/image decode 390/1366; no JS errors; node syntax and diff passed",
+  "deployment_verification": "Local preview only. No production deployment.",
+  "rollback_target": "Prior local logo cards: omit app-interface-previews.js; logo assets retained",
+  "vps_mirror_sync": "Not performed; no VPS access",
+  "limitations": "Existing compiled frontend builds; synthetic API fixtures; no inference; physical-device review pending"
+}

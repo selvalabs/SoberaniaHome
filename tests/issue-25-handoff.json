@@ -1,0 +1,19 @@
+{
+  "issue": "https://github.com/selvalabs/SoberaniaHome/issues/25",
+  "branch": "fix/25-horizontal-leaf",
+  "base_sha": "45ebfbbba3dd99fa64d62e6b5047901535568ef7",
+  "resulting_sha": "8c1a67e6ec930c65f6c5d537e4dfdf274d0bc00e",
+  "pr": "https://github.com/selvalabs/SoberaniaHome/pull/26",
+  "pr_status": "draft/open",
+  "merged": false,
+  "release_tag": null,
+  "environment": "local Wi-Fi port 4181",
+  "preview_url": "http://192.168.3.204:4181/?projeto=analytics&vista=login&v=25-5",
+  "checks": "Dedicated test on clean branch and integrated Wi-Fi preview: 320x640/390x844/1366x900, both lateral chapters, centre, glow, boundaries, reverse, idle, reading/reduced motion passed. Existing six chapter glow regression passed at 320/390/1366px. Visual desktop, syntax/diff passed. Full build/security audit not repeated; no new dependencies. Refinement tested on clean branch and Wi-Fi in all three viewports: sway amplitude, increased run, x/y continuity, glow, reverse, idle, reading/reduced motion passed. Real wheel in both galleries: 200px ->90px; native outside. CDP mobile horizontal swipes both directions, vertical slowed swipes, no drift passed on clean branch and Wi-Fi. Controls tap/vertical exit passed in Wi-Fi; rotation >250 degrees verified. Real mouse drags in both directions of both galleries, release/idle/controls passed in clean branch and Wi-Fi; wheel and CDP touch regressions passed. New edge-flow suite passed on branch and Wi-Fi: overrun of both edges for both galleries using wheel, held mouse drag and mobile CDP touch; next vertical scroll/swipe follows document flow. Existing mouse/touch/wheel/leaf suites passed on branch.",
+  "deployment_verification": "Local preview verified only; no production deployment",
+  "rollback_target": "Previous commit b5d06949553e669794db2ec7462c730337b9ecd4; production v0.1.3 unchanged",
+  "vps_mirror_sync": "Not performed; no VPS operations",
+  "anomaly": "Initial load-complete navigation timed out; DOM-ready dedicated tests subsequently passed. A fixed 120ms reading-mode wait raced once; test now awaits rendered state and passed.",
+  "refinement": "Full gradual wind turn and depth flip. Direct slow input: wheel vertical .45, touch vertical .55, touch/trackpad horizontal .55 card-distance mapping, both directions. Touch covers floating leaf overlay; controls preserved and vertical exit allowed. Desktop mouse drag with pointer capture, threshold8px, both directions, cursor grab/grabbing and click suppression after drag. Excess at lateral gallery start/end converts to vertical page flow: downward after final slide, upward before first. Mouse drag remains captured through handoff; excess of same touch swipe continues vertically and subsequent gesture is native document scroll.",
+  "limitation": "Touch validated in Chromium mobile emulation with actual CDP touch; physical-device homologation remains pending."
+}

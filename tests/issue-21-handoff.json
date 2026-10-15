@@ -1,0 +1,23 @@
+{
+  "issue": "https://github.com/selvalabs/SoberaniaHome/issues/21",
+  "branch": "feat/21-analytics-views",
+  "base_sha": "45ebfbbba3dd99fa64d62e6b5047901535568ef7",
+  "resulting_sha": "c5b760d89a6162f3f0fe00c72b9a85166f1697e2",
+  "pr": "https://github.com/selvalabs/SoberaniaHome/pull/22",
+  "pr_status": "draft/open",
+  "merged": false,
+  "release_tag": null,
+  "environment": "local Wi-Fi port 4181",
+  "preview_url": "http://192.168.3.204:4181/?projeto=analytics&vista=login&v=21-1",
+  "order": [
+    "Login",
+    "Visão geral",
+    "Mapa",
+    "Documentação"
+  ],
+  "checks": "Isolated real interface captures and image load passed; gallery ordering/default and each selection at 320/390/1366px passed, no JavaScript errors; script syntax and diff check passed. Complete PR build/CI not executed. No dependencies changed.",
+  "deployment_verification": "Local preview only; no production deployment",
+  "rollback_target": "Previous selector and all assets preserved; production v0.1.3 unchanged",
+  "vps_mirror_sync": "Not performed; no VPS operations",
+  "integration_limitation": "Gallery/index changes kept in integrated local draft; PR assets/init/docs depend on earlier unmerged gallery drafts"
+}

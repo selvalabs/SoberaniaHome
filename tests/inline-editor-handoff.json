@@ -1,0 +1,131 @@
+{
+  "issue": "https://github.com/selvalabs/SoberaniaHome/issues/13",
+  "branch": "feat/13-inline-editor-demo",
+  "base_sha": "45ebfbbba3dd99fa64d62e6b5047901535568ef7",
+  "head_sha": "45ebfbbba3dd99fa64d62e6b5047901535568ef7",
+  "state": "local uncommitted preview; prior development preserved in local-development-12",
+  "package": "Inline Editor 1.6.1",
+  "canonical_fragment_hashes": "PASS against original package manifest",
+  "integration": [
+    {
+      "viewport": [
+        1366,
+        900
+      ],
+      "status": "PASS",
+      "downloads": [
+        "editable",
+        "final"
+      ],
+      "reopened": true
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "status": "PASS",
+      "downloads": [
+        "editable",
+        "final"
+      ],
+      "reopened": true
+    },
+    {
+      "viewport": [
+        320,
+        568
+      ],
+      "status": "PASS",
+      "downloads": [
+        "editable",
+        "final"
+      ],
+      "reopened": true
+    }
+  ],
+  "leaf_regression": "PASS 320, 390, 1366 and reduced motion",
+  "syntax": "PASS editor-preview.js, portfolio.js and canonical runtime.js",
+  "release_checks": "No production preflight; no dependency changes in this task",
+  "pr": null,
+  "merge": null,
+  "new_release_tag": null,
+  "environment": "local Wi-Fi http://192.168.3.204:4177",
+  "published_release_unchanged": "v0.1.3",
+  "rollback": "local-development-12 retained at port 4176",
+  "vps_mirror": "not applicable; no VPS operations",
+  "canonical_regressions": {
+    "status": "PASS",
+    "cases": 318,
+    "suites": [
+      {
+        "suite": "test_template.py",
+        "passed": true,
+        "cases": 25
+      },
+      {
+        "suite": "test_extra.py",
+        "passed": true,
+        "cases": 8
+      },
+      {
+        "suite": "test_box_model.py",
+        "passed": true,
+        "cases": 36
+      },
+      {
+        "suite": "box_edges",
+        "passed": true,
+        "cases": 15
+      },
+      {
+        "suite": "text_range",
+        "passed": true,
+        "cases": 43
+      },
+      {
+        "suite": "text_edges",
+        "passed": true,
+        "cases": 20
+      },
+      {
+        "suite": "comments_duplicate",
+        "passed": true,
+        "cases": 15
+      },
+      {
+        "suite": "landing",
+        "passed": true,
+        "cases": 8
+      },
+      {
+        "suite": "product_ui",
+        "passed": true,
+        "cases": 40
+      },
+      {
+        "suite": "delete_reflow",
+        "passed": true,
+        "cases": 108
+      }
+    ]
+  },
+  "mobility": "PASS: grab visible, one history entry per drag, 500 pointermoves coalesced to 1 frame",
+  "preview_image_correction": {
+    "issue": 13,
+    "asset": "assets/portfolio-editor-real-v2.png",
+    "cause": "toolbar obscured title; capture layout changed before selection to prevent stale handles",
+    "validation": "PASS gallery at 8 viewports; Wi-Fi desktop/mobile; no overlap and correctly aligned handles",
+    "deployment": "local only"
+  },
+  "demonstration_sequence": {
+    "states": [
+      "Open original HTML",
+      "Edit title in canonical UI",
+      "Resize image to 110 px",
+      "Clean export retaining edits"
+    ],
+    "validation": "PASS 320x568, 390x844, 1366x768; distinct images, captions, no frame overflow, live editor and reading mode",
+    "environment": "local only"
+  }
+}

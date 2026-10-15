@@ -1,0 +1,148 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inline Editor __IE_VERSION__ — Template de homologação</title><style id="demo-site-styles">
+:root{
+  --cream:#f1e7da;--paper:#fffaf4;--ink:#30272b;--muted:#7a6e72;--plum:#765a78;--plum-deep:#4d354f;--lilac:#d8c5de;--rust:#b06b45;--line:rgba(77,53,79,.18);--shadow:0 22px 58px rgba(47,32,49,.16);--sans:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--sans)}
+.demo-shell{max-width:1120px;margin:auto;padding:74px 28px 140px}.demo-hero{display:grid;grid-template-columns:1.1fr .9fr;gap:44px;align-items:center;min-height:70vh}.demo-kicker{font-size:12px;text-transform:uppercase;letter-spacing:.16em;color:var(--plum);font-weight:850}.demo-hero h1{font:800 clamp(44px,7vw,84px)/.98 Georgia,serif;letter-spacing:-.045em;margin:16px 0;color:var(--plum-deep)}.demo-hero p{font-size:18px;line-height:1.65;color:var(--muted);max-width:650px}.demo-cta{display:inline-flex;margin-top:18px;padding:14px 20px;border-radius:999px;background:var(--plum);color:#fff;text-decoration:none;font-weight:850;border:0;cursor:pointer}.demo-card{position:relative;border:1px solid var(--line);background:var(--paper);padding:18px;border-radius:22px;box-shadow:var(--shadow)}.demo-card img{display:block;width:100%;height:410px;object-fit:cover;object-position:center;border-radius:15px}.demo-caption{font-size:12px;color:var(--muted);padding:10px 4px 0}.demo-section{margin-top:70px;padding:42px;border-radius:28px;background:linear-gradient(135deg,#fffaf4,#e6d6e9);border:1px solid var(--line)}.demo-section h2{font:700 38px/1.08 Georgia,serif;margin:0 0 18px;color:var(--plum-deep)}.demo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.demo-mini{padding:22px;border:1px solid var(--line);border-radius:16px;background:var(--paper)}.demo-mini h3{margin:0 0 10px}.demo-mini p{color:var(--muted);line-height:1.55}.demo-nested{padding:14px;border:1px dashed var(--line);border-radius:12px;background:#fff}.demo-important{font-size:18px!important;color:#7b3f55!important}.demo-stage{position:relative;min-height:270px;margin-top:30px;border:1px dashed var(--plum);border-radius:18px;background:rgba(255,255,255,.42);overflow:hidden}.demo-absolute{position:absolute;left:34px;top:42px;width:220px;padding:18px;border-radius:14px;background:var(--paper);border:1px solid var(--line);box-shadow:0 10px 24px rgba(0,0,0,.10)}.demo-svg-wrap{display:flex;align-items:center;justify-content:center;min-height:240px}.demo-svg{width:148px;height:148px;color:var(--plum);animation:demo-spin 16s linear infinite;transform-origin:center}.demo-svg path,.demo-svg circle{stroke:currentColor}@keyframes demo-spin{to{transform:rotate(360deg)}}
+.demo-table{width:100%;border-collapse:collapse;margin-top:26px;background:var(--paper)}.demo-table th,.demo-table td{border:1px solid var(--line);padding:14px;text-align:left}.demo-table th{background:rgba(118,90,120,.10)}.demo-table-ambiguous{margin-top:16px;width:100%;border-collapse:collapse}.demo-table-ambiguous td{border:1px solid var(--line);padding:10px;background:#fff}.demo-status{margin-top:12px;font-size:12px;color:var(--muted)}
+@media(max-width:760px){.demo-shell{padding:52px 18px 110px}.demo-hero{grid-template-columns:1fr;min-height:auto}.demo-card img{height:320px}.demo-grid{grid-template-columns:1fr}.demo-section{padding:25px}.demo-stage{min-height:310px}}
+@media(prefers-reduced-motion:reduce){.demo-svg{animation:none}}
+
+</style>
+<style id="bm-fixture-css">
+#bm-fixture{font-family:var(--sans);max-width:960px;margin:40px auto;padding:24px;background:var(--paper);border:1px solid var(--line)}
+#bm-fixture .bm-case{border:1px solid var(--line);background:var(--cream);margin-bottom:16px;min-height:35px}
+#bm-px{padding:10px 12px 14px 16px;margin:5px 7px 9px 11px}
+#bm-percent{padding:10% 5%;margin:2% 4%}
+#bm-rem{padding:1.5rem;margin:1rem}
+#bm-em{font-size:20px;padding:2em;margin:1em}
+#bm-vp{padding:1vw 2vh;margin:1vh 2vw}
+#bm-auto{width:50%;margin:14px auto;padding:12px}
+#bm-expression{--bm-space:15px;padding-top:calc(1rem + 6px);padding-right:clamp(10px,2vw,40px);padding-bottom:var(--bm-space);padding-left:max(8px,1vw)}
+#bm-responsive{padding:20px;margin:10px}
+@media(max-width:700px){#bm-responsive{padding:8px!important}}
+#bm-important{padding:16px!important;margin:12px!important}
+#bm-flex{display:flex;flex-wrap:wrap;gap:12px 18px;padding:14px;margin:10px;width:80%;height:180px}
+#bm-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 22px;padding:12px;margin:8px;width:80%;height:200px}
+#bm-flex>span,#bm-grid>span{padding:10px;background:var(--lilac);min-width:45px}
+#bm-grid-margins{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#bm-grid-margins>div{margin:10px;padding:12px}
+#bm-inline{padding:2px;margin:3px;color:var(--ink)}
+#bm-cell{padding:9px;border:1px solid var(--plum)}
+#bm-table{border-collapse:collapse;width:90%;margin:10px}
+#bm-abs-parent{position:relative;height:200px;border:1px dashed var(--plum);padding:10px;margin:10px}
+#bm-absolute{position:absolute;left:25px;top:30px;width:180px;padding:12px;margin:4px;background:var(--lilac)}
+#bm-batch{display:flex;gap:10px;flex-wrap:wrap}
+#bm-a{padding:10px;margin:10px}#bm-b{padding:30px;margin:30px}#bm-c{padding:50px;margin:50px}
+#bm-unit-mix{padding:2rem;margin:2rem}#bm-auto-mix{padding:12px;margin:auto;width:120px}
+#bm-logical{padding-inline:2rem 3rem;margin-inline:auto;direction:rtl;width:50%}
+#bm-img-parent{padding:20px;margin:20px;transform:scale(.9);transform-origin:left top;width:min(700px,100%)}
+#bm-img{width:300px;height:180px;object-fit:contain;padding:8px;margin:10px;border:2px solid var(--plum);box-sizing:border-box}
+.bm-specificity{padding:9px}.bm-specificity:where(#bm-specificity){padding:11px}#bm-specificity{padding:25px}:is(#bm-specificity,.none){padding-left:31px}
+@media(max-width:500px){#bm-fixture{margin:25px 8px;padding:10px}#bm-flex,#bm-grid{width:100%}}
+</style></head><body><!-- SITE-DEMO:START -->
+<main class="demo-shell">
+<section class="demo-hero" id="topo">
+<div>
+<div class="demo-kicker">Template canônico v1.5.2</div>
+<h1>Inline Editor<br/>Selection Engine v2</h1>
+<p>Site demonstrativo para homologar seleção hierárquica, texto, mídia, SVG, containers, tabelas, drag absolute, efeitos e proteção de ações.</p>
+<a class="demo-cta" href="#qa" id="demo-cta">CTA de teste</a>
+<div class="demo-status" id="demo-action-status">Ação do host ainda não executada.</div>
+</div>
+<figure class="demo-card" id="demo-image-card">
+<img alt="Imagem demonstrativa" id="demo-image" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='560' viewBox='0 0 800 560'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%23d8c5de'/%3E%3Cstop offset='1' stop-color='%23f3d7bd'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='800' height='560' fill='url(%23g)'/%3E%3Ccircle cx='600' cy='150' r='95' fill='%23765a78' opacity='.25'/%3E%3Cpath d='M90 430 C230 260 370 520 710 280' fill='none' stroke='%234d354f' stroke-width='18' opacity='.72'/%3E%3C/svg%3E"/>
+<figcaption class="demo-caption">Imagem com oito handles, lock de proporção e resize por eixo.</figcaption>
+</figure>
+</section>
+<section class="demo-section" id="qa">
+<h2>Seleção de cards e texto interno</h2>
+<div class="demo-grid">
+<article class="demo-mini" id="demo-card-1"><h3>Card editável</h3><p>Este texto precisa continuar editável mesmo quando o card também puder ser selecionado.</p></article>
+<article class="demo-mini" id="demo-card-2"><h3 class="demo-important" id="important-copy">CSS host com !important</h3><p>O Style Engine deve escalar o override somente quando a regra hospedeira bloquear o valor pedido.</p></article>
+<article class="demo-mini" id="demo-card-3"><div class="demo-nested" id="nested-card"><strong>Card nested</strong><p>Use o breadcrumb ou ↑ Pai para subir na hierarquia sem exigir clique em área vazia.</p></div></article>
+</div>
+<div class="demo-svg-wrap" id="svg-section">
+<svg aria-label="Flor SVG animada" class="demo-svg" id="demo-svg" role="img" viewbox="0 0 120 120">
+<circle cx="60" cy="60" fill="none" r="13" stroke-width="4"></circle>
+<path d="M60 46 C43 35 43 18 60 7 C77 18 77 35 60 46Z" fill="none" stroke-width="4"></path>
+<path d="M74 60 C85 43 102 43 113 60 C102 77 85 77 74 60Z" fill="none" stroke-width="4"></path>
+<path d="M60 74 C77 85 77 102 60 113 C43 102 43 85 60 74Z" fill="none" stroke-width="4"></path>
+<path d="M46 60 C35 77 18 77 7 60 C18 43 35 43 46 60Z" fill="none" stroke-width="4"></path>
+</svg>
+</div>
+<div class="demo-stage" id="absolute-stage">
+<div class="demo-absolute" id="absolute-card"><strong>position:absolute</strong><p>Quando selecionado, aparece a alça ⠿ mover.</p></div>
+</div>
+<table class="demo-table" id="demo-table">
+<thead><tr><th>Coluna A</th><th>Coluna B</th><th>Coluna C</th></tr></thead>
+<tbody><tr><td>A1 editável</td><td>B1</td><td>C1</td></tr><tr><td>A2</td><td>B2</td><td>C2</td></tr></tbody>
+</table>
+<table class="demo-table-ambiguous" id="demo-table-ambiguous"><tr><td colspan="2">colspan proposital: resize estrutural deve ser bloqueado</td></tr><tr><td>A</td><td>B</td></tr></table>
+</section>
+</main>
+
+<section id="qa-fixtures" style="padding:32px"><h2>Casos de teste de edição em lote</h2>
+<div id="qa-group" style="position:relative;display:flex;gap:40px;align-items:flex-start;width:850px;max-width:100%;padding:20px;border:1px solid #ccc;min-height:220px">
+<div id="qa-a" class="qa-card" style="width:100px;height:90px;background:#e1ccdf">Card A</div><div id="qa-b" class="qa-card" style="width:130px;height:110px;background:#d5dabc;margin-top:35px">Card B</div><div id="qa-c" class="qa-card" style="width:90px;height:80px;background:#dfd3bd;margin-top:12px">Card C</div></div>
+<div id="qa-text-group"><p id="qa-text-a">Texto alfa <strong>forte</strong>.</p><p id="qa-text-b">Texto beta.</p><p id="qa-text-c">Texto gama.</p></div>
+<div id="qa-shadow" style="padding:24px;margin:35px 0;box-shadow:3px 5px 9px rgba(10,20,30,.3);filter:contrast(1.12)">Sombra e filtros originais preservados.</div>
+<div id="qa-scale-parent" style="transform:scale(.9);transform-origin:0 0;width:450px;padding:20px;"><img id="qa-media-scaled" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='240'%3E%3Crect width='400' height='240' fill='%23b49abe'/%3E%3C/svg%3E" style="width:300px;height:180px;object-fit:contain" alt="Caso com pai escalado"></div>
+<table id="qa-table"><tbody><tr><th>Etapa</th><th>Data</th><th>Status</th></tr><tr><td>Pesquisa</td><td>Segunda</td><td>Aberto</td></tr><tr><td>Revisão</td><td>Terça</td><td>Pendente</td></tr></tbody></table>
+<table id="qa-table-merged"><tbody><tr><td colspan="2">Unidas</td></tr><tr><td>A</td><td>B</td></tr></tbody></table>
+<button id="qa-action" type="button">Ação protegida</button><a id="qa-link" href="#qa-fixtures">Ir ao teste</a>
+<svg id="qa-spin" width="90" height="90" viewBox="0 0 100 100" style="animation:qaHostSpin 8s linear infinite"><path d="M50 5 L95 50 L50 95 L5 50Z" fill="#b49abe"/></svg>
+</section><style>@keyframes qaHostSpin{to{transform:rotate(360deg)}}#qa-table,#qa-table-merged{width:700px;max-width:100%;border-collapse:collapse;margin:20px 0}#qa-table td,#qa-table th,#qa-table-merged td{padding:12px;border:1px solid #aaa}#qa-text-a{font-size:22px!important}</style><script>window.qaActionCount=0;document.querySelector('#qa-action').addEventListener('click',()=>window.qaActionCount++);</script><script id="demo-host-script">
+(function(){
+  const cta=document.getElementById('demo-cta'),status=document.getElementById('demo-action-status');
+  cta.addEventListener('click',function(){status.textContent='Listener do host executado após a ação ser liberada.'});
+})();
+</script>
+<section id="bm-fixture"><h2>Box Model — homologação 1.5.2</h2><p>Selecione os casos abaixo e abra Layout → Espaçamento. AUTO, fórmulas e unidades devem permanecer intactos até uma edição explícita.</p>
+<div id="bm-px" class="bm-case">Quatro lados em px.</div>
+<div id="bm-percent" class="bm-case">Unidade percentual fluida.</div>
+<div id="bm-rem" class="bm-case">rem, relativo à fonte raiz.</div>
+<div id="bm-em" class="bm-case">em, relativo à fonte deste elemento.</div>
+<div id="bm-vp" class="bm-case">Unidades vw e vh.</div>
+<div id="bm-auto" class="bm-case">Centralização: margem AUTO.</div>
+<div id="bm-expression" class="bm-case">calc / clamp / var / max.</div>
+<div id="bm-responsive" class="bm-case">Responsivo: no mobile, padding 8px !important.</div>
+<div id="bm-important" class="bm-case">Regra !important que exige consentimento.</div>
+<div><span id="bm-inline">Texto inline, margem vertical sem efeito.</span></div>
+<div id="bm-flex"><span>A</span><span>B</span><span>C</span></div>
+<div id="bm-grid"><span>A</span><span>B</span><span>C</span><span>D</span></div>
+<div id="bm-grid-margins"><div>Gap + margem</div><div>Não remover automaticamente</div></div>
+<table id="bm-table"><tbody><tr><td id="bm-cell">Célula editável</td><td>Coluna B</td></tr><tr><td>Outra linha</td><td>Padding, não margem</td></tr></tbody></table>
+<div id="bm-abs-parent"><div id="bm-absolute">Elemento absolute</div></div>
+<div id="bm-batch"><div id="bm-a" class="bm-case">10px</div><div id="bm-b" class="bm-case">30px</div><div id="bm-c" class="bm-case">50px</div></div>
+<div id="bm-unit-mix">Unidade distinta</div><div id="bm-auto-mix">AUTO misto</div>
+<div id="bm-logical">Margens e paddings lógicos em RTL</div>
+<div id="bm-specificity" class="bm-specificity">Especificidade :where / :is</div>
+<div id="bm-img-parent"><img id="bm-img" alt="Teste resize após padding" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='240'%3E%3Crect width='400' height='240' fill='%23b49abe'/%3E%3C/svg%3E"></div>
+</section>
+<section id="tr-fixture" aria-label="Homologação de edição textual 1.5.3">
+<h2>Textos — seleção, trechos e navegação</h2>
+<h1 id="tr-title">Uma rotina feita para você.</h1>
+<p id="tr-plain">Uma rotina clara organiza seu negócio todos os dias.</p>
+<p id="tr-long">Organize com intenção. Este parágrafo tem palavras suficientes para selecionar trechos, mudar de fonte e experimentar formatações diferentes sem reescrever o conteúdo ao redor.</p>
+<p id="tr-strong">Texto <strong id="tr-strong-node">muito importante</strong> aqui.</p>
+<p id="tr-em">Uma ideia <em id="tr-em-node">leve e possível</em> para hoje.</p>
+<p id="tr-markup">Antes <strong>força <em>suave</em></strong> e <a id="tr-inline-link" href="#tr-next">link útil</a> com <span class="tr-original">cor original</span><br>mais <small>detalhes</small> H<sub>2</sub>O e 2<sup>3</sup>.</p>
+<a id="tr-cta" href="#tr-next" class="tr-cta">Quero participar agora <span aria-hidden="true" class="arrow">→</span></a>
+<button type="button" id="tr-action">Confirmar minha participação</button>
+<ul><li id="tr-li-a">Primeiro item editável.</li><li id="tr-li-b">Segundo item editável.</li></ul>
+<table><tbody><tr><th id="tr-th">Objetivo do mês</th><td id="tr-td">Clareza e ação.</td></tr><tr><td id="tr-cell-multi"><p>Texto da célula</p><div>Outro bloco <strong>importante</strong></div></td><td>Sem atravessar células.</td></tr></tbody></table>
+<p id="tr-br">Antes da quebra<br>Depois da quebra.</p>
+<span id="tr-standalone">Etiqueta independente</span>
+<div id="tr-card"><h3 id="tr-card-title">Um card real</h3><p id="tr-card-copy">Copy dentro de um card.</p></div>
+<p id="tr-first">Primeiro texto consecutivo.</p><p id="tr-next">Próximo texto consecutivo.</p>
+<p id="tr-hidden" hidden>Não visitar: oculto.</p><div aria-hidden="true"><p>Não visitar: auxiliar.</p></div>
+<p id="tr-last-near">Último perto.</p><div aria-hidden="true" style="height:1100px"></div><p id="tr-far">Texto fora da tela.</p>
+</section>
+<style>
+#tr-fixture{margin:40px 20px;padding:24px;max-width:880px;border:1px solid #bca8c4;color:#392f3d;background:#f8f3ec;font-size:18px;line-height:1.5}
+#tr-fixture p{margin:14px 0}#tr-fixture h1{font-size:44px}#tr-fixture table{border-collapse:collapse;width:100%}#tr-fixture td,#tr-fixture th{padding:12px;border:1px solid #bca8c4}
+#tr-fixture .tr-original{color:#695178!important}#tr-fixture .tr-cta,#tr-fixture button{display:inline-block;padding:12px 18px;border:1px solid #bca8c4;background:#ece0ed;color:#392f3d}#tr-fixture #tr-standalone{display:inline-block}#tr-fixture #tr-card{padding:18px;background:#ecdfed}
+</style>
+<script>window.trActionCount=0;document.querySelector('#tr-action').addEventListener('click',()=>window.trActionCount++);</script>
+<!-- SITE-DEMO:END --></body></html>

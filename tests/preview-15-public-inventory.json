@@ -1,0 +1,386 @@
+[
+  {
+    "path": "index.html",
+    "bytes": 48138
+  },
+  {
+    "path": "styles.css",
+    "bytes": 137664
+  },
+  {
+    "path": "motion.js",
+    "bytes": 67565
+  },
+  {
+    "path": "portfolio.js",
+    "bytes": 7175
+  },
+  {
+    "path": "editor-preview.js",
+    "bytes": 1083
+  },
+  {
+    "path": "public-preview.js",
+    "bytes": 1858
+  },
+  {
+    "path": "assets\\cooperative-newsprint-v1.png",
+    "bytes": 3510902
+  },
+  {
+    "path": "assets\\cooperative-tablet-v1.png",
+    "bytes": 1130483
+  },
+  {
+    "path": "assets\\inline-sequence-final-v1.png",
+    "bytes": 82665
+  },
+  {
+    "path": "assets\\inline-sequence-image-v1.png",
+    "bytes": 120694
+  },
+  {
+    "path": "assets\\inline-sequence-open-v1.png",
+    "bytes": 86688
+  },
+  {
+    "path": "assets\\inline-sequence-text-v1.png",
+    "bytes": 116650
+  },
+  {
+    "path": "assets\\knowledge-branch-v1.png",
+    "bytes": 1657648
+  },
+  {
+    "path": "assets\\knowledge-hands-v1.png",
+    "bytes": 2726463
+  },
+  {
+    "path": "assets\\knowledge-notebook-v1.png",
+    "bytes": 2619028
+  },
+  {
+    "path": "assets\\lab-ciclico-community-v1.png",
+    "bytes": 719713
+  },
+  {
+    "path": "assets\\lab-ciclico-overview-v1.png",
+    "bytes": 771495
+  },
+  {
+    "path": "assets\\lab-foco-edition-v1.png",
+    "bytes": 69768
+  },
+  {
+    "path": "assets\\lab-foco-overview-v1.png",
+    "bytes": 99340
+  },
+  {
+    "path": "assets\\lab-game-lesson-v1.png",
+    "bytes": 394161
+  },
+  {
+    "path": "assets\\lab-game-overview-v1.png",
+    "bytes": 241830
+  },
+  {
+    "path": "assets\\lab-roots-greenhouse-v1.png",
+    "bytes": 123153
+  },
+  {
+    "path": "assets\\lab-roots-overview-v1.png",
+    "bytes": 306142
+  },
+  {
+    "path": "assets\\lab-techia-glossary-v1.png",
+    "bytes": 134091
+  },
+  {
+    "path": "assets\\lab-techia-overview-v1.png",
+    "bytes": 144611
+  },
+  {
+    "path": "assets\\leaf-a.png",
+    "bytes": 176536
+  },
+  {
+    "path": "assets\\leaf-b.png",
+    "bytes": 93062
+  },
+  {
+    "path": "assets\\leaf-c.png",
+    "bytes": 180124
+  },
+  {
+    "path": "assets\\portfolio-analytics-documentation-v1.png",
+    "bytes": 138419
+  },
+  {
+    "path": "assets\\portfolio-analytics-funnel-v1.png",
+    "bytes": 271708
+  },
+  {
+    "path": "assets\\portfolio-analytics-v1.png",
+    "bytes": 151708
+  },
+  {
+    "path": "assets\\portfolio-circulo-course-v1.png",
+    "bytes": 199604
+  },
+  {
+    "path": "assets\\portfolio-circulo-lesson-v1.png",
+    "bytes": 128809
+  },
+  {
+    "path": "assets\\portfolio-circulo-v1.png",
+    "bytes": 2525342
+  },
+  {
+    "path": "assets\\portfolio-editor-document-v1.png",
+    "bytes": 33159
+  },
+  {
+    "path": "assets\\portfolio-editor-real-document-v1.png",
+    "bytes": 87782
+  },
+  {
+    "path": "assets\\portfolio-editor-real-v1.png",
+    "bytes": 112944
+  },
+  {
+    "path": "assets\\portfolio-editor-real-v2.png",
+    "bytes": 119573
+  },
+  {
+    "path": "assets\\portfolio-editor-v1.png",
+    "bytes": 32868
+  },
+  {
+    "path": "assets\\portfolio-monitor-member-v1.png",
+    "bytes": 17375
+  },
+  {
+    "path": "assets\\portfolio-monitor-public-v1.png",
+    "bytes": 73035
+  },
+  {
+    "path": "assets\\portfolio-monitor-registration-v1.png",
+    "bytes": 90711
+  },
+  {
+    "path": "assets\\process-mask-01.svg",
+    "bytes": 299
+  },
+  {
+    "path": "assets\\process-mask-02.svg",
+    "bytes": 341
+  },
+  {
+    "path": "assets\\process-mask-03.svg",
+    "bytes": 295
+  },
+  {
+    "path": "assets\\process-mask-04.svg",
+    "bytes": 341
+  },
+  {
+    "path": "assets\\process-mask-05.svg",
+    "bytes": 341
+  },
+  {
+    "path": "assets\\process-master-mask-01.svg",
+    "bytes": 182
+  },
+  {
+    "path": "assets\\process-master-mask-02.svg",
+    "bytes": 217
+  },
+  {
+    "path": "assets\\process-master-mask-03.svg",
+    "bytes": 182
+  },
+  {
+    "path": "assets\\process-master-mask-04.svg",
+    "bytes": 217
+  },
+  {
+    "path": "assets\\process-master-mask-05.svg",
+    "bytes": 289
+  },
+  {
+    "path": "assets\\process-master-mask-06.svg",
+    "bytes": 217
+  },
+  {
+    "path": "assets\\process-piece-01.png",
+    "bytes": 354447
+  },
+  {
+    "path": "assets\\process-piece-01.svg",
+    "bytes": 767
+  },
+  {
+    "path": "assets\\process-piece-02.png",
+    "bytes": 376662
+  },
+  {
+    "path": "assets\\process-piece-02.svg",
+    "bytes": 854
+  },
+  {
+    "path": "assets\\process-piece-03.png",
+    "bytes": 344886
+  },
+  {
+    "path": "assets\\process-piece-03.svg",
+    "bytes": 760
+  },
+  {
+    "path": "assets\\process-piece-04.png",
+    "bytes": 380127
+  },
+  {
+    "path": "assets\\process-piece-04.svg",
+    "bytes": 855
+  },
+  {
+    "path": "assets\\process-piece-05.png",
+    "bytes": 402469
+  },
+  {
+    "path": "assets\\process-piece-05.svg",
+    "bytes": 855
+  },
+  {
+    "path": "assets\\process-piece-06.png",
+    "bytes": 424935
+  },
+  {
+    "path": "assets\\process-puzzle-assembled.png",
+    "bytes": 1773554
+  },
+  {
+    "path": "assets\\process-puzzle-master.png",
+    "bytes": 1793507
+  },
+  {
+    "path": "assets\\process-puzzle-master.svg",
+    "bytes": 3497
+  },
+  {
+    "path": "assets\\process-puzzle-texture.png",
+    "bytes": 2688167
+  },
+  {
+    "path": "assets\\tree.png",
+    "bytes": 715455
+  },
+  {
+    "path": "demos\\editor-editavel.html",
+    "bytes": 456879
+  },
+  {
+    "path": "demos\\editor-original.html",
+    "bytes": 126490
+  },
+  {
+    "path": "demos\\entretrama\\index.html",
+    "bytes": 12844
+  },
+  {
+    "path": "demos\\entretrama\\script.js",
+    "bytes": 1444
+  },
+  {
+    "path": "demos\\entretrama\\styles.css",
+    "bytes": 18665
+  },
+  {
+    "path": "demos\\landing-collection\\data.js",
+    "bytes": 2674
+  },
+  {
+    "path": "demos\\landing-collection\\gallery.js",
+    "bytes": 2337
+  },
+  {
+    "path": "demos\\landing-collection\\index.html",
+    "bytes": 2570
+  },
+  {
+    "path": "demos\\landing-collection\\screens\\alma-abertura-v1.png",
+    "bytes": 847957
+  },
+  {
+    "path": "demos\\landing-collection\\screens\\alma-conteudo-v1.png",
+    "bytes": 770329
+  },
+  {
+    "path": "demos\\landing-collection\\screens\\ciclico-abertura-v1.png",
+    "bytes": 772891
+  },
+  {
+    "path": "demos\\landing-collection\\screens\\ciclico-conteudo-v1.png",
+    "bytes": 513341
+  },
+  {
+    "path": "demos\\landing-collection\\screens\\entretrama-abertura-v1.png",
+    "bytes": 669351
+  },
+  {
+    "path": "demos\\landing-collection\\screens\\entretrama-conteudo-v1.png",
+    "bytes": 415053
+  },
+  {
+    "path": "demos\\landing-collection\\screens\\lapidar-abertura-v1.png",
+    "bytes": 423543
+  },
+  {
+    "path": "demos\\landing-collection\\screens\\lapidar-conteudo-v1.png",
+    "bytes": 88599
+  },
+  {
+    "path": "demos\\landing-collection\\screens\\mariaanna-abertura-v1.png",
+    "bytes": 789762
+  },
+  {
+    "path": "demos\\landing-collection\\screens\\mariaanna-conteudo-v1.png",
+    "bytes": 390537
+  },
+  {
+    "path": "demos\\landing-collection\\screens\\mariana-abertura-v1.png",
+    "bytes": 1261352
+  },
+  {
+    "path": "demos\\landing-collection\\screens\\mariana-conteudo-v1.png",
+    "bytes": 341615
+  },
+  {
+    "path": "demos\\landing-collection\\screens\\penochao-abertura-v1.png",
+    "bytes": 1069669
+  },
+  {
+    "path": "demos\\landing-collection\\screens\\penochao-conteudo-v1.png",
+    "bytes": 800932
+  },
+  {
+    "path": "demos\\landing-collection\\screens\\shala-abertura-v1.png",
+    "bytes": 896356
+  },
+  {
+    "path": "demos\\landing-collection\\screens\\shala-conteudo-v1.png",
+    "bytes": 301730
+  },
+  {
+    "path": "demos\\entretrama\\assets\\atelie-v1.png",
+    "bytes": 2488555
+  },
+  {
+    "path": "demos\\entretrama\\assets\\pecas-v1.png",
+    "bytes": 2866297
+  },
+  {
+    "path": "demos\\entretrama\\assets\\trama-v1.png",
+    "bytes": 2665168
+  }
+]

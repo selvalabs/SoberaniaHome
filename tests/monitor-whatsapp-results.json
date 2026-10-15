@@ -1,0 +1,82 @@
+[
+  {
+    "viewport": [
+      320,
+      568
+    ],
+    "message_matches_production_renderer": true,
+    "gallery_navigation": "passed",
+    "resources": "loaded",
+    "overflow": false
+  },
+  {
+    "viewport": [
+      360,
+      640
+    ],
+    "message_matches_production_renderer": true,
+    "gallery_navigation": "passed",
+    "resources": "loaded",
+    "overflow": false
+  },
+  {
+    "viewport": [
+      390,
+      724
+    ],
+    "message_matches_production_renderer": true,
+    "gallery_navigation": "passed",
+    "resources": "loaded",
+    "overflow": false
+  },
+  {
+    "viewport": [
+      390,
+      844
+    ],
+    "message_matches_production_renderer": true,
+    "gallery_navigation": "passed",
+    "resources": "loaded",
+    "overflow": false
+  },
+  {
+    "viewport": [
+      412,
+      915
+    ],
+    "message_matches_production_renderer": true,
+    "gallery_navigation": "passed",
+    "resources": "loaded",
+    "overflow": false
+  },
+  {
+    "viewport": [
+      768,
+      1024
+    ],
+    "message_matches_production_renderer": true,
+    "gallery_navigation": "passed",
+    "resources": "loaded",
+    "overflow": false
+  },
+  {
+    "viewport": [
+      1366,
+      768
+    ],
+    "message_matches_production_renderer": true,
+    "gallery_navigation": "passed",
+    "resources": "loaded",
+    "overflow": false
+  },
+  {
+    "viewport": [
+      1440,
+      900
+    ],
+    "message_matches_production_renderer": true,
+    "gallery_navigation": "passed",
+    "resources": "loaded",
+    "overflow": false
+  }
+]

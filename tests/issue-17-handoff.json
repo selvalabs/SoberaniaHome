@@ -1,0 +1,47 @@
+{
+  "issue": "https://github.com/selvalabs/SoberaniaHome/issues/17",
+  "branch": "feat/17-monitor-phone-alert",
+  "base_sha": "45ebfbbba3dd99fa64d62e6b5047901535568ef7",
+  "resulting_sha": "5c4cba46a568b16c81eafd4348bbe662359ef932",
+  "pr": "https://github.com/selvalabs/SoberaniaHome/pull/18",
+  "pr_status": "draft/open",
+  "merged": false,
+  "release_tag": null,
+  "environment": "local preview on Wi-Fi, port 4181",
+  "checks": "RGBA/transparent corner/dimensions confirmed; 390/1366 gallery correct asset and no overflow/JS errors; visual reviewed, diff check passed. Prior broader tests valid; no dependencies changed.",
+  "github_ci": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "0001-01-01T00:00:00Z",
+      "conclusion": "",
+      "detailsUrl": "https://github.com/selvalabs/SoberaniaHome/actions/runs/37355636619/job/111917214880",
+      "name": "validate",
+      "startedAt": "2026-10-05T18:24:01Z",
+      "status": "IN_PROGRESS",
+      "workflowName": "Validar versão pública"
+    }
+  ],
+  "deployment_verification": "no production deployment; LAN HTTP confirmed updated gallery script",
+  "rollback_target": "previous local draft local-development-15; production unchanged at v0.1.3/base SHA",
+  "vps_mirror_sync": "not performed; no remote operations this revision",
+  "scope": "Scoped demo, screenshots, preview initializer and documentation committed from clean review-17; inherited integration drafts preserved in local-development-17; public Wi-Fi preview updated",
+  "asset": "assets/portfolio-monitor-whatsapp-v10.png",
+  "mockup_status": "reconstructed WhatsApp conversation with production renderer text and fictional name/address/occurrence; not a resident delivery screenshot",
+  "fix": "Versioned gallery/CSS URLs; missing config/content/app scripts copied to public preview; direct initializer opens monitor Avisos with explicit URL parameters",
+  "direct_preview_url": "http://192.168.3.204:4181/?projeto=monitor&vista=avisos&v=17-11",
+  "direct_preview_checks": "390 and 1366px plus reduced motion: direct entry and reload passed; correct phone asset/selection; no missing script/style/image responses or JS errors",
+  "full_message_url": "http://192.168.3.204:4181/demos/monitor-whatsapp/?v=8",
+  "source_verification": {
+    "ssh_alias": "soberania-vps",
+    "host": "srv1502293",
+    "user": "root",
+    "runtime_sha": "82dc06d14e18be3e3fb357e35169d1e3cba4cc4b",
+    "matching_source": "/app/src/monitor_comunitario/services/matching.py",
+    "dispatcher_source": "/opt/hermes/monitor-comunitario/data/scripts/monitor_registration_dispatcher.py",
+    "mode": "read-only; AST extraction of formatting functions; no database/resident records/credentials accessed",
+    "remote_mutations": false,
+    "service_state": "API and internal API healthy; dispatcher running",
+    "provenance_file": "demos/monitor-whatsapp/provenance.json"
+  },
+  "ui_revision": "Softened perspective: X16/Y-18/Z-4 degrees, 1800px perspective, transparent 2184x4000 HD asset; approved screen preserved"
+}

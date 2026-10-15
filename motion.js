@@ -1,6 +1,6 @@
 /* Soberania Labs / motion engine
- * The document scroll is the only source of visual progress. Wheel input may be
- * rate-limited before it changes that document scroll; touch and keyboard stay native.
+ * Document scroll is the only source of visual progress. Lateral chapters scale
+ * wheel/touch input directly; keyboard and other chapters retain native scrolling.
  * Geometry is measured on layout changes, never inside the animation renderers.
  * Discontinuous jumps resynchronise; they are not replayed as a high-speed sweep.
  */
@@ -24,6 +24,7 @@
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
   const mobile=()=>innerWidth<760;
   let requestedReading=false, enabled=false, paused=false, raf=null,lastY=scrollY;
+  let mastScrollDirection=0,mastScrollTravel=0,mastDirectionY=scrollY;
   let controlledScrollTarget=scrollY,controlledScrollVelocity=0,controlledScrollRaf=null,controlledScrollLastTime=null;
   let dirty=true,geometry=null,layoutPending=true,forceSync=true,ready=false,activeId='hero',resizeTimer;
   // Dragging is an intentional, temporary exception to the scroll route. The
@@ -33,6 +34,105 @@
   const metrics={frames:0,measurements:0,resynchronisations:0,maxFrameMs:0,idle:true};
   const els={mast:document.getElementById('mast'),flight:document.getElementById('leaf-flight'),depth:document.getElementById('leaf-depth'),leaf:document.getElementById('wind-leaf'),glow:document.getElementById('leaf-glow'),fragA:document.getElementById('wind-fragment-a'),fragB:document.getElementById('wind-fragment-b'),global:document.getElementById('wind-global'),origin:document.getElementById('leaf-origin'),dock:document.getElementById('leaf-dock'),pile:document.getElementById('leaf-pile'),counter:document.getElementById('section-counter')};
   const allSections=[...document.querySelectorAll('main > .section')];
+  const hero=document.getElementById('hero'),heroStage=hero.querySelector('.hero-stage');
+  const choices=document.getElementById('folha');
+  const choicesStage=document.createElement('div');
+  choicesStage.className='choices-stage';
+  choicesStage.append(...choices.childNodes);choices.append(choicesStage);
+  const technology=document.getElementById('deslocamento-1');
+  const technologyStage=technology.querySelector('.technology-stage');
+  const knowledge=document.getElementById('deslocamento-2'),knowledgeStage=knowledge.querySelector('.knowledge-cover-stage');
+  const knowledgeNotes=[...knowledge.querySelectorAll('.knowledge-note')];
+  let coverLayoutSnapshot=[];
+  function restoreCoverLayout(){
+    for(const {el,values} of coverLayoutSnapshot){
+      for(const [name,value,priority] of values){
+        if(value)el.style.setProperty(name,value,priority);else el.style.removeProperty(name);
+      }
+    }
+    coverLayoutSnapshot=[];
+  }
+  function holdMobileCoverLayout(){
+    if(coverLayoutSnapshot.length)return;
+    // Height media queries and svh-based spacing must not change typography
+    // halfway through a touch gesture as the browser toolbar retracts.
+    // Only layout properties are captured: transforms, glow and leaf motion
+    // remain live. Rebuild this snapshot on width/orientation changes.
+    const names=['font-size','line-height','letter-spacing','margin-top','margin-bottom','padding-top','padding-bottom','row-gap','column-gap'];
+    const nodes=[heroStage,...heroStage.querySelectorAll('.hero-copy,.hero-copy *'),choicesStage,...choicesStage.querySelectorAll('*'),technologyStage,...technologyStage.querySelectorAll('*'),knowledgeStage,...knowledgeStage.querySelectorAll('*')];
+    const snapshots=nodes.map(el=>{
+      const css=getComputedStyle(el);
+      return {el,values:names.map(name=>[name,el.style.getPropertyValue(name),el.style.getPropertyPriority(name)]),computed:names.map(name=>[name,css.getPropertyValue(name)])};
+    });
+    for(const item of snapshots)for(const [name,value] of item.computed)item.el.style.setProperty(name,value);
+    coverLayoutSnapshot=snapshots;
+  }
+  const eyebrowGlyphs=[];
+  hero.querySelectorAll('.eyebrow-lab,.eyebrow-tech').forEach(label=>{
+    const text=label.textContent;
+    const readable=document.createElement('span');readable.className='eyebrow-readable';readable.textContent=text;
+    const visual=document.createElement('span');visual.setAttribute('aria-hidden','true');
+    for(const letter of text){
+      const glyph=document.createElement('span');glyph.className='eyebrow-glyph';glyph.textContent=letter;
+      visual.append(glyph);eyebrowGlyphs.push(glyph);
+    }
+    label.replaceChildren(readable,visual);
+  });
+  let lastEyebrowProgress=null;
+  function renderEyebrow(y){
+    const p=enabled?clamp(y/Math.max(1,geometry.heroHold)):0;
+    if(p===lastEyebrowProgress)return;
+    lastEyebrowProgress=p;
+    eyebrowGlyphs.forEach((glyph,i)=>{
+      const hue=(185+p*790+i*19)%360;
+      glyph.style.color=p===0?'':`hsl(${hue} 90% 23%)`;
+      glyph.style.textShadow=p===0?'':`0 0 1px #fff9e8,0 0 4px hsl(${hue} 100% 60% / .85),0 0 9px hsl(${(hue+65)%360} 100% 60% / .55)`;
+    });
+  }
+  const highlightSelector='h2,h3,p,figcaption,.technology-note,.knowledge-note';
+  const markSelector='strong,em,.hero-future,.choices-pencil,.choices-paper,.choices-ink,.knowledge-copy-practice,.knowledge-copy-technical';
+  const highlightGroups=[...allSections,...document.querySelectorAll('main > figure')].map(section=>({
+    section,
+    items:[...section.querySelectorAll(highlightSelector)].map(paragraph=>({
+      paragraph,
+      marks:paragraph.matches('h2,h3,.technology-note,.knowledge-note')?[paragraph]:
+        paragraph.querySelector(markSelector)?[...paragraph.querySelectorAll(markSelector)]:[paragraph]
+    })).filter(item=>item.marks.length)
+  }));
+  let litMarks=new Set();
+  function renderHighlights(y){
+    // Read bounds together, then only paint. No transforms, timers or layout
+    // changes: a stopped leaf leaves an exactly stopped light treatment.
+    const canGlow=enabled&&leaf.opacity>.1&&leaf.occlusionState!=='occluded';
+    // Only read text geometry in the visible chapters. The measured chapter
+    // bounds are scroll-relative, including their native sticky intervals.
+    const items=canGlow?highlightGroups.flatMap(group=>{
+      const section=geometry.sections.find(section=>section.el===group.section);
+      const visible=section?section.top-y<geometry.height&&section.bottom-y>geometry.mast:
+        (()=>{const r=group.section.getBoundingClientRect();return r.top<geometry.height&&r.bottom>geometry.mast;})();
+      return visible?group.items:[];
+    }):[];
+    const bounds=items.map(({paragraph})=>paragraph.getBoundingClientRect());
+    const lateral=scenes.some(s=>s.kind==='horizontal'&&!s.static&&s.g&&y>=s.g.start&&y<=s.g.end);
+    const radius=lateral?clamp(innerHeight*.22,110,220):clamp(innerHeight*.12,65,120);
+    const nextLit=new Set();
+    items.forEach(({paragraph,marks},index)=>{
+      const r=bounds[index],centre=(r.top+r.bottom)/2;
+      const dx=lateral?0:Math.max(r.left-leaf.x,0,leaf.x-r.right);
+      const vertical=lateral?Math.max(r.top-leaf.y,0,leaf.y-r.bottom):leaf.y-centre;
+      const distance=Math.hypot(vertical,dx*.18);
+      const visible=r.width>0&&r.height>0&&r.bottom>geometry.mast&&r.top<geometry.height&&!paragraph.closest('[inert],[aria-hidden="true"]');
+      const amount=visible?1-smoother(clamp(distance/(lateral?radius:r.height/2+radius))):0;
+      marks.forEach((mark,i)=>{
+        const hue=(y*.43+index*95+i*47)%360;
+        mark.dataset.glow=amount.toFixed(3);
+        mark.style.textShadow=amount<.001?'':`0 0 2px hsl(${hue} 100% 80% / ${amount*.95}),0 0 6px hsl(${hue} 100% 60% / ${amount}),0 0 15px hsl(${(hue+65)%360} 100% 55% / ${amount*.8})`;
+        if(amount>=.001)nextLit.add(mark);
+      });
+    });
+    for(const mark of litMarks){if(!nextLit.has(mark)){mark.style.textShadow='';mark.dataset.glow='0.000';}}
+    litMarks=nextLit;
+  }
   const processSequence=document.querySelector('.process-sequence');
   if(processSequence&&!processSequence.dataset.puzzleMaster){
     processSequence.dataset.puzzleMaster='true';processSequence.dataset.states='6';
@@ -78,7 +178,7 @@
   const processBoard=(s)=>{
     const pieceWidth=s.nodes[0].offsetWidth||160;
     const scale=pieceWidth/processCrop.width;
-    return {scale,centreX:(mobile()?s.g.stage.width*.5:s.g.stage.width*.42),centreY:(mobile()?s.g.stage.height*.45:s.g.stage.height*.5)};
+    return {scale,centreX:(mobile()?s.g.stage.width*.5:s.g.stage.width*.38),centreY:(mobile()?s.g.stage.height*.45:s.g.stage.height*.5)};
   };
   const processTarget=(s,index,layout=processBoard(s))=>{
     const {scale,centreX,centreY}=layout,[originX,originY]=processOrigins[index];
@@ -131,20 +231,73 @@
     return clamp(scrollPosition/(s.visualFraction||1));
   }
   function measure(preserve=false){
-    const carried=preserve?stableView:null;
-    const oldActive=carried?scenes.find(s=>s.id===carried.id):scenes.find(s=>s.g&&lastY>=s.g.start&&lastY<=s.g.end);
-    const oldProgress=carried?carried.progress:oldActive?scrollProgress(oldActive,lastY):0;
-    const mode=!requestedReading&&!reduced.matches&&innerHeight>=580;
+    const heroProgress=preserve&&geometry?.heroHold&&scrollY<=geometry.heroHold?clamp(scrollY/geometry.heroHold):null;
+    const oldY=scrollY;
+    const oldActive=scenes.find(s=>s.g&&oldY>=s.g.start&&oldY<=s.g.end);
+    // A scene snapshot belongs to one scroll position, not to the entire
+    // session. Mobile toolbar resizing must never restore a previously
+    // visited scene after the reader has returned to the hero.
+    const carried=preserve&&oldActive&&stableView&&oldActive.id===stableView.id&&Math.abs(oldY-stableView.y)<2?stableView:null;
+    const oldProgress=carried?carried.progress:oldActive?scrollProgress(oldActive,oldY):0;
+    const oldChapter=geometry?.choices;
+    const oldTechnology=geometry?.technology;
+    const oldKnowledge=geometry?.knowledge;
+    const knowledgeProgress=preserve&&oldKnowledge&&oldY>=oldKnowledge.start&&oldY<=oldKnowledge.end+oldKnowledge.viewport?
+      {part:oldY<=oldKnowledge.end?'fall':'departure',p:oldY<=oldKnowledge.end?clamp((oldY-oldKnowledge.start)/oldKnowledge.run):clamp((oldY-oldKnowledge.end)/oldKnowledge.viewport)}:null;
+    const technologyProgress=preserve&&oldTechnology&&oldY>=oldTechnology.start&&oldY<=oldTechnology.end+oldTechnology.viewport?
+      {part:oldY<=oldTechnology.end?'fall':'departure',p:oldY<=oldTechnology.end?clamp((oldY-oldTechnology.start)/oldTechnology.run):clamp((oldY-oldTechnology.end)/oldTechnology.viewport)}:null;
+    let chapterProgress=null;
+    if(preserve&&oldChapter&&oldY>geometry.heroHold&&oldY<=oldChapter.end+oldChapter.viewport){
+      const a=oldY<oldChapter.start?geometry.heroHold:oldY<=oldChapter.end?oldChapter.start:oldChapter.end;
+      const b=oldY<oldChapter.start?oldChapter.start:oldY<=oldChapter.end?oldChapter.end:oldChapter.end+oldChapter.viewport;
+      chapterProgress={part:oldY<oldChapter.start?'arrival':oldY<=oldChapter.end?'fall':'departure',p:clamp((oldY-a)/(b-a))};
+    }
+    const mode=!requestedReading&&!reduced.matches&&innerHeight>=500;
     enabled=mode;root.classList.toggle('motion',enabled);root.dataset.reading=enabled?'false':'true';
     const vh=innerHeight,vw=document.documentElement.clientWidth,mast=els.mast.getBoundingClientRect().height;
     const isMobile=mobile();
+    els.leaf.style.touchAction=isMobile?'pan-y pinch-zoom':'';
+    const coverHeight=isMobile&&enabled&&geometry&&Math.abs(vw-geometry.width)<=2?(geometry.coverHeight||geometry.height):vh;
+    const heroViewport=Math.max(1,coverHeight-mast),heroRun=Math.round(clamp(heroViewport*3.6,1200,5000)*.9);
+    // Mobile browser chrome changes height during scrolling. Recentring the
+    // flex cover on every such resize made the entire paragraph block jump.
+    // Recompose only for a width/layout-mode change, not a toolbar resize.
+    const recompose=!geometry||Math.abs(vw-geometry.width)>2||!enabled||hero.dataset.pin!=='true';
+    if(recompose||!isMobile)restoreCoverLayout();
+    if(recompose)hero.style.removeProperty('--hero-content-top');
+    hero.style.setProperty('--hero-viewport',heroViewport+'px');
+    hero.style.setProperty('--hero-hold',heroRun+'px');
+    hero.dataset.pin=enabled?'true':'false';
+    if(enabled&&recompose){
+      const stageRect=heroStage.getBoundingClientRect();
+      hero.style.setProperty('--hero-content-top',(hero.querySelector('.hero-copy').getBoundingClientRect().top-stageRect.top)+'px');
+    }
+    // Enlarged text must remain readable rather than clipped inside a pin.
+    if(enabled&&heroStage.scrollHeight>heroViewport+2)hero.dataset.pin='false';
+    const heroHold=hero.dataset.pin==='true'?heroRun:0;
+    // The second cover owns its own native sticky interval. Disable it when
+    // enlarged text or a short viewport needs ordinary, unclipped reading.
+    choices.dataset.pin='false';
+    choices.style.setProperty('--choices-viewport',heroViewport+'px');
+    choices.style.setProperty('--choices-hold',Math.round(heroViewport*2.4)+'px');
+    if(enabled&&heroHold&&choicesStage.scrollHeight<=heroViewport+2)choices.dataset.pin='true';
+    technology.dataset.pin=enabled&&choices.dataset.pin==='true'?'true':'false';
+    technology.style.setProperty('--technology-viewport',heroViewport+'px');
+    technology.style.setProperty('--technology-hold',Math.round(heroViewport*2.4)+'px');
+    if(technologyStage.scrollHeight>heroViewport+2)technology.dataset.pin='false';
+    knowledge.dataset.pin=enabled&&technology.dataset.pin==='true'?'true':'false';
+    knowledge.style.setProperty('--knowledge-viewport',heroViewport+'px');
+    knowledge.style.setProperty('--knowledge-hold',Math.round(heroViewport*2.6)+'px');
+    if(knowledgeStage.scrollHeight>heroViewport+2)knowledge.dataset.pin='false';
+    if(isMobile&&enabled&&heroHold)holdMobileCoverLayout();
     // Pass one writes scene lengths and track gutters only.
     scenes.forEach(s=>{
       const staticScene=!enabled||(isMobile&&s.kind==='journal');
       s.static=staticScene;
+      if(s.kind==='horizontal')s.frame.style.touchAction=staticScene?'':'pan-y pinch-zoom';
       const h=enabled?s.frame.offsetHeight:Math.max(vh-mast,1);
-      let units=s.kind==='words'?.34:s.kind==='knowledge'?.66:s.kind==='horizontal'?.68:s.kind==='process'?.72:s.kind==='editor'?.66:.79;
-      if(!isMobile)units=s.kind==='words'?.40:s.kind==='horizontal'?.8:.78;
+      let units=s.kind==='words'?.34:s.kind==='knowledge'?.66:s.kind==='horizontal'?1.02:s.kind==='process'?.72:s.kind==='editor'?.66:.79;
+      if(!isMobile)units=s.kind==='words'?.40:s.kind==='horizontal'?1.20:.78;
       const holdSteps=s.kind==='process'?2:0;
       s.visualFraction=(s.count-1)/(s.count-1+holdSteps);
       let run=Math.round((s.count-1+holdSteps)*Math.max(500,h)*units);
@@ -158,7 +311,20 @@
       if(staticScene){s.panels.forEach(p=>{p.inert=false;p.removeAttribute('aria-hidden');p.style.transform='';p.style.opacity='';p.style.clipPath='';p.classList.remove('is-current','is-past','is-future');});if(s.track)s.track.style.transform='';if(s.strip)s.strip.style.transform='';}
     });
     // Pass two reads geometry after all section heights have been written.
-    geometry={width:vw,height:vh,mast,sections:allSections.map(el=>({el,id:el.id,number:+el.dataset.number,...docRect(el)})),maxScroll:Math.max(0,document.documentElement.scrollHeight-vh),origin:docRect(els.origin),dock:docRect(els.dock),pile:docRect(els.pile),zones:[...document.querySelectorAll('.prose-section h2,.hero-copy h1,.hero-copy p,.hero-bottom,.footer-content,.reference-groups,.manifesto-list,.sovereignty-list,.choice-rows,.about-copy,.newspaper-frame')].map(docRect)};
+    geometry={width:vw,height:vh,mast,heroHold,sections:allSections.map(el=>({el,id:el.id,number:+el.dataset.number,...docRect(el)})),maxScroll:Math.max(0,document.documentElement.scrollHeight-vh),origin:docRect(els.origin),dock:docRect(els.dock),pile:docRect(els.pile),zones:[...document.querySelectorAll('.prose-section h2,.hero-copy h1,.hero-copy p,.hero-bottom,.footer-content,.reference-groups,.manifesto-list,.sovereignty-list,.choice-rows,.about-copy,.newspaper-frame')].map(docRect)};
+    geometry.coverHeight=coverHeight;
+    if(choices.dataset.pin==='true'){
+      const start=docRect(choices).top-mast,run=parseFloat(choices.style.getPropertyValue('--choices-hold'));
+      geometry.choices={start,end:start+run,run,viewport:heroViewport};
+    }
+    if(technology.dataset.pin==='true'){
+      const start=docRect(technology).top-mast,run=parseFloat(technology.style.getPropertyValue('--technology-hold'));
+      geometry.technology={start,end:start+run,run,viewport:heroViewport};
+    }
+    if(knowledge.dataset.pin==='true'){
+      const start=docRect(knowledge).top-mast,run=parseFloat(knowledge.style.getPropertyValue('--knowledge-hold'));
+      geometry.knowledge={start,end:start+run,run,viewport:heroViewport};
+    }
     scenes.forEach(s=>{
       const top=docRect(s.el).top,fh=s.frame.offsetHeight;
       const run=Math.max(1,s.el.offsetHeight-fh);
@@ -169,11 +335,30 @@
       if(s.static){setPanelAccess(s,0);s.panels.forEach(p=>{p.inert=false;p.removeAttribute('aria-hidden');});}
       else renderScene(s,true);
     });
-    if(preserve&&oldActive&&!oldActive.static){scrollTo({top:oldActive.g.start+oldProgress*oldActive.g.run,behavior:'instant'});}
+    // A sticky origin is measured in its current viewport position. Remove
+    // the pin displacement so resizing does not relocate the branch anchor.
+    if(heroHold)geometry.origin.top-=Math.min(scrollY,heroHold);
+    if(heroProgress!==null&&heroHold){scrollTo({top:heroProgress*heroHold,behavior:'instant'});}
+    else if(knowledgeProgress&&geometry.knowledge){
+      const c=geometry.knowledge,p=knowledgeProgress;
+      scrollTo({top:p.part==='fall'?c.start+p.p*c.run:c.end+p.p*c.viewport,behavior:'instant'});
+    }
+    else if(technologyProgress&&geometry.technology){
+      const c=geometry.technology,p=technologyProgress;
+      scrollTo({top:p.part==='fall'?c.start+p.p*c.run:c.end+p.p*c.viewport,behavior:'instant'});
+    }
+    else if(chapterProgress&&geometry.choices){
+      const c=geometry.choices,p=chapterProgress;
+      const a=p.part==='arrival'?heroHold:p.part==='fall'?c.start:c.end;
+      const b=p.part==='arrival'?c.start:p.part==='fall'?c.end:c.end+c.viewport;
+      scrollTo({top:mix(a,b,p.p),behavior:'instant'});
+    }
+    else if(preserve&&oldActive&&!oldActive.static){scrollTo({top:oldActive.g.start+oldProgress*oldActive.g.run,behavior:'instant'});}
     layoutPending=false;forceSync=true;metrics.measurements++;
     document.getElementById('reading-switch').checked=!enabled;document.getElementById('reading-switch').disabled=reduced.matches;
     document.getElementById('toggle-motion-footer').textContent=reduced.matches?'Movimento reduzido (sistema)':enabled?'Modo de leitura':'Ativar animação';document.getElementById('toggle-motion-footer').disabled=reduced.matches;
     ready=true;
+    if(!enabled)renderHighlights(scrollY);
   }
   function panelTween(s,i,v,distance=24,horizontal=false){
     const d=v-i;
@@ -265,9 +450,9 @@
       for(let i=0;i<4;i++)s.el.classList.toggle(`editor-phase-${i}`,i===index);
       if(!s.editorLive){
         const demo=s.el.querySelector('.editor-demo');
-        demo.classList.toggle('demo-preview-bounds',p>.26&&p<.84);demo.classList.toggle('demo-preview-tools',p>.50&&p<.90);demo.querySelector('.demo-toolbar').inert=true;
+        // Four real package captures follow the scene's existing phase classes.
         demo.style.transform=`translate3d(0,${Math.sin(p*Math.PI)*-5}px,0) scale(${mix(.965,1,range(0,.28,p))})`;
-        const captions=[['01 / Ideia','Ferramentas que deixam você dentro da ferramenta.'],['02 / Estrutura','O documento revela suas partes.'],['03 / Edição','As ferramentas entram na página.'],['04 / Autonomia','O documento continua sendo seu.']];
+        const captions=[['01 / Abrir','Comece com um documento HTML.'],['02 / Editar texto','Mude o texto diretamente na página.'],['03 / Ajustar imagem','Redimensione a imagem e ajuste a composição.'],['04 / Exportar','Salve o editável ou exporte o HTML final.']];
         const [k,t]=captions[index];document.getElementById('editor-caption-kicker').textContent=k;document.getElementById('editor-caption-text').textContent=t;
       }
     }else if(s.kind==='spiral'){
@@ -350,28 +535,37 @@
     return out;
   }
   function releaseTarget(y){
-    const {width:w,height:h,origin,mast}=geometry;
+    const {width:w,origin,mast}=geometry,h=geometry.coverHeight||geometry.height;
     // The cover holds for a deliberately long first passage on desktop.
     // The leaf's release is still calculated directly from scrollY; the sticky
     // cover simply gives that first movement room before the document advances.
-    const releasePx=mobile()?270:2550;
+    const releasePx=geometry.heroHold||(mobile()?270:geometry.height*3);
     const raw=clamp(y/releasePx);
     // A falling leaf does not leave a branch in a straight line. The first
     // portion lingers, then gains vertical distance while its horizontal route
     // makes two broad, scroll-indexed pendular passes. There is no time-based
     // animation here: a stopped scroll always freezes the exact same pose.
     const q=smoother(raw);
-    const fall=Math.pow(raw,1.12);
+    // Ease vertical speed to zero near the viewport edge. Hermite tangents
+    // match the earlier fall, so the slowdown is continuous, not a new step.
+    let fall=Math.pow(raw,1.12);
+    if(raw>.78){
+      const u=(raw-.78)/.22,u2=u*u,u3=u2*u;
+      const start=Math.pow(.78,1.12),tangent=.22*1.12*Math.pow(.78,.12);
+      fall=(2*u3-3*u2+1)*start+(u3-2*u2+u)*tangent+(-2*u3+3*u2);
+    }
     const initialScale=mobile()?.64:.72;
     // On desktop the release stays within the held cover all the way to the
     // lower edge. Only then does ordinary document movement reveal section 02.
     // Match the first coordinate of the long route (about 56.4% of viewport
     // width) so the leaf keeps gliding sideways instead of resolving into a
     // vertical drop at the moment the hero releases.
-    const endX=w*(mobile()?.58:.564),endY=Math.max(origin.top+3,h*(mobile()?.45:.86));
-    const broadSway=Math.sin(raw*Math.PI*3)*(mobile()?34:158)*(.72+raw*.28);
-    const fineSway=Math.sin(raw*Math.PI*6)*(mobile()?9:22);
-    const floatBob=Math.sin(raw*Math.PI*3)*(mobile()?7:24)*(1-raw*.28);
+    // Start gliding in the lower band while the whole leaf is still visible,
+    // rather than waiting for its stem to touch the viewport edge.
+    const endX=w*.564,endY=Math.max(origin.top+3,h-clamp(h*.085,52,88));
+    const broadSway=Math.sin(raw*Math.PI*3)*w*(mobile()?.12:.11)*(.72+raw*.28);
+    const fineSway=Math.sin(raw*Math.PI*6)*w*.018;
+    const floatBob=Math.sin(raw*Math.PI*3)*h*.018*(1-raw*.28)*(1-smoother(range(.78,1,raw)));
     return {
       x:mix(origin.left,endX,q)+broadSway+fineSway,
       y:Math.max(mast+22,mix(origin.top+3,endY,fall)+floatBob),
@@ -382,6 +576,83 @@
       phase:y<=1?'presa':'desprendimento',mode:y<=1?'branch':'release',depth:'front',releasePx
     };
   }
+  // Integrate a scroll-speed envelope: mostly 1:1 with the moving content,
+  // gently docking/undocking at either edge instead of switching velocity.
+  function carriedDistance(distance,total){
+    const d=clamp(distance,0,total),r=Math.min(total/3,clamp((geometry.coverHeight||geometry.height)*.12,80,120));
+    const entry=v=>{const u=clamp(v/r);return r*(u*u*u-.5*u*u*u*u);};
+    if(d<r)return entry(d);
+    if(d>total-r)return total-r-entry(total-d);
+    return d-r/2;
+  }
+  function carriedPose(pose,distance,total,toX){
+    const p=clamp(distance/total),q=smoother(p);
+    const flutter=Math.sin(p*Math.PI*2)*Math.pow(Math.sin(p*Math.PI),2);
+    return {...pose,x:mix(pose.x,toX,q)+geometry.width*.018*flutter,
+      y:pose.y-carriedDistance(distance,total),
+      rx:mix(pose.rx,14,q)+flutter*8,
+      ry:mix(pose.ry,12,q)+flutter*16,
+      rz:mix(pose.rz,90,q)+flutter*22,
+      phase:'flutua com o fundo',mode:'carried'};
+  }
+  function choicesFall(p){
+    const c=geometry.choices,end=releaseTarget(geometry.heroHold);
+    const travel=c.start-geometry.heroHold;
+    const start=carriedPose(end,travel,travel,geometry.width*.18);
+    const q=smoother(p),sway=Math.sin(p*Math.PI*3)*Math.pow(Math.sin(p*Math.PI),2);
+    return {...end,x:mix(start.x,end.x,q)+geometry.width*.18*sway,
+      y:mix(start.y,end.y,q),
+      rx:mix(start.rx,12,q)+Math.sin(p*Math.PI*4)*12*Math.pow(Math.sin(p*Math.PI),2),
+      ry:mix(start.ry,18,q)+sway*38,
+      rz:mix(start.rz,102,q)+sway*40,
+      phase:'queda em Escolhas',mode:'chapter-fall'};
+  }
+  function chapterTarget(y){
+    const c=geometry.choices;if(!c||y<=geometry.heroHold)return null;
+    const end=releaseTarget(geometry.heroHold);
+    if(y<c.start)return carriedPose(end,y-geometry.heroHold,c.start-geometry.heroHold,geometry.width*.18);
+    if(y<=c.end)return choicesFall(clamp((y-c.start)/c.run));
+    const tech=geometry.technology;
+    if(tech){
+      const passage=tech.start-c.end;
+      if(y<tech.start)return carriedPose(choicesFall(1),y-c.end,passage,geometry.width*.82);
+      if(y<=tech.end)return technologyFall(clamp((y-tech.start)/tech.run));
+      const k=geometry.knowledge;
+      if(k){
+        if(y<k.start)return carriedPose(technologyFall(1),y-tech.end,k.start-tech.end,geometry.width*.78);
+        if(y<=k.end)return knowledgeFall(clamp((y-k.start)/k.run));
+        if(y<=k.end+k.viewport)return carriedPose(knowledgeFall(1),y-k.end,k.viewport,geometry.width*.18);
+        return null;
+      }
+      if(y<=tech.end+tech.viewport)return carriedPose(technologyFall(1),y-tech.end,tech.viewport,geometry.width*.78);
+      return null;
+    }
+    if(y<=c.end+c.viewport){
+      const pose=choicesFall(1);
+      return carriedPose(pose,y-c.end,c.viewport,geometry.width*.82);
+    }
+    return null;
+  }
+  function technologyFall(p){
+    const c=geometry.choices,tech=geometry.technology,end=releaseTarget(geometry.heroHold);
+    const start=carriedPose(choicesFall(1),tech.start-c.end,tech.start-c.end,geometry.width*.82);
+    const q=smoother(p),sway=Math.sin(p*Math.PI*3)*Math.pow(Math.sin(p*Math.PI),2);
+    return {...end,x:mix(start.x,geometry.width*.24,q)+geometry.width*.16*sway,y:mix(start.y,end.y,q),
+      rx:mix(start.rx,12,q)+sway*10,ry:mix(start.ry,18,q)+sway*32,rz:mix(start.rz,102,q)+sway*38,
+      phase:'queda em Alta tecnologia',mode:'chapter-fall'};
+  }
+  function knowledgeFall(p){
+    const tech=geometry.technology,k=geometry.knowledge,end=releaseTarget(geometry.heroHold);
+    const start=carriedPose(technologyFall(1),k.start-tech.end,k.start-tech.end,geometry.width*.78);
+    const q=smoother(p),sway=Math.sin(p*Math.PI*3)*Math.pow(Math.sin(p*Math.PI),2);
+    return {...end,x:mix(start.x,geometry.width*.3,q)+geometry.width*.16*sway,y:mix(start.y,end.y,q),
+      rx:mix(start.rx,12,q)+sway*10,ry:mix(start.ry,18,q)+sway*32,rz:mix(start.rz,102,q)+sway*38,
+      phase:'queda em Inteligências',mode:'chapter-fall'};
+  }
+  function renderKnowledgeNotes(y){
+    const k=geometry.knowledge,p=k?clamp((y-k.start)/k.run):1;
+    knowledgeNotes.forEach((note,i)=>note.style.setProperty('--note-show',!enabled||!k?'1':String(range(.08+i*.22,.22+i*.22,p))));
+  }
   function targetAt(y,activeScene){
     const {width:w,height:h,dock,mast}=geometry;
     const maxScroll=Math.max(geometry.maxScroll,document.documentElement.scrollHeight-innerHeight);
@@ -389,6 +660,8 @@
     if(y<=release.releasePx){
       return {...release,parent:els.global,offsetX:0,offsetY:0,spiralBlend:0,gust:0};
     }
+    const chapter=chapterTarget(y);
+    if(chapter)return {...chapter,parent:els.global,offsetX:0,offsetY:0,spiralBlend:0,gust:0,depth:'front'};
 
     const flightP=clamp((y-release.releasePx)/Math.max(1,maxScroll-release.releasePx));
     const releaseEnd=releaseTarget(release.releasePx);
@@ -399,7 +672,7 @@
     const longSway=Math.sin(flightP*Math.PI*2.1+.55)*.075+Math.sin(flightP*Math.PI*4.4-.3)*.018;
     t.x=w*(.53+longSway);
     const g=gustAt(flightP),tb=tumbleAt(flightP);
-    const fallStartY=releaseTarget(release.releasePx).y;
+    const fallStartY=Math.max(releaseTarget(release.releasePx).y,h-22);
     const finalDockY=clamp(dock.top-maxScroll,mast+14,h-54);
     const fallEndY=Math.max(fallStartY,finalDockY);
     t.y=mix(fallStartY,fallEndY,smoother(flightP));
@@ -422,16 +695,7 @@
       const s=activeScene;
 
       if(s.kind==='horizontal'){
-        const sp=clamp(s.v/(s.count-1));
-        const dir=s.el.dataset.direction==='reverse'?-1:1;
-        // Scene motion changes the leaf's attitude, never its global route.
-        // Position remains a direct continuous function of document scroll.
-        const kick=bell(.055,.39,sp);
-        const tumble=smoother(range(.07,.31,sp));
-        t.rz+=dir*(205*tumble+42*kick);
-        t.ry+=dir*180*tumble;
-        t.rx-=dir*58*Math.sin(tumble*Math.PI);
-        t.scale*=mix(1,mobile()?1.05:1.10,kick);
+        // Broad pendular motion is applied below with a continuous entry/exit.
         mode='horizontal-gust';depth='front';
       }else if(s.kind==='spiral'){
         const sp=clamp(s.v/(s.count-1));
@@ -475,10 +739,67 @@
       t.phase=takeoffBlend<.5?releaseEnd.phase:t.phase;
     }
 
+    // A long leftward glide: turn -> traverse -> linger -> resume falling.
+    // The background remains native-scroll driven throughout this passage.
+    const exitRun=clamp(h*2.8,1600,3000),exitP=clamp((y-release.releasePx)/exitRun);
+    if(!geometry.choices&&exitP<1){
+      const before=releaseTarget(release.releasePx-1);
+      const u=clamp(exitP/.55),u2=u*u,u3=u2*u,leftX=w*.16;
+      const tangent=(releaseEnd.x-before.x)*exitRun*.55;
+      const traverse=(2*u3-3*u2+1)*releaseEnd.x+(u3-2*u2+u)*tangent+(-2*u3+3*u2)*leftX;
+      const linger=bell(.55,.72,exitP)*Math.sin(range(.55,.72,exitP)*Math.PI*2)*w*.018;
+      // One easing curve over a wider interval avoids a compressed burst of
+      // lateral speed and a fast rotation immediately after the pin releases.
+      const bridge=smoother(clamp((exitP-.60)/.40)),turn=smoother(clamp(exitP/.42));
+      const flutter=bell(0,.72,exitP);
+      t.x=mix(traverse+linger,t.x,bridge);
+      t.y=mix(releaseEnd.y+Math.sin(exitP*Math.PI*4)*3*flutter,t.y,bridge);
+      t.rz=mix(mix(releaseEnd.rz,90,turn)+Math.sin(turn*Math.PI)*35+Math.sin(exitP*Math.PI*4)*9*flutter,t.rz,bridge);
+      t.ry=mix(mix(releaseEnd.ry,12,turn)+Math.sin(turn*Math.PI)*20,t.ry,bridge);
+      t.rx=mix(mix(releaseEnd.rx,8,turn)+Math.sin(exitP*Math.PI*4)*6*flutter,t.rx,bridge);
+      t.scale=mix(releaseEnd.scale,t.scale,bridge);
+      mode='glide';depth='front';t.phase=exitP<.72?'planando':'retomando queda';
+    }
+
+    // Rejoin the untouched later scenes through a spatial bridge; no swap to
+    // an unrelated global coordinate when this first two-cover cycle ends.
+    if(geometry.choices){
+      const c=geometry.knowledge||geometry.technology||geometry.choices,joinStart=c.end+c.viewport;
+      const join=smoother(clamp((y-joinStart)/c.viewport));
+      if(join<1){
+        const pose=carriedPose(geometry.knowledge?knowledgeFall(1):geometry.technology?technologyFall(1):choicesFall(1),c.viewport,c.viewport,geometry.width*(geometry.knowledge?.18:geometry.technology?.78:.82));
+        for(const key of ['x','y','scale','rx','ry','rz'])t[key]=mix(pose[key],t[key],join);
+        mode='chapter-bridge';depth='front';t.phase='próxima cena';
+      }
+    }
+
+    // Bring lateral chapters through the useful viewport centre. The blend
+    // begins before pinning and ends after it, so boundaries never jump.
+    for(const s of scenes){
+      if(s.kind!=='horizontal'||s.static||!s.g)continue;
+      const transition=(h-mast)*.55;
+      const enter=smoother(clamp((y-(s.g.start-transition))/transition));
+      const leave=1-smoother(clamp((y-s.g.end)/transition));
+      const weight=enter*leave;
+      if(weight<=0)continue;
+      const progress=clamp((y-s.g.start)/Math.max(1,s.g.run));
+      const phase=progress*Math.PI*2;
+      const dir=s.el.dataset.direction==='reverse'?-1:1;
+      const sway=Math.sin(phase);
+      const centre=mast+(h-mast)*(.48+.065*sway);
+      t.y=mix(t.y,centre,weight);
+      t.x=mix(t.x,w*(.5+dir*(mobile()?.08:.11)*sway),weight);
+      // A full wind-driven turn; the completed 360° is visually identical
+      // to zero on departure, avoiding a fast backwards unwind.
+      t.rz+=dir*(360*smoother(progress)*enter+28*sway*weight);
+      t.ry+=dir*105*Math.sin(phase)*weight;
+      t.rx+=18*Math.cos(phase)*weight;
+    }
+
     // Keep the protagonist recoverable in the viewport. The first third is stricter.
     const edge=mobile()?17:24;
     t.x=clamp(t.x,-edge,w+edge);
-    t.y=clamp(t.y,mast+14,h-54);
+    t.y=clamp(t.y,mast+14,Math.max(h-22,releaseEnd.y));
 
     // Final approach is driven by the real footer geometry. We split the ending
     // into approach -> contact -> settle -> rest, so the leaf does not "hook"
@@ -606,10 +927,20 @@
     return dragMoving;
   }
 
+  function updateMastVisibility(y){
+    const delta=y-mastDirectionY;
+    if(Math.abs(delta)<1)return;
+    const direction=Math.sign(delta);
+    if(direction!==mastScrollDirection){mastScrollDirection=direction;mastScrollTravel=0;}
+    mastScrollTravel+=Math.abs(delta);
+    if(y<96||(direction<0&&mastScrollTravel>=8)){els.mast.classList.remove('is-hidden');root.classList.remove('mast-hidden');}
+    else if(direction>0&&y>150&&mastScrollTravel>=20){els.mast.classList.add('is-hidden');root.classList.add('mast-hidden');}
+    mastDirectionY=y;
+  }
   function updateNav(y){
     const sec=currentSection(y);
     if(sec.id===activeId&&ready)return;
-    activeId=sec.id;els.counter.textContent=String(sec.number).padStart(2,'0')+' / 15';
+    activeId=sec.id;root.dataset.activeSection=sec.id;els.counter.textContent=String(sec.number).padStart(2,'0')+' / '+String(allSections.length).padStart(2,'0');
     document.querySelectorAll('.main-nav a,.index-links a').forEach(a=>{a.toggleAttribute('aria-current',a.hash==='#'+activeId);if(a.hasAttribute('aria-current'))a.setAttribute('aria-current','location');});
   }
   function request(sync=false){
@@ -627,6 +958,8 @@
     const visualY=clamp(y,0,geometry.maxScroll);
     dirty=false;forceSync=false;let moving=false,activeScene=null;
     updateNav(y);
+    renderEyebrow(visualY);
+    renderKnowledgeNotes(visualY);
     if(enabled){
       for(const s of scenes){
         if(s.static)continue;
@@ -641,7 +974,9 @@
       }
       moving=renderLeaf(visualY,activeScene,ts)||moving;
     }
-    if(enabled&&activeScene&&innerWidth===geometry.width&&Math.abs(innerHeight-geometry.height)<2)stableView={id:activeScene.id,progress:scrollProgress(activeScene,visualY)};
+    renderHighlights(visualY);
+    if(enabled&&activeScene&&innerWidth===geometry.width&&Math.abs(innerHeight-geometry.height)<2)stableView={id:activeScene.id,progress:scrollProgress(activeScene,visualY),y};
+    else stableView=null;
     lastY=y;metrics.frames++;metrics.maxFrameMs=Math.max(metrics.maxFrameMs,performance.now()-started);
     if(moving||dirty){raf=requestAnimationFrame(frame);metrics.idle=false;}else metrics.idle=true;
   }
@@ -688,6 +1023,9 @@
     controlledScrollRaf=null;controlledScrollLastTime=null;controlledScrollVelocity=0;controlledScrollTarget=scrollY;
   }
   function beginLeafDrag(e){
+    // The visual leaf must not steal the returning archive's navigation.
+    const navigation=document.elementsFromPoint(e.clientX,e.clientY).find(el=>el.matches?.('#laboratorio .scene-controls button'));
+    if(navigation&&e.button===0){e.preventDefault();e.stopPropagation();if(!navigation.disabled)navigation.click();return;}
     if(e.pointerType!=='mouse'||e.button!==0||!enabled||reduced.matches||leaf.occlusionState==='occluded')return;
     e.preventDefault();e.stopPropagation();stopControlledScroll();
     leafDrag.active=true;leafDrag.returning=false;leafDrag.pointerId=e.pointerId;
@@ -715,17 +1053,108 @@
     if(els.flight.hasPointerCapture?.(e.pointerId))els.flight.releasePointerCapture(e.pointerId);
     request(true);
   }
-  // Scrolling belongs to the browser. The old wheel interceptor accumulated a
-  // target and kept issuing scrollTo calls after input stopped, which felt like
-  // dragging a heavy page. Scenes only observe the native scroll position.
-  addEventListener('wheel',stopControlledScroll,{passive:true});
+  // Slow input only while a lateral chapter is pinned. No queued target or
+  // post-gesture animation: leaf, glow and cards observe the same document y.
+  function lateralSceneAt(y){
+    return enabled&&!paused&&!reduced.matches?scenes.find(s=>s.kind==='horizontal'&&!s.static&&s.g&&y>=s.g.start-1&&y<=s.g.end+1):null;
+  }
+  function lateralDestination(s,current,delta,horizontal,flowDirection=delta){
+    const target=current+delta,edge=target>s.g.end?s.g.end:target<s.g.start?s.g.start:null;
+    if(edge===null)return {y:clamp(target,0,geometry.maxScroll),flow:false};
+    const overflow=target-edge;
+    const verticalRemainder=horizontal?overflow*s.g.travel/Math.max(1,s.g.run)*.45/.55:overflow;
+    return {y:clamp(edge+verticalRemainder,0,geometry.maxScroll),flow:true,direction:Math.sign(flowDirection)};
+  }
+  const gestureControl='button,a,input,textarea,select,[contenteditable="true"],dialog,.landing-phone-rail,.landing-phone-screen';
+  addEventListener('wheel',event=>{
+    stopControlledScroll();
+    const s=lateralSceneAt(scrollY);
+    if(!s||event.ctrlKey||event.target.closest?.(gestureControl)||!event.cancelable)return;
+    const unit=event.deltaMode===1?16:event.deltaMode===2?innerHeight:1;
+    const horizontal=Math.abs(event.deltaX)>Math.abs(event.deltaY)*1.2;
+    const dir=s.el.dataset.direction==='reverse'?-1:1;
+    const input=horizontal?event.deltaX*unit*dir:event.deltaY*unit;
+    const delta=horizontal?input*s.g.run/Math.max(1,s.g.travel)*.55:input*.45;
+    if(!delta)return;
+    event.preventDefault();
+    const destination=lateralDestination(s,scrollY,delta,horizontal,input);
+    scrollTo({top:destination.y,behavior:'instant'});request(true);
+  },{passive:false});
+  let lateralMouse=null,suppressLateralClick=false;
+  function releaseLateralMouse(){
+    const gesture=lateralMouse;lateralMouse=null;
+    root.removeAttribute('data-lateral-dragging');
+    if(gesture?.scene.frame.hasPointerCapture?.(gesture.pointerId))gesture.scene.frame.releasePointerCapture(gesture.pointerId);
+  }
+  scenes.filter(s=>s.kind==='horizontal').forEach(s=>{
+    s.frame.addEventListener('pointerdown',event=>{
+      suppressLateralClick=false;
+      if(event.pointerType!=='mouse'||event.button!==0||lateralSceneAt(scrollY)!==s||event.target.closest?.(gestureControl))return;
+      event.preventDefault();stopControlledScroll();
+      lateralMouse={scene:s,pointerId:event.pointerId,startX:event.clientX,lastX:event.clientX,moved:false,flow:false};
+      s.frame.setPointerCapture?.(event.pointerId);
+    });
+    s.frame.addEventListener('dragstart',event=>{
+      if(lateralSceneAt(scrollY)===s&&!event.target.closest?.(gestureControl))event.preventDefault();
+    });
+  });
+  document.addEventListener('pointermove',event=>{
+    const gesture=lateralMouse,s=gesture?.scene;
+    if(!gesture||event.pointerId!==gesture.pointerId)return;
+    if(!(event.buttons&1)||(!gesture.flow&&lateralSceneAt(scrollY)!==s)){releaseLateralMouse();return;}
+    if(!gesture.moved&&Math.abs(event.clientX-gesture.startX)<8)return;
+    gesture.moved=true;suppressLateralClick=true;
+    root.dataset.lateralDragging='true';event.preventDefault();
+    const dir=s.el.dataset.direction==='reverse'?-1:1;
+    const input=(gesture.lastX-event.clientX)*dir;
+    const delta=gesture.flow?input*.55:input*s.g.run/Math.max(1,s.g.travel)*.55;
+    gesture.lastX=event.clientX;
+    const destination=gesture.flow?{y:clamp(scrollY+delta,0,geometry.maxScroll)}:lateralDestination(s,scrollY,delta,true,input);
+    if(destination.flow)gesture.flow=true;
+    scrollTo({top:destination.y,behavior:'instant'});request(true);
+  });
+  document.addEventListener('pointerup',event=>{if(event.pointerId===lateralMouse?.pointerId)releaseLateralMouse();});
+  document.addEventListener('pointercancel',()=>{releaseLateralMouse();suppressLateralClick=false;});
+  addEventListener('blur',()=>{releaseLateralMouse();suppressLateralClick=false;});
+  document.addEventListener('click',event=>{
+    if(!suppressLateralClick)return;
+    suppressLateralClick=false;event.preventDefault();event.stopImmediatePropagation();
+  },true);
+  // Bind at document level so the floating leaf cannot swallow the swipe.
+  let lateralTouch=null;
+  document.addEventListener('touchstart',event=>{
+    const s=lateralSceneAt(scrollY);
+    if(innerWidth>=760||!s||event.touches.length!==1||event.target.closest?.(gestureControl)||(!s.frame.contains(event.target)&&!els.flight.contains(event.target))){lateralTouch=null;return;}
+    const point=event.touches[0];
+    lateralTouch={scene:s,x:point.clientX,y:point.clientY,lastX:point.clientX,lastY:point.clientY,axis:null,flow:false};
+  },{passive:true});
+  document.addEventListener('touchmove',event=>{
+    const gesture=lateralTouch,s=gesture?.scene;
+    if(!gesture||event.touches.length!==1||(!gesture.flow&&lateralSceneAt(scrollY)!==s)||!event.cancelable){lateralTouch=null;return;}
+    const point=event.touches[0],dx=gesture.x-point.clientX,dy=gesture.y-point.clientY;
+    if(!gesture.axis){
+      if(Math.max(Math.abs(dx),Math.abs(dy))<10)return;
+      gesture.axis=Math.abs(dx)>Math.abs(dy)*1.15?'x':'y';
+    }
+    event.preventDefault();stopControlledScroll();
+    const horizontal=gesture.axis==='x',dir=s.el.dataset.direction==='reverse'?-1:1;
+    const input=horizontal?(gesture.lastX-point.clientX)*dir:gesture.lastY-point.clientY;
+    const delta=gesture.flow?input*.55:horizontal?input*s.g.run/Math.max(1,s.g.travel)*.55:input*.55;
+    gesture.lastX=point.clientX;gesture.lastY=point.clientY;
+    const destination=gesture.flow?{y:clamp(scrollY+delta,0,geometry.maxScroll)}:lateralDestination(s,scrollY,delta,horizontal,input);
+    if(destination.flow)gesture.flow=true;
+    scrollTo({top:destination.y,behavior:'instant'});request(true);
+  },{passive:false});
+  const releaseLateralTouch=()=>{lateralTouch=null;};
+  document.addEventListener('touchend',releaseLateralTouch,{passive:true});
+  document.addEventListener('touchcancel',releaseLateralTouch,{passive:true});
   // Bind to the flight wrapper so the generous invisible hit-area and the
   // visible sprite both start the same gesture.
   els.flight.addEventListener('pointerdown',beginLeafDrag);
   els.flight.addEventListener('pointermove',moveLeafDrag);
   els.flight.addEventListener('pointerup',endLeafDrag);
   els.flight.addEventListener('pointercancel',endLeafDrag);
-  addEventListener('scroll',()=>{if(controlledScrollRaf===null)controlledScrollTarget=scrollY;request();},{passive:true});
+  addEventListener('scroll',()=>{updateMastVisibility(scrollY);if(controlledScrollRaf===null)controlledScrollTarget=scrollY;request();},{passive:true});
   addEventListener('pointerdown',stopControlledScroll,{passive:true});
   addEventListener('touchstart',stopControlledScroll,{passive:true});
   addEventListener('keydown',stopControlledScroll,{passive:true});
@@ -733,8 +1162,8 @@
   addEventListener('resize',()=>{
     if(document.activeElement?.isContentEditable)return;
     clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{
-      const preserve=Math.abs(innerWidth-prevWidth)>20;
-      if(preserve||Math.abs(innerHeight-prevHeight)>100){prevWidth=innerWidth;prevHeight=innerHeight;remeasure(preserve);}
+      const changed=Math.abs(innerWidth-prevWidth)>2||Math.abs(innerHeight-prevHeight)>2;
+      if(changed){prevWidth=innerWidth;prevHeight=innerHeight;remeasure(true);}
       else request();
     },140);
   },{passive:true});

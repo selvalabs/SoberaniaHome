@@ -1,0 +1,112 @@
+[
+  {
+    "key": "roots",
+    "title": "T1 <em>Roots</em>",
+    "type": "Cultivo / automação",
+    "status": "Modo demonstração",
+    "description": "Sensores, clima e irrigação em um painel de operação. Uma interface para acompanhar o cultivo e testar cenários antes do hardware.",
+    "tail": "ambiente / controle",
+    "pages": [
+      [
+        "Operação",
+        "overview",
+        "Painel real do T1 Roots em modo demonstração.",
+        "O cultivo visto como um sistema."
+      ],
+      [
+        "Estufa",
+        "greenhouse",
+        "Visualização da estufa envidraçada no painel T1 Roots.",
+        "Sensores e atuadores, no contexto da estufa."
+      ]
+    ]
+  },
+  {
+    "key": "game",
+    "title": "Laboratório <em>Educativo</em>",
+    "type": "Educação / programação",
+    "status": "Versão em desenvolvimento",
+    "description": "Programação aprendida construindo regras de um jogo. Missões, blocos e uma cena onde observar o resultado do código.",
+    "tail": "aprendizagem / jogo",
+    "pages": [
+      [
+        "Abertura",
+        "overview",
+        "Abertura real do Laboratório Educativo, com missões da primeira aula.",
+        "Aprender observando o que uma regra muda."
+      ],
+      [
+        "Aula",
+        "lesson",
+        "Interface real da primeira aula do Laboratório Educativo.",
+        "Da regra ao movimento dentro do jogo."
+      ]
+    ]
+  },
+  {
+    "key": "foco",
+    "title": "Esquerda <em>em Foco</em>",
+    "type": "Pesquisa / consulta pública",
+    "status": "Prévia local do site",
+    "description": "Um caderno de candidaturas, trajetórias e fontes. A interface organiza a consulta por estado e preserva o contexto de cada edição.",
+    "tail": "documentação / sociedade",
+    "pages": [
+      [
+        "Entrada",
+        "overview",
+        "Página inicial local do Esquerda em Foco.",
+        "A consulta começa pelo contexto."
+      ],
+      [
+        "Edição SC",
+        "edition",
+        "Hub de Santa Catarina do site Esquerda em Foco.",
+        "Estados e cargos com seus próprios recortes."
+      ]
+    ]
+  },
+  {
+    "key": "techia",
+    "title": "Tech / <em>IA</em>",
+    "type": "Publicação / conhecimento",
+    "status": "Protótipo de interface",
+    "description": "Uma experiência editorial com leitura, glossário e ferramentas de consulta. Conhecimento técnico organizado para continuar a investigação.",
+    "tail": "editorial / pesquisa",
+    "pages": [
+      [
+        "Publicação",
+        "overview",
+        "Atlas real da interface pública Tech/IA, um protótipo com conteúdo em rascunho.",
+        "Leitura e consulta na mesma publicação."
+      ],
+      [
+        "Glossário",
+        "glossary",
+        "Tela de glossário do protótipo Tech/IA.",
+        "Uma palavra abre outros caminhos de leitura."
+      ]
+    ]
+  },
+  {
+    "key": "ciclico",
+    "title": "Planejamento <em>Cíclico</em>",
+    "type": "Site / comunidade",
+    "status": "Prévia da página pública",
+    "description": "Uma página para apresentar uma comunidade e seu método de planejamento. Conteúdo, ritmo visual e caminhos de participação.",
+    "tail": "experiência / comunidade",
+    "pages": [
+      [
+        "Abertura",
+        "overview",
+        "Página pública real do Planejamento Cíclico em prévia local.",
+        "Dar forma digital a uma proposta de comunidade."
+      ],
+      [
+        "Comunidade",
+        "community",
+        "Apresentação da comunidade na página pública do Planejamento Cíclico.",
+        "A narrativa acompanha a proposta e o método."
+      ]
+    ]
+  }
+]

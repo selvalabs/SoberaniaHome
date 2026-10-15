@@ -1,0 +1,31 @@
+{
+  "issue": "https://github.com/selvalabs/SoberaniaHome/issues/15",
+  "branch": "feat/15-weaving-school-landings",
+  "base_sha": "45ebfbbba3dd99fa64d62e6b5047901535568ef7",
+  "resulting_sha": "4cc8e98b40355eec5a2382e97de8a21a35d6d65c",
+  "pr": "https://github.com/selvalabs/SoberaniaHome/pull/16",
+  "pr_status": "draft/open",
+  "merged": false,
+  "release_tag": null,
+  "environment": "local Wi-Fi preview only",
+  "preview_directory": "C:\\Users\\carlo\\projects\\websites\\lab.soberania.cloud\\preview-15-public",
+  "preview_url": "http://192.168.3.204:4181/demos/entretrama/",
+  "preview_pid": 60648,
+  "checks": {
+    "school_and_collection": "four viewports passed including actual download and Escape/focus, all 16 views, no JS reading",
+    "horizontal_chapter": "eight viewports + reading/reduced motion passed",
+    "integrated_project_selector": "physical clicks and keyboard; 16 views at 320/390/1366 passed",
+    "syntax": "node --check, three scripts passed",
+    "whitespace": "git diff --check passed",
+    "visual": "desktop/mobile reviewed",
+    "security": "no new dependencies; static review no external integrations or secret values",
+    "unconfigured": "build/lint/typecheck/dependency scanner not configured for new static files",
+    "github_ci": "validate SUCCESS, run 37257134997"
+  },
+  "deployment_verification": "No production deployment; LAN HTTP 200 and public-only directory; tests and .git return 404",
+  "rollback_target": "production unchanged at base SHA; previous local draft preserved at local-development-14",
+  "vps_mirror_sync": "not applicable; no VPS interaction",
+  "integration_scope": "The local homepage integration inherits unpublished issues 12–14. Only standalone issue 15 school/gallery/tools were committed from clean review-15 checkout. Local-development-15 HEAD remains at base; remote branch and PR point to resulting SHA.",
+  "images": "Three generated images persisted under demos/entretrama/assets; built-in imagegen; exact prompts in demos/entretrama/image-prompts.json",
+  "preview_approval": "Initial whole-worktree exposure rejected by automatic review; resolved by public-only directory inventory of 96 static files. Existing 4179/4180 services preserved; preview uses verified free 4181."
+}

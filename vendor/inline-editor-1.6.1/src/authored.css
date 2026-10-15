@@ -1,0 +1,3 @@
+/* IE-AUTHORED: layout and selected effects survive removal of the editing toolbox. */
+.ie-move-authored{translate:calc(var(--ie-base-translate-x,0px) + var(--ie-move-x,0px)) calc(var(--ie-base-translate-y,0px) + var(--ie-move-y,0px)) !important;}
+@media (prefers-reduced-motion:reduce){[data-ie-effects]{scroll-behavior:auto}}

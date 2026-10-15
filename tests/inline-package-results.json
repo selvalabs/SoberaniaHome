@@ -1,0 +1,38 @@
+[
+  {
+    "viewport": [
+      1366,
+      900
+    ],
+    "status": "PASS",
+    "downloads": [
+      "editable",
+      "final"
+    ],
+    "reopened": true
+  },
+  {
+    "viewport": [
+      390,
+      844
+    ],
+    "status": "PASS",
+    "downloads": [
+      "editable",
+      "final"
+    ],
+    "reopened": true
+  },
+  {
+    "viewport": [
+      320,
+      568
+    ],
+    "status": "PASS",
+    "downloads": [
+      "editable",
+      "final"
+    ],
+    "reopened": true
+  }
+]

@@ -1,0 +1,18 @@
+{
+  "issue": "https://github.com/selvalabs/SoberaniaHome/issues/30",
+  "branch": "fix/30-landing-gallery-scroll",
+  "base_sha": "45ebfbbba3dd99fa64d62e6b5047901535568ef7",
+  "resulting_sha": "125779d",
+  "pr": "https://github.com/selvalabs/SoberaniaHome/pull/31",
+  "pr_status": "draft/open",
+  "merged": false,
+  "release_tag": null,
+  "environment": "local preview HTTP 4181, Wi-Fi",
+  "checks": "390/1366: normal vertical wheel scrolls current phone only; Shift moves rail; small horizontal wheel settling, limits, reversal, drag and native touch passed; full local and served-preview integration passed; node syntax and diff passed",
+  "limitations": "Physical device homologation pending; PR integration depends on #16 and unpublished homepage drafts",
+  "deployment_verification": "Local preview only, cache landing-scroll-10; production unchanged",
+  "rollback_target": "Previous gallery controller recoverable from local prior draft; production preserved",
+  "vps_mirror_sync": "Not performed; no VPS operations",
+  "interaction": "Vertical wheel over phone reads content; horizontal trackpad/Shift wheel/drag navigate gallery; vertical wheel outside phone navigates gallery",
+  "refinement": "Removed collection count eyebrow and entire landing card footer; served preview DOM validated 390/1366; eight phone mockups preserved. Cache landing-clean-11."
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "viewport": [
+      320,
+      568
+    ],
+    "school_images": "loaded",
+    "overflow": false,
+    "dialog_download_escape_focus": "passed",
+    "collection_views": 16
+  },
+  {
+    "viewport": [
+      390,
+      844
+    ],
+    "school_images": "loaded",
+    "overflow": false,
+    "dialog_download_escape_focus": "passed",
+    "collection_views": 16
+  },
+  {
+    "viewport": [
+      768,
+      1024
+    ],
+    "school_images": "loaded",
+    "overflow": false,
+    "dialog_download_escape_focus": "passed",
+    "collection_views": 16
+  },
+  {
+    "viewport": [
+      1366,
+      900
+    ],
+    "school_images": "loaded",
+    "overflow": false,
+    "dialog_download_escape_focus": "passed",
+    "collection_views": 16
+  }
+]

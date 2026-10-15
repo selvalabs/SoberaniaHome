@@ -1,0 +1,12 @@
+{
+  "version": "1.6.1",
+  "baseline": "1.6.0",
+  "scope": "ESCOPO_v1.6.1.md",
+  "focus": "Exclusão estrutural, histórico integrado, espaço opcional e compactação conservadora",
+  "runtimeDependencies": [],
+  "geometrySourceUnchanged": true,
+  "boxModelSourceUnchanged": true,
+  "date": "2026-09-13",
+  "textRangeSourceUnchanged": true,
+  "releaseDate": "2026-09-13"
+}

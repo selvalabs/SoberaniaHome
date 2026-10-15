@@ -1,0 +1,16 @@
+const TableEditor={
+  info(e=selected()){const cell=e?.closest?.('td,th');if(!cell)return null;const table=cell.closest('table'),row=cell.parentElement;return{cell,table,row,colIndex:cell.cellIndex,rowIndex:[...table.rows].indexOf(row),ambiguous:[...table.querySelectorAll('td,th')].some(c=>c.colSpan!==1||c.rowSpan!==1)}},
+  ensureCols(table){let cg=table.querySelector(':scope > colgroup');const cells=[...table.rows[0].cells];if(!cg){cg=document.createElement('colgroup');table.insertBefore(cg,[...table.children].find(e=>e.tagName!=='CAPTION')||null)}
+    while(cg.children.length<cells.length)cg.appendChild(document.createElement('col'));
+    if(!table.hasAttribute('data-ie-table-sized')){const widths=cells.map(c=>c.getBoundingClientRect().width);table.dataset.ieTableExtra=String(table.getBoundingClientRect().width-widths.reduce((a,b)=>a+b,0));widths.forEach((w,i)=>S.set(cg.children[i],'width',px(w),{strong:true}));S.set(table,'tableLayout','fixed',{strong:true});S.set(table,'width',px(widths.reduce((a,b)=>a+b,0)+Number(table.dataset.ieTableExtra||0)),{strong:true});table.setAttribute('data-ie-table-sized','1')}
+    return cg;
+  },
+  applyColumn(inf,value){const cg=this.ensureCols(inf.table),col=cg.children[inf.colIndex];if(value===''){S.set(col,'width','');return}S.set(col,'width',px(Math.max(24,Number(value))),{strong:true});const total=[...cg.children].reduce((n,c)=>n+safeNum(c.style.width),0)+Number(inf.table.dataset.ieTableExtra||0);S.set(inf.table,'width',px(total),{strong:true});},
+  setColumn(v){const i=this.info();if(!i||selection().length!==1)return;if(i.ambiguous){notify('Esta tabela tem células unidas. Redimensionamento bloqueado para preservar a estrutura.');return}withHistory('Largura da coluna',[i.table],()=>this.applyColumn(i,v),{deep:true})},
+  setRow(v){const i=this.info();if(!i||selection().length!==1)return;if(i.ambiguous){notify('Esta tabela tem células unidas; ajuste estrutural bloqueado.');return}withHistory('Altura da linha',[i.table],()=>S.set(i.row,'height',v===''?'':px(Math.max(20,Number(v))),{strong:true}),{deep:true})},
+  start(kind,e){const i=this.info();if(!EditorState.editMode||!i||i.ambiguous||EditorState.geometry)return;e.preventDefault();e.stopPropagation();const before=H.begin([i.table],{deep:true});EditorState.geometry={type:'table',id:e.pointerId,kind,info:i,historyBefore:before,startPointer:{x:e.clientX,y:e.clientY},start:kind==='column'?i.cell.getBoundingClientRect().width:i.row.getBoundingClientRect().height,capture:e.currentTarget,paused:[]};e.currentTarget.setPointerCapture(e.pointerId)},
+  move(e){const s=EditorState.geometry;if(!s||s.type!=='table'||s.id!==e.pointerId)return;e.preventDefault();const value=Math.max(s.kind==='column'?24:20,s.start+(s.kind==='column'?e.clientX-s.startPointer.x:e.clientY-s.startPointer.y));if(s.kind==='column')this.applyColumn(s.info,value);else S.set(s.info.row,'height',px(value),{strong:true});OverlayManager.update();GeometryController.showBadge('resize',s.info.cell.getBoundingClientRect(),{w:s.info.cell.getBoundingClientRect().width,h:s.info.row.getBoundingClientRect().height})}
+};
+// The sole GeometryController dispatches table gestures as well.
+const geometryResize=GeometryController.resize.bind(GeometryController);
+GeometryController.resize=e=>EditorState.geometry?.type==='table'?TableEditor.move(e):geometryResize(e);

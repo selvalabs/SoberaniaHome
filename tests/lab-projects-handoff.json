@@ -1,0 +1,29 @@
+{
+  "issue": "https://github.com/selvalabs/SoberaniaHome/issues/14",
+  "branch": "feat/14-lab-projects",
+  "base_sha": "45ebfbbba3dd99fa64d62e6b5047901535568ef7",
+  "head_sha": "45ebfbbba3dd99fa64d62e6b5047901535568ef7",
+  "state": "Local uncommitted preview; previous draft retained in local-development-13",
+  "projects": [
+    "T1 Roots",
+    "Laboratório Educativo",
+    "Esquerda em Foco",
+    "Tech/IA",
+    "Planejamento Cíclico"
+  ],
+  "assets": "10 screenshots of existing local interfaces, 2 per project",
+  "capture_safety": "Clean browser contexts; local static file routes; external requests blocked; no accounts or production services",
+  "validation": "PASS 8 viewports, all images, stable scroll, forward/back navigation, reduced motion and JavaScript disabled",
+  "navigation_fix": "Leaf pointer interception forwards clicks to underlying lab navigation buttons",
+  "pr": null,
+  "merge": null,
+  "new_release_tag": null,
+  "environment": "local Wi-Fi http://192.168.3.204:4178",
+  "published_release_unchanged": "v0.1.3",
+  "rollback": "local-development-13 retained, previous Wi-Fi preview at port 4177",
+  "vps_mirror": "Not applicable; no VPS operations",
+  "release_preflight": "Not performed; no deployment in scope",
+  "leaf_regression": "PASS 320, 390 and 1366 px; idle/reverse behavior, no added frame measurements, reading and reduced motion",
+  "wifi_http": "200 OK, bound on 0.0.0.0:4178",
+  "syntax": "PASS motion.js and portfolio.js"
+}
