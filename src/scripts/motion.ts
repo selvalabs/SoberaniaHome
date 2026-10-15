@@ -736,8 +736,22 @@ function setupHorizontalTrack(sectionId: string, trackSel: string, seqSel: strin
 
 // Geometria e montagem do tabuleiro de processo
 const processScatter = {
-  desktop: [[13, 16], [50, 11], [79, 16], [17, 41], [50, 48], [83, 41]],
-  mobile: [[14, 13], [50, 9], [86, 13], [15, 30], [50, 36], [85, 30]]
+  desktop: [
+    [12, 18], // 01 ENTENDER (superior esquerdo)
+    [34, 15], // 02 INVESTIGAR (superior centro)
+    [56, 19], // 03 PROTOTIPAR (superior direito)
+    [13, 58], // 04 CONSTRUIR (inferior esquerdo)
+    [35, 63], // 05 TESTAR (inferior centro)
+    [57, 59]  // 06 TRANSFERIR (inferior direito)
+  ],
+  mobile: [
+    [16, 12],
+    [50, 9],
+    [84, 12],
+    [16, 32],
+    [50, 37],
+    [84, 32]
+  ]
 };
 const processOrigins = [[20, 88], [518, 88], [1016, 88], [20, 507], [518, 507], [1016, 507]];
 const processCrop = { width: 662, height: 568, left: 82, top: 72, sourceWidth: 1536, sourceHeight: 1024 };
@@ -767,11 +781,11 @@ function setupProcessAssembly() {
     const w = stage!.clientWidth || window.innerWidth;
     const h = stage!.clientHeight || (window.innerHeight - 72);
     const scatter = isMob ? processScatter.mobile : processScatter.desktop;
-    const basePieceWidth = isMob ? clamp(w * 0.28, 118, 162) : clamp(w * 0.17, 185, 300);
+    const basePieceWidth = isMob ? clamp(w * 0.28, 118, 162) : clamp(w * 0.16, 180, 245);
     const pieceWidth = nodes![0]?.offsetWidth > 20 ? nodes![0].offsetWidth : basePieceWidth;
     const scale = pieceWidth / processCrop.width;
-    const centreX = isMob ? w * 0.5 : w * 0.38;
-    const centreY = isMob ? h * 0.45 : h * 0.5;
+    const centreX = isMob ? w * 0.5 : w * 0.35;
+    const centreY = isMob ? h * 0.42 : h * 0.5;
 
     if (board) {
       board.style.width = `${processCrop.sourceWidth * scale}px`;
@@ -784,8 +798,12 @@ function setupProcessAssembly() {
     if (counter) counter.textContent = `0${currentIndex + 1} / 06`;
     if (meter) meter.style.transform = `scaleX(${p})`;
 
-    const builds = Array.from(nodes!).map((_, i) => state.assembled[i] ? 1 : range(0.18 + i * 0.10, 0.50 + i * 0.10, p));
-    const noteBuilds = Array.from(nodes!).map((_, i) => state.assembled[i] ? 1 : range(0.38 + i * 0.092, 0.54 + i * 0.092, p));
+    const builds = Array.from(nodes!).map((_, i) => {
+      if (state.assembled[i]) return 1;
+      const startP = i * 0.15;
+      const endP = Math.min(1, startP + 0.25);
+      return clamp((p - startP) / (endP - startP));
+    });
 
     nodes!.forEach((n, i) => {
       const built = builds[i];
@@ -803,15 +821,15 @@ function setupProcessAssembly() {
       }
 
       const active = i === currentIndex;
-      const tilt = (i % 2 ? 1 : -1) * mix(10, 0, built);
-      const pieceScale = mix(active ? 1.04 : 0.96, 1, built);
+      const tilt = (i % 2 ? 1 : -1) * mix(8, 0, built);
+      const pieceScale = mix(active ? 1.04 : 0.97, 1, built);
 
       n.style.width = `${processCrop.width * scale}px`;
       n.style.height = `${processCrop.height * scale}px`;
       n.style.left = `${(originX - processCrop.left) * scale}px`;
       n.style.top = `${(originY - processCrop.top) * scale}px`;
       n.style.transform = `translate3d(${x - target.x}px, ${y - target.y}px, 0) rotate(${tilt}deg) scale(${pieceScale})`;
-      n.style.opacity = String(0.78 + 0.22 * mix(built, active ? 1 : 0.84, 0.35));
+      n.style.opacity = String(0.82 + 0.18 * mix(built, active ? 1 : 0.88, 0.4));
 
       n.classList.toggle('is-assembled', built > 0.96);
       n.classList.toggle('is-active', active);
@@ -820,7 +838,7 @@ function setupProcessAssembly() {
 
     panels!.forEach((panel, i) => {
       const active = i === currentIndex;
-      panel.style.opacity = isMob ? (active ? '1' : '0') : String(noteBuilds[i]);
+      panel.style.opacity = active ? '1' : '0';
       panel.classList.toggle('is-active', active);
     });
   }
@@ -856,8 +874,8 @@ function setupProcessAssembly() {
       const h = stage!.clientHeight || (window.innerHeight - 72);
       const pieceWidth = nodes![0]?.offsetWidth || 160;
       const scale = pieceWidth / processCrop.width;
-      const centreX = isMob ? w * 0.5 : w * 0.38;
-      const centreY = isMob ? h * 0.45 : h * 0.5;
+      const centreX = isMob ? w * 0.5 : w * 0.35;
+      const centreY = isMob ? h * 0.42 : h * 0.5;
       const [originX, originY] = processOrigins[i];
       const target = {
         x: centreX - (processCrop.sourceWidth * scale) / 2 + (originX - processCrop.left + processCrop.width / 2) * scale,
