@@ -485,6 +485,23 @@ function setupVanillaLeaf(els: any) {
       }
     }
 
+    // Oclusão geométrica em seções escuras (Processo e Espiral)
+    const occlusion = checkOcclusion(y);
+    const isOccluded = occlusion.state === 'occluded';
+    document.documentElement.dataset.leafOccluded = isOccluded ? '1' : '0';
+
+    if (isOccluded || occlusion.state === 'entering') {
+      depth = 'back';
+    }
+
+    const leafOpacity = occlusion.state === 'entering'
+      ? 1 - occlusion.progress
+      : occlusion.state === 'exiting'
+      ? occlusion.progress
+      : isOccluded ? 0 : 1;
+
+    els.flight.style.opacity = leafOpacity.toFixed(3);
+    els.flight.style.visibility = isOccluded ? 'hidden' : 'visible';
     document.documentElement.dataset.leafDepth = depth;
 
     if (isNaN(t.x) || isNaN(t.y)) {
@@ -503,6 +520,32 @@ function setupVanillaLeaf(els: any) {
       console.error('Highlights error:', err);
     }
   });
+}
+
+function checkOcclusion(y: number) {
+  if (!geometry) return { state: 'visible', progress: 0 };
+  const h = geometry.height;
+  const darkSections = ['processo', 'espiral']
+    .map(id => document.getElementById(id))
+    .filter(Boolean) as HTMLElement[];
+
+  for (const sec of darkSections) {
+    const rect = docRect(sec);
+    const entryStart = rect.top - h * 0.40;
+    const entryEnd = rect.top + h * 0.15;
+    const exitStart = rect.bottom - h * 0.35;
+    const exitEnd = rect.bottom + h * 0.15;
+
+    if (y < entryStart || y > exitEnd) continue;
+    if (y < entryEnd) {
+      return { state: 'entering', progress: smoother(range(entryStart, entryEnd, y)) };
+    }
+    if (y <= exitStart) {
+      return { state: 'occluded', progress: 1 };
+    }
+    return { state: 'exiting', progress: smoother(range(exitStart, exitEnd, y)) };
+  }
+  return { state: 'visible', progress: 0 };
 }
 
 export const sceneProgress: Record<string, number> = {};
@@ -611,62 +654,356 @@ function setupHorizontalTrack(sectionId: string, trackSel: string, seqSel: strin
   const section = document.getElementById(sectionId);
   const track = section?.querySelector<HTMLElement>(trackSel);
   const seq = section?.querySelector<HTMLElement>(seqSel);
+  const cards = section?.querySelectorAll<HTMLElement>('.portfolio-card');
   const progressMeter = section?.querySelector<HTMLElement>('.scene-progress i');
-  if (!section || !track || !seq) return;
-  const getDistance = () => reverse ? (track.scrollWidth - (track.parentElement?.clientWidth || window.innerWidth) + 32) : -(track.scrollWidth - (track.parentElement?.clientWidth || window.innerWidth) + 32);
-  if (reverse) gsap.set(track, { x: - (track.scrollWidth - (track.parentElement?.clientWidth || window.innerWidth) + 32) });
-  const tween = gsap.to(track, {
-    x: reverse ? 0 : getDistance, ease: 'none',
-    scrollTrigger: {
-      trigger: seq, pin: true, scrub: true, start: 'top top', end: () => `+=${Math.max(1200, track.scrollWidth)}`, invalidateOnRefresh: true,
-      onUpdate: (self) => {
-        if (progressMeter) progressMeter.style.transform = `scaleX(${self.progress})`;
-        sceneProgress[sectionId] = self.progress;
-      }
+  const counter = section?.querySelector<HTMLElement>('.scene-count');
+  const prevBtn = section?.querySelector<HTMLButtonElement>('[data-prev]');
+  const nextBtn = section?.querySelector<HTMLButtonElement>('[data-next]');
+
+  if (!section || !track || !seq || !cards || cards.length === 0) return;
+
+  const count = cards.length;
+
+  function renderHorizontal(p: number) {
+    const v = p * (count - 1);
+    const index = Math.max(0, Math.min(count - 1, Math.round(v)));
+
+    if (progressMeter) progressMeter.style.transform = `scaleX(${p})`;
+    if (counter) counter.textContent = `0${index + 1} / 0${count}`;
+    if (prevBtn) prevBtn.disabled = index === 0;
+    if (nextBtn) nextBtn.disabled = index === count - 1;
+
+    const stageWidth = track!.parentElement?.clientWidth || window.innerWidth;
+    const offsets = Array.from(cards!).map(c => c.offsetLeft + c.offsetWidth / 2 - stageWidth / 2);
+
+    const i0 = Math.floor(v);
+    const i1 = Math.min(count - 1, i0 + 1);
+    const frac = v - i0;
+
+    if (reverse) {
+      const revIdx0 = count - 1 - i0;
+      const revIdx1 = Math.max(0, count - 2 - i0);
+      const revOffset = (offsets[revIdx0] || 0) + ((offsets[revIdx1] || 0) - (offsets[revIdx0] || 0)) * frac;
+      track!.style.transform = `translate3d(${-revOffset}px, 0, 0)`;
+    } else {
+      const targetOffset = (offsets[i0] || 0) + ((offsets[i1] || 0) - (offsets[i0] || 0)) * frac;
+      track!.style.transform = `translate3d(${-targetOffset}px, 0, 0)`;
     }
-  });
-  if (tween.scrollTrigger) {
-    const st = tween.scrollTrigger;
-    horizontalScenes.push({
-      id: sectionId,
-      reverse,
-      getStart: () => st.start,
-      getEnd: () => st.end
+
+    cards!.forEach((card, i) => {
+      const logicalV = reverse ? count - 1 - v : v;
+      const dist = Math.abs(i - logicalV);
+      card.style.opacity = String(0.64 + 0.36 * (1 - clamp(dist)));
     });
   }
+
+  const tween = ScrollTrigger.create({
+    trigger: seq,
+    pin: true,
+    scrub: true,
+    start: () => 'top ' + (geometry?.mast || 64) + 'px',
+    end: () => `+=${Math.max(1600, track!.scrollWidth * 1.1)}`,
+    invalidateOnRefresh: true,
+    onUpdate: (self) => {
+      sceneProgress[sectionId] = self.progress;
+      renderHorizontal(self.progress);
+    }
+  });
+
+  prevBtn?.addEventListener('click', () => {
+    const currentP = sceneProgress[sectionId] || 0;
+    const currentIndex = Math.round(currentP * (count - 1));
+    const targetP = clamp((currentIndex - 1) / (count - 1));
+    window.scrollTo({ top: tween.start + targetP * (tween.end - tween.start), behavior: 'smooth' });
+  });
+
+  nextBtn?.addEventListener('click', () => {
+    const currentP = sceneProgress[sectionId] || 0;
+    const currentIndex = Math.round(currentP * (count - 1));
+    const targetP = clamp((currentIndex + 1) / (count - 1));
+    window.scrollTo({ top: tween.start + targetP * (tween.end - tween.start), behavior: 'smooth' });
+  });
+
+  horizontalScenes.push({
+    id: sectionId,
+    reverse,
+    getStart: () => tween.start,
+    getEnd: () => tween.end
+  });
+
+  renderHorizontal(0);
 }
+
+// Geometria e montagem do tabuleiro de processo
+const processScatter = {
+  desktop: [[13, 16], [50, 11], [79, 16], [17, 41], [50, 48], [83, 41]],
+  mobile: [[14, 13], [50, 9], [86, 13], [15, 30], [50, 36], [85, 30]]
+};
+const processOrigins = [[20, 88], [518, 88], [1016, 88], [20, 507], [518, 507], [1016, 507]];
+const processCrop = { width: 662, height: 568, left: 82, top: 72, sourceWidth: 1536, sourceHeight: 1024 };
 
 function setupProcessAssembly() {
   const processSection = document.getElementById('processo');
   const seq = processSection?.querySelector<HTMLElement>('.process-sequence');
+  const stage = processSection?.querySelector<HTMLElement>('.process-stage');
+  const board = processSection?.querySelector<HTMLElement>('.process-board');
   const nodes = processSection?.querySelectorAll<HTMLElement>('.process-node');
   const panels = processSection?.querySelectorAll<HTMLElement>('.process-panel');
-  if (!processSection || !seq || !nodes || !panels) return;
-  const scatter = [{ x: -160, y: -90, rot: -15 }, { x: 180, y: -70, rot: 12 }, { x: -140, y: 80, rot: -8 }, { x: 160, y: 90, rot: 14 }, { x: -180, y: 130, rot: -10 }, { x: 0, y: 150, rot: -5 }];
-  const tl = gsap.timeline({ scrollTrigger: { trigger: seq, pin: true, scrub: true, start: 'top top', end: '+=2000' } });
-  nodes.forEach((node, i) => { const sc = scatter[i] || { x: 0, y: 0, rot: 0 }; tl.fromTo(node, { x: sc.x, y: sc.y, rotation: sc.rot, opacity: 0.6 }, { x: 0, y: 0, rotation: 0, opacity: 1, ease: 'power1.out', duration: 0.2 }, i * 0.18); });
-  panels.forEach((panel, i) => { tl.fromTo(panel, { opacity: 0, y: 20 }, { opacity: 1, y: 0, ease: 'power1.out', duration: 0.15 }, i * 0.18); });
+  const counter = processSection?.querySelector<HTMLElement>('.scene-count');
+  const meter = processSection?.querySelector<HTMLElement>('.scene-progress i');
+
+  if (!processSection || !seq || !stage || !nodes || !panels) return;
+
+  const state = {
+    assembled: [false, false, false, false, false, false],
+    dragging: -1,
+    points: Array(6).fill(null),
+    pointerId: null as number | null,
+    movedAt: -Infinity
+  };
+
+  function renderProcess(p: number) {
+    const isMob = mobile();
+    const w = stage!.clientWidth || window.innerWidth;
+    const h = stage!.clientHeight || (window.innerHeight - 72);
+    const scatter = isMob ? processScatter.mobile : processScatter.desktop;
+    const basePieceWidth = isMob ? clamp(w * 0.28, 118, 162) : clamp(w * 0.17, 185, 300);
+    const pieceWidth = nodes![0]?.offsetWidth > 20 ? nodes![0].offsetWidth : basePieceWidth;
+    const scale = pieceWidth / processCrop.width;
+    const centreX = isMob ? w * 0.5 : w * 0.38;
+    const centreY = isMob ? h * 0.45 : h * 0.5;
+
+    if (board) {
+      board.style.width = `${processCrop.sourceWidth * scale}px`;
+      board.style.height = `${processCrop.sourceHeight * scale}px`;
+      board.style.left = `${centreX}px`;
+      board.style.top = `${centreY}px`;
+    }
+
+    const currentIndex = Math.min(5, Math.floor(p * 6));
+    if (counter) counter.textContent = `0${currentIndex + 1} / 06`;
+    if (meter) meter.style.transform = `scaleX(${p})`;
+
+    const builds = Array.from(nodes!).map((_, i) => state.assembled[i] ? 1 : range(0.18 + i * 0.10, 0.50 + i * 0.10, p));
+    const noteBuilds = Array.from(nodes!).map((_, i) => state.assembled[i] ? 1 : range(0.38 + i * 0.092, 0.54 + i * 0.092, p));
+
+    nodes!.forEach((n, i) => {
+      const built = builds[i];
+      const [originX, originY] = processOrigins[i];
+      const target = {
+        x: centreX - (processCrop.sourceWidth * scale) / 2 + (originX - processCrop.left + processCrop.width / 2) * scale,
+        y: centreY - (processCrop.sourceHeight * scale) / 2 + (originY - processCrop.top + processCrop.height / 2) * scale
+      };
+      let x = mix((w * scatter[i][0]) / 100, target.x, built);
+      let y = mix((h * scatter[i][1]) / 100, target.y, built);
+
+      if (state.dragging === i && state.points[i]) {
+        x = state.points[i].x;
+        y = state.points[i].y;
+      }
+
+      const active = i === currentIndex;
+      const tilt = (i % 2 ? 1 : -1) * mix(10, 0, built);
+      const pieceScale = mix(active ? 1.04 : 0.96, 1, built);
+
+      n.style.width = `${processCrop.width * scale}px`;
+      n.style.height = `${processCrop.height * scale}px`;
+      n.style.left = `${(originX - processCrop.left) * scale}px`;
+      n.style.top = `${(originY - processCrop.top) * scale}px`;
+      n.style.transform = `translate3d(${x - target.x}px, ${y - target.y}px, 0) rotate(${tilt}deg) scale(${pieceScale})`;
+      n.style.opacity = String(0.78 + 0.22 * mix(built, active ? 1 : 0.84, 0.35));
+
+      n.classList.toggle('is-assembled', built > 0.96);
+      n.classList.toggle('is-active', active);
+      n.classList.toggle('is-dragging', state.dragging === i);
+    });
+
+    panels!.forEach((panel, i) => {
+      const active = i === currentIndex;
+      panel.style.opacity = isMob ? (active ? '1' : '0') : String(noteBuilds[i]);
+      panel.classList.toggle('is-active', active);
+    });
+  }
+
+  // Interatividade de arrastar e clicar para encaixar peças
+  nodes!.forEach((node, i) => {
+    node.addEventListener('pointerdown', (e: PointerEvent) => {
+      if (e.pointerType !== 'mouse' || window.innerWidth < 760) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const r = stage!.getBoundingClientRect();
+      state.dragging = i;
+      state.pointerId = e.pointerId;
+      state.points[i] = { x: clamp(e.clientX - r.left, 0, r.width), y: clamp(e.clientY - r.top, 0, r.height) };
+      node.setPointerCapture?.(e.pointerId);
+      renderProcess(sceneProgress['processo'] || 0);
+    });
+
+    node.addEventListener('pointermove', (e: PointerEvent) => {
+      if (state.dragging !== i || state.pointerId !== e.pointerId) return;
+      e.preventDefault();
+      const r = stage!.getBoundingClientRect();
+      state.points[i] = { x: clamp(e.clientX - r.left, 0, r.width), y: clamp(e.clientY - r.top, 0, r.height) };
+      renderProcess(sceneProgress['processo'] || 0);
+    });
+
+    const release = (e: PointerEvent) => {
+      if (state.dragging !== i || state.pointerId !== e.pointerId) return;
+      const r = stage!.getBoundingClientRect();
+      const dropped = { x: clamp(e.clientX - r.left, 0, r.width), y: clamp(e.clientY - r.top, 0, r.height) };
+      const isMob = mobile();
+      const w = stage!.clientWidth || window.innerWidth;
+      const h = stage!.clientHeight || (window.innerHeight - 72);
+      const pieceWidth = nodes![0]?.offsetWidth || 160;
+      const scale = pieceWidth / processCrop.width;
+      const centreX = isMob ? w * 0.5 : w * 0.38;
+      const centreY = isMob ? h * 0.45 : h * 0.5;
+      const [originX, originY] = processOrigins[i];
+      const target = {
+        x: centreX - (processCrop.sourceWidth * scale) / 2 + (originX - processCrop.left + processCrop.width / 2) * scale,
+        y: centreY - (processCrop.sourceHeight * scale) / 2 + (originY - processCrop.top + processCrop.height / 2) * scale
+      };
+      state.assembled[i] = Math.hypot(dropped.x - target.x, dropped.y - target.y) < Math.min(w, h) * 0.17;
+      state.points[i] = null;
+      state.dragging = -1;
+      state.pointerId = null;
+      state.movedAt = performance.now();
+      if (node.hasPointerCapture?.(e.pointerId)) node.releasePointerCapture(e.pointerId);
+      renderProcess(sceneProgress['processo'] || 0);
+    };
+
+    node.addEventListener('pointerup', release);
+    node.addEventListener('pointercancel', release);
+
+    node.addEventListener('click', () => {
+      if (window.innerWidth < 760) return;
+      if (performance.now() - state.movedAt < 280) return;
+      state.assembled[i] = true;
+      renderProcess(sceneProgress['processo'] || 0);
+    });
+  });
+
+  ScrollTrigger.create({
+    trigger: seq,
+    pin: true,
+    scrub: true,
+    start: () => 'top ' + (geometry?.mast || 64) + 'px',
+    end: '+=2600',
+    onUpdate: (self) => {
+      sceneProgress['processo'] = self.progress;
+      renderProcess(self.progress);
+    }
+  });
+
+  renderProcess(0);
 }
 
 function setupSpiralOrbit() {
   const spiral = document.getElementById('espiral');
   const seq = spiral?.querySelector<HTMLElement>('.spiral-sequence');
+  const orbitView = spiral?.querySelector<HTMLElement>('.orbit-view');
   const orbitWords = spiral?.querySelectorAll<HTMLElement>('.orbit-word');
+  const captions = spiral?.querySelectorAll<HTMLElement>('.spiral-caption');
+  const ringOuter = spiral?.querySelector<HTMLElement>('.ring-outer');
+  const ringInner = spiral?.querySelector<HTMLElement>('.ring-inner');
+  const counter = spiral?.querySelector<HTMLElement>('.scene-count');
+  const meter = spiral?.querySelector<HTMLElement>('.scene-progress i');
+
   if (!spiral || !seq || !orbitWords) return;
-  const tl = gsap.timeline({ scrollTrigger: { trigger: seq, pin: true, scrub: true, start: 'top top', end: '+=1600', onUpdate: (self) => { sceneProgress['spiral'] = self.progress; } } });
-  orbitWords.forEach((word, i) => {
-    const angle = (i / orbitWords.length) * Math.PI * 2;
-    const rx = 150, ry = 95;
-    tl.to(word, { keyframes: [ { x: Math.cos(angle + Math.PI * 0.5) * rx, y: Math.sin(angle + Math.PI * 0.5) * ry, scale: 1.15, opacity: 1 }, { x: Math.cos(angle + Math.PI) * rx, y: Math.sin(angle + Math.PI) * ry, scale: 0.8, opacity: 0.6 }, { x: Math.cos(angle + Math.PI * 1.5) * rx, y: Math.sin(angle + Math.PI * 1.5) * ry, scale: 0.95, opacity: 0.85 }, { x: Math.cos(angle + Math.PI * 2) * rx, y: Math.sin(angle + Math.PI * 2) * ry, scale: 1, opacity: 0.7 } ], ease: 'none' }, 0);
+
+  function renderSpiral(p: number) {
+    const isMob = mobile();
+    const ow = orbitView ? orbitView.clientWidth : (isMob ? 320 : 600);
+    const oh = orbitView ? orbitView.clientHeight : (isMob ? 240 : 400);
+    const base = Math.min(ow, oh);
+    const twist = p * Math.PI * 4.15;
+    const compress = range(0.22, 0.70, p) * (1 - range(0.76, 1, p));
+    const radii = [0.43, 0.31, 0.48, 0.37, 0.44, 0.29, 0.47, 0.34, 0.40];
+
+    orbitWords!.forEach((n, i) => {
+      const a = (i / orbitWords!.length) * Math.PI * 2 + twist - Math.PI / 2 + (i % 2 ? -0.10 : 0.08);
+      const r = base * radii[i % radii.length] * (1 - compress * 0.46);
+      const ellipseX = 1 + (i % 3) * 0.07;
+      const ellipseY = 0.82 + (i % 2) * 0.11;
+      const x = ow * 0.5 + Math.cos(a) * r * ellipseX;
+      const y = oh * 0.50 + Math.sin(a) * r * ellipseY;
+      n.style.left = `${x}px`;
+      n.style.top = `${y}px`;
+      n.style.transform = `translate(-50%, -50%) rotate(${Math.sin(a) * 5}deg)`;
+
+      const currentQuadrant = Math.min(3, Math.floor(p * 4));
+      const windowStart = (currentQuadrant * 2) % orbitWords!.length;
+      const rel = (i - windowStart + orbitWords!.length) % orbitWords!.length;
+      const visible = !isMob || rel < 5;
+      n.style.opacity = visible ? (rel === 0 ? '1' : '0.58') : '0';
+    });
+
+    if (ringOuter) ringOuter.style.transform = `translate(-50%, -50%) rotate(${p * 220}deg)`;
+    if (ringInner) ringInner.style.transform = `translate(-50%, -50%) rotate(${-p * 180}deg)`;
+
+    const currentQuadrant = Math.min(3, Math.floor(p * 4));
+    if (counter) counter.textContent = `0${currentQuadrant + 1} / 04`;
+    if (meter) meter.style.transform = `scaleX(${p})`;
+
+    if (captions) {
+      captions.forEach((cap, i) => {
+        const d = p * 3 - i;
+        const alpha = Math.round(p * 3) === i ? 1 : 0;
+        cap.style.opacity = String(alpha);
+        cap.style.transform = `translate3d(0, ${-d * 16}px, 0)`;
+        cap.style.pointerEvents = alpha === 1 ? 'auto' : 'none';
+      });
+    }
+  }
+
+  ScrollTrigger.create({
+    trigger: seq,
+    pin: true,
+    scrub: true,
+    start: () => 'top ' + (geometry?.mast || 64) + 'px',
+    end: '+=2000',
+    onUpdate: (self) => {
+      sceneProgress['espiral'] = self.progress;
+      renderSpiral(self.progress);
+    }
   });
+
+  renderSpiral(0);
 }
 
 function setupJournalTrack() {
   const journal = document.getElementById('caderno');
   const seq = journal?.querySelector<HTMLElement>('.journal-sequence');
-  const strip = journal?.querySelector<HTMLElement>( '.newspaper-strip');
-  if (!journal || !seq || !strip) return;
-  gsap.to(strip, { x: () => -(strip.scrollWidth - (strip.parentElement?.clientWidth || 800) + 40), ease: 'none', scrollTrigger: { trigger: seq, pin: true, scrub: true, start: 'top top', end: '+=1400' } });
+  const strip = journal?.querySelector<HTMLElement>('.newspaper-strip');
+  const paper = journal?.querySelector<HTMLElement>('.newspaper-window');
+  const counter = journal?.querySelector<HTMLElement>('.scene-count');
+  const meter = journal?.querySelector<HTMLElement>('.scene-progress i');
+
+  if (!journal || !seq || !strip || !paper) return;
+
+  function renderJournal(p: number) {
+    const paperTravel = Math.max(0, strip!.scrollHeight - paper!.clientHeight);
+    strip!.style.transform = `translate3d(0, ${-paperTravel * p}px, 0)`;
+    if (meter) meter.style.transform = `scaleX(${p})`;
+    if (counter) {
+      const idx = Math.min(5, Math.floor(p * 6));
+      counter.textContent = `0${idx + 1} / 06`;
+    }
+  }
+
+  ScrollTrigger.create({
+    trigger: seq,
+    pin: true,
+    scrub: true,
+    start: () => 'top ' + (geometry?.mast || 64) + 'px',
+    end: '+=1800',
+    onUpdate: (self) => {
+      sceneProgress['caderno'] = self.progress;
+      renderJournal(self.progress);
+    }
+  });
+
+  renderJournal(0);
 }
 
 
