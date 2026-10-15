@@ -30,36 +30,37 @@ const catmull = (p0: number, p1: number, p2: number, p3: number, t: number) => {
 };
 const mobile = () => window.innerWidth < 760;
 
-// Waypoints oficiais do Leaf Motion 4.0 (Aerodinâmica Natural no terço central)
+// Waypoints oficiais do Leaf Motion 4.5 (Dança Aerodinâmica & Profundidade Z-Space)
 interface LeafKey { p: number; x: number; y: number; s: number; rz: number; rx: number; ry: number; phase: string; }
 const leafKeys: LeafKey[] = [
-  { p: 0.00, x: 0.58, y: 0.44, s: 0.82, rz: 88, rx: 22, ry: 34, phase: 'queda' },
-  { p: 0.09, x: 0.64, y: 0.46, s: 0.80, rz: 60, rx: -8, ry: 42, phase: 'deriva' },
-  { p: 0.18, x: 0.46, y: 0.48, s: 0.88, rz: 92, rx: 18, ry: -32, phase: 'queda' },
-  { p: 0.29, x: 0.62, y: 0.50, s: 0.98, rz: 72, rx: -20, ry: 30, phase: 'queda' },
-  { p: 0.40, x: 0.42, y: 0.47, s: 0.86, rz: 104, rx: 14, ry: -38, phase: 'queda' },
-  { p: 0.51, x: 0.64, y: 0.52, s: 1.02, rz: 78, rx: -18, ry: 34, phase: 'queda' },
-  { p: 0.62, x: 0.38, y: 0.49, s: 0.84, rz: 96, rx: 20, ry: -38, phase: 'queda' },
-  { p: 0.71, x: 0.56, y: 0.53, s: 0.94, rz: 76, rx: -12, ry: 28, phase: 'queda' },
-  { p: 0.82, x: 0.50, y: 0.54, s: 1.05, rz: 91, rx: 18, ry: -40, phase: 'espiral' },
-  { p: 0.89, x: 0.60, y: 0.58, s: 0.88, rz: 68, rx: -8, ry: 36, phase: 'queda' },
-  { p: 0.95, x: 0.56, y: 0.68, s: 0.84, rz: 94, rx: 12, ry: -22, phase: 'queda-final' },
+  { p: 0.00, x: 0.58, y: 0.44, s: 0.85, rz: 88, rx: 22, ry: 34, phase: 'queda' },
+  { p: 0.09, x: 0.65, y: 0.46, s: 1.15, rz: 55, rx: -14, ry: 50, phase: 'deriva-aproxima' },
+  { p: 0.18, x: 0.44, y: 0.48, s: 1.25, rz: 96, rx: 24, ry: -40, phase: 'primeiro-plano' },
+  { p: 0.29, x: 0.64, y: 0.50, s: 0.98, rz: 66, rx: -26, ry: 36, phase: 'queda' },
+  { p: 0.40, x: 0.40, y: 0.47, s: 0.68, rz: 110, rx: 20, ry: -44, phase: 'fundo-distante' },
+  { p: 0.51, x: 0.66, y: 0.52, s: 1.24, rz: 74, rx: -24, ry: 44, phase: 'vento-trabalho-frente' },
+  { p: 0.62, x: 0.36, y: 0.49, s: 0.72, rz: 104, rx: 26, ry: -44, phase: 'fundo-recuo' },
+  { p: 0.71, x: 0.58, y: 0.53, s: 1.18, rz: 70, rx: -18, ry: 34, phase: 'laboratorio-frente' },
+  { p: 0.82, x: 0.48, y: 0.54, s: 0.65, rz: 96, rx: 22, ry: -48, phase: 'espiral-distante' },
+  { p: 0.89, x: 0.62, y: 0.58, s: 1.14, rz: 62, rx: -12, ry: 40, phase: 'saida-frente' },
+  { p: 0.95, x: 0.56, y: 0.68, s: 0.88, rz: 94, rx: 14, ry: -22, phase: 'queda-final' },
   { p: 1.00, x: 0.54, y: 0.80, s: 0.74, rz: 96, rx: 6, ry: 0, phase: 'pouso' }
 ];
 
 const leafGusts = [
-  { c: 0.12, w: 0.11, amp: 0.14, twist: 8 },
-  { c: 0.30, w: 0.13, amp: -0.12, twist: -7 },
-  { c: 0.51, w: 0.14, amp: 0.16, twist: 9 },
-  { c: 0.73, w: 0.13, amp: -0.11, twist: -7 },
-  { c: 0.91, w: 0.10, amp: 0.12, twist: 8 }
+  { c: 0.12, w: 0.11, amp: 0.24, twist: 14 },
+  { c: 0.30, w: 0.13, amp: -0.20, twist: -12 },
+  { c: 0.51, w: 0.15, amp: 0.28, twist: 16 },
+  { c: 0.73, w: 0.14, amp: -0.24, twist: -14 },
+  { c: 0.91, w: 0.10, amp: 0.20, twist: 12 }
 ];
 
 const tumbleSteps = [
-  { a: 0.135, b: 0.185, axis: 'ry', deg: 180 },
-  { a: 0.335, b: 0.390, axis: 'rx', deg: -180 },
-  { a: 0.585, b: 0.640, axis: 'ry', deg: -180 },
-  { a: 0.865, b: 0.905, axis: 'rz', deg: 180 }
+  { a: 0.130, b: 0.190, axis: 'ry', deg: 360 }, // pirueta completa em Y
+  { a: 0.320, b: 0.395, axis: 'rx', deg: -360 }, // cambalhota completa em X
+  { a: 0.560, b: 0.640, axis: 'ry', deg: -360 }, // pirueta reversa no vento
+  { a: 0.750, b: 0.810, axis: 'rx', deg: 180 },  // meio giro antes da espiral
+  { a: 0.860, b: 0.915, axis: 'rz', deg: 360 }  // giro espiralado
 ];
 
 // O estado e a geometria da janela para projeção exata
@@ -105,7 +106,15 @@ export function initMotion() {
     origin: document.getElementById('leaf-origin') as HTMLElement,
     dock: document.getElementById('leaf-dock') as HTMLElement,
     pile: document.getElementById('leaf-pile') as HTMLElement,
-    counter: document.getElementById('section-counter') as HTMLElement
+    counter: document.getElementById('section-counter') as HTMLElement,
+    streamers: document.getElementById('wind-streamers') as SVGElement | null,
+    gustLines: [
+      document.getElementById('gust-line-1') as SVGPathElement | null,
+      document.getElementById('gust-line-2') as SVGPathElement | null,
+      document.getElementById('gust-line-3') as SVGPathElement | null
+    ],
+    fragA: document.getElementById('wind-fragment-a') as HTMLElement | null,
+    fragB: document.getElementById('wind-fragment-b') as HTMLElement | null
   };
 
   if (!els.flight || !els.leaf) return;
@@ -373,33 +382,38 @@ function setupVanillaLeaf(els: any) {
         t = splineKeyTarget(flightP);
 
         const g = gustAt(flightP), tb = tumbleAt(flightP);
-
-        // Aerodinâmica: sustentação (lift) gerada por rajadas + ondulação natural de planar
-        const lift = -Math.abs(g.gx) * (mobile() ? 30 : 50);
-        const flightPhase = flightP * Math.PI * 5.5;
-        const sinkGlide = Math.sin(flightPhase * 0.8) * (mobile() ? 12 : 22);
-
-        // Microflutuação contínua viva (mesmo quando o scroll para)
         const now = performance.now() * 0.0016;
-        const idleY = Math.sin(now * 2.2) * 3.5;
-        const idleX = Math.cos(now * 1.5) * 2.5;
-        const idleRotZ = Math.sin(now * 1.8) * 2.0;
+
+        // Dança composta: onda pendular longa + vibração rápida de flutter
+        const flightPhase = flightP * Math.PI * 6.5;
+        const broadSway = Math.sin(flightPhase) * (mobile() ? 32 : 62);
+        const flutterSway = Math.sin(flightPhase * 2.4) * (mobile() ? 10 : 20);
+
+        // Sustentação aerodinâmica (Lift) e ondulação de cruzeiro
+        const lift = -Math.abs(g.gx) * (mobile() ? 38 : 65) - Math.abs(Math.sin(flightPhase)) * 12;
+        const sinkGlide = Math.sin(flightPhase * 0.85 + 0.25) * (mobile() ? 15 : 26);
+
+        // Microflutuação contínua viva (mesmo quando parado no scroll)
+        const idleY = Math.sin(now * 2.4) * 4.5;
+        const idleX = Math.cos(now * 1.7) * 3.8;
+        const idleRotZ = Math.sin(now * 1.9) * 3.0;
+        const idleRotY = Math.cos(now * 1.6) * 4.0;
+        const idleScale = Math.sin(now * 1.3) * 0.025;
 
         // Altitude Y preserva os waypoints confortáveis e adiciona aerodinâmica
         t.y += lift + sinkGlide + idleY;
 
         // Dinâmica horizontal e arrasto do vento
-        const swayAmp = (mobile() ? 18 : 28) * (0.85 + 0.15 * Math.sin(flightP * Math.PI * 2.1 + 0.6));
-        t.x += Math.sin(flightPhase) * swayAmp + g.gx * (mobile() ? 32 : 48) + idleX;
+        t.x += broadSway + flutterSway + g.gx * (mobile() ? 38 : 58) + idleX;
 
-        // Inclinação lateral (banking) decorrente da velocidade lateral
+        // Inclinação lateral dinâmica (banking) decorrente da velocidade horizontal
         const lateralVelocity = Math.cos(flightPhase);
-        const bankingAngle = lateralVelocity * (mobile() ? 12 : 18);
+        const bankingAngle = lateralVelocity * (mobile() ? 16 : 24);
 
-        t.rz += Math.sin(flightPhase + 0.25) * 14 + g.twist + tb.rz + bankingAngle + idleRotZ;
-        t.ry += Math.sin(flightPhase * 0.78 + 1.15) * 20 + tb.ry + lateralVelocity * 10;
-        t.rx += Math.cos(flightPhase * 0.61 + 0.4) * 10 + tb.rx;
-        t.scale *= 1 + Math.sin(flightP * Math.PI * 2.4 + 0.75) * (mobile() ? 0.018 : 0.028);
+        t.rz += Math.sin(flightPhase + 0.25) * 16 + g.twist + tb.rz + bankingAngle + idleRotZ;
+        t.ry += Math.sin(flightPhase * 0.78 + 1.15) * 26 + tb.ry + lateralVelocity * 14 + idleRotY;
+        t.rx += Math.cos(flightPhase * 0.61 + 0.4) * 14 + tb.rx;
+        t.scale = (t.scale + idleScale) * (1 + Math.sin(flightP * Math.PI * 2.4 + 0.75) * (mobile() ? 0.022 : 0.035));
 
         const takeoffBlend = smoother(range(0, 0.05, flightP));
         if (takeoffBlend < 1) {
@@ -437,8 +451,10 @@ function setupVanillaLeaf(els: any) {
           }
         }
 
-        // Bring lateral chapters through the useful viewport centre. The blend
-        // begins before pinning and ends after it, so boundaries never jump.
+        // Vento lateral forte e aceleração nos capítulos horizontais (Trabalho e Laboratório)
+        let windIntensity = 0;
+        let windDir = 1;
+
         for (const s of horizontalScenes) {
           const start = s.getStart();
           const end = s.getEnd();
@@ -449,19 +465,28 @@ function setupVanillaLeaf(els: any) {
           const weight = enter * leave;
           if (weight <= 0) continue;
 
+          windIntensity = Math.max(windIntensity, weight);
+          windDir = s.reverse ? -1 : 1;
+
           const progress = clamp((y - start) / run);
           const phase = progress * Math.PI * 2;
           const dir = s.reverse ? -1 : 1;
           const sway = Math.sin(phase);
-          const centre = mast + (h - mast) * (0.48 + 0.065 * sway);
+          const centre = mast + (h - mast) * (0.48 + 0.08 * sway);
 
           t.y = mix(t.y, centre, weight);
-          t.x = mix(t.x, w * (0.5 + dir * (mobile() ? 0.08 : 0.11) * sway), weight);
-          // A full wind-driven turn; the completed 360° is visually identical
-          // to zero on departure, avoiding a fast backwards unwind.
-          t.rz += dir * (360 * smoother(progress) * enter + 28 * sway * weight);
-          t.ry += dir * 105 * Math.sin(phase) * weight;
-          t.rx += 18 * Math.cos(phase) * weight;
+
+          // Efeito de sopro do vento: empurrão lateral forte e arco vertical
+          const windPush = dir * (mobile() ? 70 : 130) * Math.sin(phase) * weight;
+          t.x = mix(t.x, w * (0.5 + dir * (mobile() ? 0.12 : 0.18) * sway), weight) + windPush;
+
+          // A folha aproxima e afasta em Z com a rajada
+          t.scale *= 1 + (0.30 * Math.sin(phase) * weight);
+
+          // Arfagem dramática e piruetas no vento
+          t.rz += dir * (360 * smoother(progress) * enter + 45 * sway * weight);
+          t.ry += dir * 140 * Math.sin(phase) * weight;
+          t.rx += 28 * Math.cos(phase) * weight;
           depth = 'front';
         }
 
@@ -498,6 +523,38 @@ function setupVanillaLeaf(els: any) {
           depth = 'front';
           landPhase = 'rest'; contactAmt = 1; settleAmt = 1;
         }
+
+        // Visualização das correntes de vento no ar
+        const totalWind = Math.max(windIntensity, Math.abs(g.gx) * 2.2);
+        const hasWind = totalWind > 0.08;
+        document.documentElement.classList.toggle('wind-active', hasWind);
+
+        if (els.streamers && els.gustLines) {
+          const gustShift = (y * 0.85 + performance.now() * 0.5) * windDir;
+          els.gustLines.forEach((line, idx) => {
+            if (line) {
+              line.style.opacity = hasWind ? String(clamp(totalWind * (0.65 + idx * 0.1), 0, 0.85)) : '0';
+              line.style.strokeDashoffset = String(gustShift * (1 + idx * 0.35));
+            }
+          });
+        }
+
+        // Fragmentos secundários no vácuo da folha
+        if (els.fragA) {
+          const showFrag = hasWind || (flightP > 0.10 && flightP < 0.92);
+          els.fragA.style.opacity = showFrag ? String(clamp(totalWind * 0.7 + 0.3, 0, 0.75)) : '0';
+          const offsetAX = -65 * windDir + Math.sin(now * 3.2) * 20;
+          const offsetAY = 35 + Math.cos(now * 2.8) * 22;
+          els.fragA.style.transform = `translate3d(${t.x + offsetAX}px, ${t.y + offsetAY}px, 0) rotate(${t.rz + 30 + Math.sin(now * 2) * 15}deg) scale(${t.scale * 0.52})`;
+        }
+
+        if (els.fragB) {
+          const showFragB = hasWind || (flightP > 0.18 && flightP < 0.88);
+          els.fragB.style.opacity = showFragB ? String(clamp(totalWind * 0.6 + 0.25, 0, 0.65)) : '0';
+          const offsetBX = -110 * windDir + Math.sin(now * 2.6) * 28;
+          const offsetBY = -25 + Math.cos(now * 3.1) * 18;
+          els.fragB.style.transform = `translate3d(${t.x + offsetBX}px, ${t.y + offsetBY}px, 0) rotate(${t.rz - 40 + Math.cos(now * 2.3) * 18}deg) scale(${t.scale * 0.40})`;
+        }
       }
     }
 
@@ -510,6 +567,18 @@ function setupVanillaLeaf(els: any) {
     els.flight.style.transform = `translate3d(${t.x + dragOffset.x}px, ${t.y + dragOffset.y}px, 0)`;
     els.depth.style.transform = `translate(-50%, -91%) scale(${t.scale})`;
     els.leaf.style.transform = `perspective(${mobile() ? 610 : 860}px) rotateX(${t.rx}deg) rotateY(${t.ry}deg) rotateZ(${t.rz}deg)`;
+
+    // Iluminação e profundidade Z com sombra e contraste dinâmico de aproximação
+    const isClose = t.scale > 1.05;
+    const isFar = t.scale < 0.78;
+    if (isFar) {
+      const blurPx = clamp((0.78 - t.scale) * 4.5, 0, 1.4);
+      els.leaf.style.filter = `saturate(0.86) contrast(0.96) blur(${blurPx.toFixed(1)}px) drop-shadow(0 3px 6px rgba(28,33,26,0.12))`;
+    } else if (isClose) {
+      els.leaf.style.filter = `saturate(1.04) contrast(1.06) drop-shadow(0 10px 22px rgba(28,33,26,0.22))`;
+    } else {
+      els.leaf.style.filter = `saturate(0.95) contrast(1.02) drop-shadow(0 5px 10px rgba(28,33,26,0.16))`;
+    }
     
     // Renders physical distance highlights
     try {

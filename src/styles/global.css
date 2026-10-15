@@ -411,6 +411,13 @@ html[data-leaf-occluded="1"] .wind-global{z-index:8!important}
 html[data-leaf-occluded="1"] #processo,
 html[data-leaf-occluded="1"] #espiral{z-index:48}
 
+/* Correntes visuais estéticas de vento */
+.wind-streamers{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity .35s ease;z-index:12;overflow:visible}
+.wind-gust-line{stroke-dasharray:220 280;stroke-dashoffset:0;opacity:0;will-change:stroke-dashoffset,opacity;transition:opacity .25s ease}
+html.wind-active .wind-streamers{opacity:1}
+.wind-fragment{position:absolute;left:0;top:0;width:34px;aspect-ratio:244/520;background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0;will-change:transform,opacity;pointer-events:none;filter:drop-shadow(0 2px 4px rgba(28,33,26,.12))}
+.wind-fragment-b{width:26px}
+
 /* Processo / peças de uma mesma prancheta. A montagem usa transforms
    atualizados pelo scroll ou pelo gesto, sem transições temporais em CSS. */
 .motion .process-stage{isolation:isolate;background:radial-gradient(circle at 52% 49%,rgba(231,180,134,.065),transparent 34%)}
