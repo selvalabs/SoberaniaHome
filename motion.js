@@ -613,8 +613,8 @@
     const direction=Math.sign(delta);
     if(direction!==mastScrollDirection){mastScrollDirection=direction;mastScrollTravel=0;}
     mastScrollTravel+=Math.abs(delta);
-    if(y<96||(direction<0&&mastScrollTravel>=8))els.mast.classList.remove('is-hidden');
-    else if(direction>0&&y>150&&mastScrollTravel>=20)els.mast.classList.add('is-hidden');
+    if(y<96||(direction<0&&mastScrollTravel>=8)){els.mast.classList.remove('is-hidden');root.classList.remove('mast-hidden');}
+    else if(direction>0&&y>150&&mastScrollTravel>=20){els.mast.classList.add('is-hidden');root.classList.add('mast-hidden');}
     mastDirectionY=y;
   }
   function updateNav(y){
