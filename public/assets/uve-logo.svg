@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="960" height="280" viewBox="0 0 960 280" role="img" aria-labelledby="title desc" xmlns="http://www.w3.org/2000/svg">
+  <title id="title">Universal Voice Engine</title>
+  <desc id="desc">A cyan, mint, and violet waveform crossing a glowing engine core.</desc>
+  <defs>
+    <linearGradient id="signal" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#42e8b5"/>
+      <stop offset="0.5" stop-color="#5fc8ff"/>
+      <stop offset="1" stop-color="#b78cff"/>
+    </linearGradient>
+    <radialGradient id="core" cx="40%" cy="35%">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.3" stop-color="#a9edff"/>
+      <stop offset="1" stop-color="#7354e8"/>
+    </radialGradient>
+    <filter id="soft-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="960" height="280" rx="36" fill="#0b1020"/>
+  <path d="M72 166c44-76 82-76 124 0s78 76 122 0 78-76 122 0 82 76 130-10 82-68 146 10" fill="none" stroke="url(#signal)" stroke-width="12" stroke-linecap="round" filter="url(#soft-glow)"/>
+  <circle cx="480" cy="140" r="27" fill="url(#core)" filter="url(#soft-glow)"/>
+  <circle cx="480" cy="140" r="55" fill="none" stroke="#9da7ff" stroke-opacity=".48" stroke-width="3"/>
+  <circle cx="480" cy="140" r="72" fill="none" stroke="#5fc8ff" stroke-opacity=".18" stroke-width="2"/>
+  <text x="480" y="238" text-anchor="middle" fill="#f4f7ff" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="600" letter-spacing="5">UNIVERSAL VOICE ENGINE</text>
+</svg>

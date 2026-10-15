@@ -3,3 +3,11 @@ __pycache__/
 .pytest_cache/
 .playwright/
 .pages-release/
+
+# Node & Astro
+node_modules/
+dist/
+.astro/
+.env
+.env.*
+

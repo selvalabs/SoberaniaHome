@@ -1,0 +1,86 @@
+[
+  {
+    "viewport": [
+      360,
+      800
+    ],
+    "errors": [],
+    "globalWidth": 360,
+    "maxScroll": 32106,
+    "idleFramesAdded": 0,
+    "landingMode": "rest",
+    "layoutIssues": []
+  },
+  {
+    "viewport": [
+      390,
+      844
+    ],
+    "errors": [],
+    "globalWidth": 390,
+    "maxScroll": 32704,
+    "idleFramesAdded": 0,
+    "landingMode": "rest",
+    "layoutIssues": []
+  },
+  {
+    "viewport": [
+      412,
+      915
+    ],
+    "errors": [],
+    "globalWidth": 412,
+    "maxScroll": 34056,
+    "idleFramesAdded": 0,
+    "landingMode": "rest",
+    "layoutIssues": []
+  },
+  {
+    "viewport": [
+      430,
+      932
+    ],
+    "errors": [],
+    "globalWidth": 430,
+    "maxScroll": 34264,
+    "idleFramesAdded": 0,
+    "landingMode": "rest",
+    "layoutIssues": []
+  },
+  {
+    "viewport": [
+      1024,
+      768
+    ],
+    "errors": [],
+    "globalWidth": 1024,
+    "maxScroll": 31232,
+    "idleFramesAdded": 0,
+    "landingMode": "rest",
+    "layoutIssues": []
+  },
+  {
+    "viewport": [
+      1280,
+      800
+    ],
+    "errors": [],
+    "globalWidth": 1280,
+    "maxScroll": 32542,
+    "idleFramesAdded": 0,
+    "landingMode": "rest",
+    "layoutIssues": []
+  },
+  {
+    "viewport": [
+      1440,
+      900
+    ],
+    "errors": [],
+    "globalWidth": 1440,
+    "maxScroll": 35813,
+    "idleFramesAdded": 0,
+    "landingMode": "rest",
+    "layoutIssues": []
+  }
+]

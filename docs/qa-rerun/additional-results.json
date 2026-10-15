@@ -1,0 +1,192 @@
+[
+  {
+    "test": "all 15 index destinations match active section",
+    "pass": true,
+    "detail": [
+      {
+        "id": "hero",
+        "active": "hero",
+        "hash": "#hero"
+      },
+      {
+        "id": "folha",
+        "active": "folha",
+        "hash": "#folha"
+      },
+      {
+        "id": "deslocamento-1",
+        "active": "deslocamento-1",
+        "hash": "#deslocamento-1"
+      },
+      {
+        "id": "deslocamento-2",
+        "active": "deslocamento-2",
+        "hash": "#deslocamento-2"
+      },
+      {
+        "id": "trabalho",
+        "active": "trabalho",
+        "hash": "#trabalho"
+      },
+      {
+        "id": "processo",
+        "active": "processo",
+        "hash": "#processo"
+      },
+      {
+        "id": "editor",
+        "active": "editor",
+        "hash": "#editor"
+      },
+      {
+        "id": "laboratorio",
+        "active": "laboratorio",
+        "hash": "#laboratorio"
+      },
+      {
+        "id": "espiral",
+        "active": "espiral",
+        "hash": "#espiral"
+      },
+      {
+        "id": "soberania",
+        "active": "soberania",
+        "hash": "#soberania"
+      },
+      {
+        "id": "referencias",
+        "active": "referencias",
+        "hash": "#referencias"
+      },
+      {
+        "id": "sobre",
+        "active": "sobre",
+        "hash": "#sobre"
+      },
+      {
+        "id": "manifesto",
+        "active": "manifesto",
+        "hash": "#manifesto"
+      },
+      {
+        "id": "caderno",
+        "active": "caderno",
+        "hash": "#caderno"
+      },
+      {
+        "id": "contato",
+        "active": "contato",
+        "hash": "#contato"
+      }
+    ]
+  },
+  {
+    "test": "native touch swipe moves page and horizontal scene",
+    "pass": true,
+    "detail": {
+      "delta": 285,
+      "phase": 0.5375530160226202
+    }
+  },
+  {
+    "test": "geometry cache stable during scroll",
+    "pass": true,
+    "detail": {
+      "before": 2,
+      "after": 2
+    }
+  },
+  {
+    "test": "spiral leaf reversible at same progress",
+    "pass": true,
+    "detail": 0.0
+  },
+  {
+    "test": "leaf stays hidden in dark process field",
+    "pass": true,
+    "detail": {
+      "state": "occluded",
+      "opacity": "0",
+      "visibility": "hidden"
+    }
+  },
+  {
+    "test": "leaf returns after dark process field",
+    "pass": true,
+    "detail": {
+      "state": "visible",
+      "opacity": "1",
+      "visibility": "visible"
+    }
+  },
+  {
+    "test": "leaf hides independently in spiral field",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "leaf begins returning after spiral field",
+    "pass": true,
+    "detail": {
+      "state": "exiting",
+      "opacity": "0.047",
+      "visibility": "visible"
+    }
+  },
+  {
+    "test": "leaf fully returns after spiral exit band",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "final landing matches physical pile anchor",
+    "pass": true,
+    "detail": {
+      "leaf": {
+        "x": 211.37344360351562,
+        "y": 544.1328125,
+        "rotation": 96,
+        "rotateX": 7,
+        "rotateY": 0,
+        "scale": 0.76,
+        "phase": "pouso",
+        "mode": "rest",
+        "depth": "front",
+        "opacity": 1,
+        "occlusionState": "visible",
+        "occlusionProgress": 0,
+        "drag": {
+          "active": false,
+          "returning": false,
+          "baseX": 211.37344360351562,
+          "baseY": 544.1328125
+        }
+      },
+      "dock": {
+        "x": 211.37344360351562,
+        "y": 544.1343994140625,
+        "width": 1.0500030517578125,
+        "height": 1.04998779296875,
+        "top": 544.1343994140625,
+        "right": 212.42344665527344,
+        "bottom": 545.1843872070312,
+        "left": 211.37344360351562
+      }
+    }
+  },
+  {
+    "test": "direct article hash opens on load",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "direct hash close returns to notebook",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "resize preserves current portfolio phase",
+    "pass": true,
+    "detail": 2.999691288729232
+  }
+]

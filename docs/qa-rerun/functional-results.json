@@ -1,0 +1,494 @@
+[
+  {
+    "test": "scroll narrative has no CSS timing transitions",
+    "pass": true,
+    "detail": [
+      {
+        "node": "leaf-flight",
+        "transition": "0s",
+        "animation": "none"
+      },
+      {
+        "node": "leaf-depth",
+        "transition": "0s",
+        "animation": "none"
+      },
+      {
+        "node": "wind-leaf",
+        "transition": "0s",
+        "animation": "none"
+      },
+      {
+        "node": "process-node is-active",
+        "transition": "0s",
+        "animation": "none"
+      },
+      {
+        "node": "process-node",
+        "transition": "0s",
+        "animation": "none"
+      },
+      {
+        "node": "process-node",
+        "transition": "0s",
+        "animation": "none"
+      },
+      {
+        "node": "process-node",
+        "transition": "0s",
+        "animation": "none"
+      },
+      {
+        "node": "process-node",
+        "transition": "0s",
+        "animation": "none"
+      },
+      {
+        "node": "process-node",
+        "transition": "0s",
+        "animation": "none"
+      },
+      {
+        "node": "editor-caption",
+        "transition": "0s",
+        "animation": "none"
+      }
+    ]
+  },
+  {
+    "test": "nav index 15 sections",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "index modal opens",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "back closes index",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "index jump matches destination",
+    "pass": true,
+    "detail": "#laboratorio"
+  },
+  {
+    "test": "forward scroll never raises leaf",
+    "pass": true,
+    "detail": [
+      163.734375,
+      379.850270035514,
+      381.7889428125622,
+      395.8097780638007,
+      430.66852912178376,
+      491.17143484362134,
+      534.5730321396802,
+      544.3046875
+    ]
+  },
+  {
+    "test": "trabalho opposite direction & all cards",
+    "pass": true,
+    "detail": [
+      -366,
+      -366,
+      -366,
+      -366
+    ]
+  },
+  {
+    "test": "laboratorio opposite direction & all cards",
+    "pass": true,
+    "detail": [
+      366,
+      366,
+      366,
+      366
+    ]
+  },
+  {
+    "test": "vertical scroll drives horizontal on mobile",
+    "pass": true,
+    "detail": {
+      "before": 1.0000883600377002,
+      "after": 1.2074399151743638
+    }
+  },
+  {
+    "test": "visual scenes match document scroll exactly",
+    "pass": true,
+    "detail": {
+      "lag": 0,
+      "scroll": {
+        "actual": 10826,
+        "target": 10826,
+        "velocity": 0,
+        "controllerActive": false
+      }
+    }
+  },
+  {
+    "test": "leaf stops promptly after scroll input",
+    "pass": true,
+    "detail": {
+      "before": 37,
+      "after": 37
+    }
+  },
+  {
+    "test": "motion RAF stops after scroll settles",
+    "pass": true,
+    "detail": {
+      "before": 37,
+      "after": 37
+    }
+  },
+  {
+    "test": "editor explicitly activates",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "editor edits and formats real content",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "editor bounded drag handle",
+    "pass": true,
+    "detail": {
+      "old": 20,
+      "new": 58
+    }
+  },
+  {
+    "test": "editor rotation control",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "editor portable HTML export",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "editor exits live mode",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "article modal & URL",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "article pending label honest",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "modal focus stays inside",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "article back restores scroll",
+    "pass": true,
+    "detail": {
+      "before": 30922,
+      "after": 30922
+    }
+  },
+  {
+    "test": "article restores opener focus",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "reference map filters",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "Escape closes reference modal",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "manual reading mode removes motion",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "reading mode all project panels accessible",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "reading mode scene not artificially long",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "landscape low-height reading fallback",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "portrait motion restored",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "OS reduced-motion structural fallback",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "RAF stops in reduced mode",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "no visual scroll playhead remains",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "End reaches leaf rest",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "Home reverses leaf to branch",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "no console errors",
+    "pass": true,
+    "detail": []
+  },
+  {
+    "test": "no external requests",
+    "pass": true,
+    "detail": 0
+  },
+  {
+    "test": "mouse can pick up leaf without scrolling document",
+    "pass": true,
+    "detail": {
+      "before": {
+        "x": 342.06573886993357,
+        "y": 358.35331800192984,
+        "rotation": 116.71472779842064,
+        "rotateX": 13.987011863964243,
+        "rotateY": 3.3887443143852636,
+        "scale": 0.7733976027163298,
+        "phase": "desprendimento",
+        "mode": "release",
+        "depth": "front",
+        "opacity": 1,
+        "occlusionState": "visible",
+        "occlusionProgress": 0,
+        "drag": {
+          "active": false,
+          "returning": false,
+          "baseX": 342.06573886993357,
+          "baseY": 358.35331800192984
+        }
+      },
+      "held": {
+        "x": 447.06573886993357,
+        "y": 303.35331800192984,
+        "rotation": 122.48972779842065,
+        "rotateX": 12.612011863964243,
+        "rotateY": 3.3887443143852636,
+        "scale": 0.7733976027163298,
+        "phase": "desprendimento",
+        "mode": "release",
+        "depth": "front",
+        "opacity": 1,
+        "occlusionState": "visible",
+        "occlusionProgress": 0,
+        "drag": {
+          "active": true,
+          "returning": false,
+          "baseX": 342.06573886993357,
+          "baseY": 358.35331800192984
+        }
+      },
+      "scroll": 1200
+    }
+  },
+  {
+    "test": "released leaf settles back on scroll route",
+    "pass": true,
+    "detail": {
+      "leaf": {
+        "x": 342.44182398489335,
+        "y": 358.1563210369509,
+        "rotation": 116.78343022396867,
+        "rotateX": 13.976177030890401,
+        "rotateY": 3.3887443143852636,
+        "scale": 0.7733976027163298,
+        "phase": "desprendimento",
+        "mode": "release",
+        "depth": "front",
+        "opacity": 1,
+        "occlusionState": "visible",
+        "occlusionProgress": 0,
+        "drag": {
+          "active": false,
+          "returning": false,
+          "baseX": 342.06573886993357,
+          "baseY": 358.35331800192984
+        }
+      }
+    }
+  },
+  {
+    "test": "process piece snaps into matching outline",
+    "pass": true,
+    "detail": {
+      "scroll": 14603,
+      "class": "process-node is-active is-assembled"
+    }
+  },
+  {
+    "test": "process board completes from scroll alone",
+    "pass": true,
+    "detail": 6
+  },
+  {
+    "test": "leaf takeoff has no positional jump",
+    "pass": true,
+    "detail": {
+      "maxStep": 11.563133701607715,
+      "steps": [
+        11.563133701607715,
+        10.517949868192272,
+        9.459918723465043,
+        8.4315240382461,
+        7.478087959375113,
+        6.645869792474358,
+        5.977134203098103,
+        5.50068993563565,
+        5.220073325905567,
+        5.107753783177098
+      ]
+    }
+  },
+  {
+    "test": "leaf route has no horizontal punch",
+    "pass": false,
+    "detail": {
+      "largest": [
+        {
+          "fromScroll": 1680,
+          "scroll": 1800,
+          "fromX": 603.5055248838073,
+          "toX": 715.7682106331619,
+          "dx": 112.26268574935455,
+          "fromActive": "hero",
+          "active": "hero",
+          "mode": "release"
+        },
+        {
+          "fromScroll": 1560,
+          "scroll": 1680,
+          "fromX": 492.9977517718445,
+          "toX": 603.5055248838073,
+          "dx": 110.50777311196282,
+          "fromActive": "hero",
+          "active": "hero",
+          "mode": "release"
+        },
+        {
+          "fromScroll": 1800,
+          "scroll": 1920,
+          "fromX": 715.7682106331619,
+          "toX": 803.3116318743362,
+          "dx": 87.54342124117431,
+          "fromActive": "hero",
+          "active": "hero",
+          "mode": "release"
+        },
+        {
+          "fromScroll": 1440,
+          "scroll": 1560,
+          "fromX": 408.1408000402002,
+          "toX": 492.9977517718445,
+          "dx": 84.8569517316443,
+          "fromActive": "hero",
+          "active": "hero",
+          "mode": "release"
+        },
+        {
+          "fromScroll": 2400,
+          "scroll": 2520,
+          "fromX": 783.1547014017369,
+          "toX": 734.4991609406375,
+          "dx": 48.65554046109946,
+          "fromActive": "hero",
+          "active": "hero",
+          "mode": "release"
+        }
+      ]
+    }
+  },
+  {
+    "test": "wheel controller moves document scroll",
+    "pass": false,
+    "detail": {
+      "before": 0,
+      "mid": {
+        "actual": 1200,
+        "target": 1200,
+        "velocity": 0,
+        "controllerActive": false
+      }
+    }
+  },
+  {
+    "test": "wheel settles with leaf directly on document scroll",
+    "pass": true,
+    "detail": {
+      "scroll": {
+        "actual": 1200,
+        "target": 1200,
+        "velocity": 0,
+        "controllerActive": false
+      },
+      "lag": 0
+    }
+  },
+  {
+    "test": "wheel scroll accelerates through small continuous steps",
+    "pass": false,
+    "detail": {
+      "frames": 0,
+      "min": null,
+      "max": null,
+      "steps": []
+    }
+  },
+  {
+    "test": "no-JS all sections present",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "no-JS navigation available",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "no-JS no page width overflow",
+    "pass": true,
+    "detail": ""
+  }
+]
