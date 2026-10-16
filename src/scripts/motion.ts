@@ -779,13 +779,13 @@ function setupProcessAssembly() {
   function renderProcess(p: number) {
     const isMob = mobile();
     const w = stage!.clientWidth || window.innerWidth;
-    const h = stage!.clientHeight || (window.innerHeight - 72);
+    const h = stage!.clientHeight || (window.innerHeight - 150);
     const scatter = isMob ? processScatter.mobile : processScatter.desktop;
-    const basePieceWidth = isMob ? clamp(w * 0.28, 118, 162) : clamp(w * 0.16, 180, 245);
-    const pieceWidth = nodes![0]?.offsetWidth > 20 ? nodes![0].offsetWidth : basePieceWidth;
+    const basePieceWidth = isMob ? clamp(w * 0.26, 105, 145) : clamp(h * 0.33, 145, 205);
+    const pieceWidth = basePieceWidth;
     const scale = pieceWidth / processCrop.width;
-    const centreX = isMob ? w * 0.5 : w * 0.35;
-    const centreY = isMob ? h * 0.42 : h * 0.5;
+    const centreX = isMob ? w * 0.5 : w * 0.34;
+    const centreY = isMob ? h * 0.40 : h * 0.50;
 
     if (board) {
       board.style.width = `${processCrop.sourceWidth * scale}px`;
@@ -871,11 +871,11 @@ function setupProcessAssembly() {
       const dropped = { x: clamp(e.clientX - r.left, 0, r.width), y: clamp(e.clientY - r.top, 0, r.height) };
       const isMob = mobile();
       const w = stage!.clientWidth || window.innerWidth;
-      const h = stage!.clientHeight || (window.innerHeight - 72);
-      const pieceWidth = nodes![0]?.offsetWidth || 160;
+      const h = stage!.clientHeight || (window.innerHeight - 150);
+      const pieceWidth = isMob ? clamp(w * 0.26, 105, 145) : clamp(h * 0.33, 145, 205);
       const scale = pieceWidth / processCrop.width;
-      const centreX = isMob ? w * 0.5 : w * 0.35;
-      const centreY = isMob ? h * 0.42 : h * 0.5;
+      const centreX = isMob ? w * 0.5 : w * 0.34;
+      const centreY = isMob ? h * 0.40 : h * 0.50;
       const [originX, originY] = processOrigins[i];
       const target = {
         x: centreX - (processCrop.sourceWidth * scale) / 2 + (originX - processCrop.left + processCrop.width / 2) * scale,

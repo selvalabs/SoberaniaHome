@@ -433,20 +433,20 @@ html[data-leaf-occluded="1"] #espiral{z-index:48}
 
 /* Caderno de campo: anotação focada na etapa ativa, posicionada à margem direita */
 .motion .process-panels{position:absolute!important;inset:0!important;z-index:10!important;pointer-events:none!important}
-.motion .process-panel{position:absolute!important;right:clamp(24px,4.5vw,72px)!important;left:auto!important;top:50%!important;transform:translateY(-50%)!important;width:clamp(240px,21vw,330px)!important;max-width:330px!important;height:auto!important;min-height:0!important;margin:0!important;padding:24px 28px!important;background:rgba(18,33,20,.92)!important;border:1px solid rgba(201,154,90,.45)!important;border-left:3px solid #c99a5a!important;border-radius:4px!important;box-shadow:0 16px 36px rgba(0,0,0,.45)!important;backdrop-filter:blur(8px)!important;text-align:left!important;opacity:0;pointer-events:none;transition:opacity .25s ease}
+.motion .process-panel{position:absolute!important;right:clamp(20px,3.5vw,56px)!important;left:auto!important;top:50%!important;transform:translateY(-50%)!important;width:clamp(220px,18.5vw,290px)!important;max-width:290px!important;height:auto!important;min-height:0!important;margin:0!important;padding:clamp(14px,1.8vh,20px) clamp(16px,1.6vw,22px)!important;background:rgba(18,33,20,.94)!important;border:1px solid rgba(201,154,90,.4)!important;border-left:3px solid #c99a5a!important;border-radius:4px!important;box-shadow:0 12px 28px rgba(0,0,0,.45)!important;backdrop-filter:blur(8px)!important;text-align:left!important;opacity:0;pointer-events:none;transition:opacity .25s ease}
 .motion .process-panel.is-active{opacity:1!important;pointer-events:auto!important}
-.motion .process-panel::before{content:"caderno de campo / etapa em foco"!important;display:block!important;margin-bottom:12px!important;color:#c99a5a!important;font:10px/1.2 var(--mono)!important;letter-spacing:.08em!important;text-transform:uppercase!important}
-.motion .process-panel .process-count{margin:0 0 8px!important;color:#c99a5a!important;font:14px/1 var(--mono)!important;letter-spacing:.06em!important}
-.motion .process-panel .process-count span{color:rgba(201,154,90,.7)!important;font-size:11px!important;margin-left:4px!important}
-.motion .process-panel h3{margin:0 0 12px!important;font-size:clamp(20px,2vw,30px)!important;font-weight:500!important;line-height:1.05!important;letter-spacing:-.035em!important;color:var(--cream)!important}
-.motion .process-panel .process-body{color:rgba(242,237,222,.85)!important;font-size:13px!important;line-height:1.55!important}
-.motion .process-panel .process-body p{display:block!important;margin:0 0 8px!important}
-.motion .process-panel .process-body .short-line{font-size:12px!important;line-height:1.45!important;color:rgba(242,237,222,.7)!important;margin:0 0 4px!important}
+.motion .process-panel::before{content:"caderno de campo / etapa em foco"!important;display:block!important;margin-bottom:8px!important;color:#c99a5a!important;font:9px/1.2 var(--mono)!important;letter-spacing:.08em!important;text-transform:uppercase!important}
+.motion .process-panel .process-count{margin:0 0 6px!important;color:#c99a5a!important;font:12px/1 var(--mono)!important;letter-spacing:.06em!important}
+.motion .process-panel .process-count span{color:rgba(201,154,90,.7)!important;font-size:10px!important;margin-left:3px!important}
+.motion .process-panel h3{margin:0 0 8px!important;font-size:clamp(17px,1.5vw,22px)!important;font-weight:500!important;line-height:1.05!important;letter-spacing:-.035em!important;color:var(--cream)!important}
+.motion .process-panel .process-body{color:rgba(242,237,222,.85)!important;font-size:clamp(11px,.82vw,12.5px)!important;line-height:1.48!important}
+.motion .process-panel .process-body p{display:block!important;margin:0 0 6px!important}
+.motion .process-panel .process-body .short-line{font-size:11px!important;line-height:1.4!important;color:rgba(242,237,222,.7)!important;margin:0 0 3px!important}
 
 @media(max-width:759px){
-  .motion .process-panel{left:50%!important;right:auto!important;bottom:16px!important;top:auto!important;transform:translateX(-50%)!important;width:min(88%,340px)!important;max-width:340px!important;padding:16px 18px!important;max-height:38%!important;overflow-y:auto!important}
-  .motion .process-panel h3{font-size:20px!important;margin-bottom:8px!important}
-  .motion .process-panel .process-body{font-size:12px!important;line-height:1.4!important}
+  .motion .process-panel{left:50%!important;right:auto!important;bottom:12px!important;top:auto!important;transform:translateX(-50%)!important;width:min(90%,340px)!important;max-width:340px!important;padding:12px 14px!important;max-height:36%!important;overflow-y:auto!important;scrollbar-width:thin!important}
+  .motion .process-panel h3{font-size:17px!important;margin-bottom:6px!important}
+  .motion .process-panel .process-body{font-size:11px!important;line-height:1.36!important}
 }
 
 /* Hero: uma capa editorial, com a tese, o argumento e o próximo gesto em
@@ -1577,12 +1577,25 @@ html[data-lateral-dragging="true"],html[data-lateral-dragging="true"] *{cursor:g
 /* process-fold-fit-27 */
 
 /* Compacta a abertura e a prancheta para a sequência caber no viewport. */
-.process-section>.section-intro{padding-top:clamp(46px,7vh,76px);padding-bottom:clamp(28px,4vh,44px);background:var(--night);border-bottom:1px solid var(--night-rule)}
-.process-section>.section-intro h2{font-size:clamp(52px,7vw,105px);line-height:.9;color:var(--cream)!important}
-.process-section>.section-intro .section-label{color:#db956d!important}
+/* Unificação da dobra 06 / Processo: Abertura e quebra-cabeça no mesmo viewport */
+.motion .process-section{position:relative;background:#122114}
 .motion .process-sequence{height:calc(100vh - var(--mast-h))!important;box-sizing:border-box}
 @supports(height:100svh){.motion .process-sequence{height:calc(100svh - var(--mast-h))!important}}
-.motion .process-sequence .scene-frame{position:relative!important;top:0!important;height:100%!important;display:grid!important;grid-template-rows:48px minmax(0,1fr) 62px!important;overflow:clip!important}
+.motion .process-sequence .scene-frame{position:relative!important;top:0!important;height:100%!important;display:grid!important;grid-template-rows:auto 36px minmax(0,1fr) 44px!important;overflow:clip!important;background:#122114!important}
+
+.motion .process-intro{padding:clamp(10px,1.4vh,16px) var(--pad) clamp(8px,1vh,12px)!important;background:linear-gradient(180deg,#19221b 0%,#131c15 100%)!important;border-bottom:1px solid rgba(201,154,90,.22)!important;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;gap:24px!important;min-height:0!important;flex-shrink:0!important}
+.motion .process-intro .section-label{margin:0!important;color:#db956d!important;white-space:nowrap!important;font:11px/1.2 var(--mono)!important;letter-spacing:.08em!important}
+.motion .process-intro h2{font-size:clamp(18px,2.2vw,30px)!important;line-height:1.05!important;letter-spacing:-.035em!important;color:var(--cream)!important;margin:0!important;white-space:nowrap!important}
+.motion .process-intro h2 br{display:none!important}
+
+.motion .process-sequence .scene-head{min-height:36px!important;padding:4px var(--pad)!important;font-size:11px!important;background:rgba(18,33,20,.65)!important;border-bottom:1px solid rgba(201,154,90,.16)!important}
+.motion .process-sequence .scene-foot{min-height:44px!important;padding:6px var(--pad)!important;font-size:11px!important;border-top:1px solid rgba(201,154,90,.16)!important}
+
+@media(max-width:759px){
+  .motion .process-intro{flex-direction:column!important;align-items:flex-start!important;gap:4px!important;padding:8px var(--pad)!important}
+  .motion .process-intro h2{font-size:18px!important;white-space:normal!important}
+  .motion .process-sequence .scene-frame{grid-template-rows:auto 32px minmax(0,1fr) 42px!important}
+}
 .mast{transition:transform .24s cubic-bezier(.22,.68,.22,1);will-change:transform}
 .mast.is-hidden{transform:translateY(-105%)}
 
