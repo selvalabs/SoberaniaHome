@@ -23,6 +23,17 @@ def centered(page,sid,index):
         raise
 
 
+def click_visible(page,button,touch=False):
+    # Locator.click auto-scrolls sticky descendants even when already visible,
+    # moving the document before dispatch. Exercise the user's actual input.
+    box=button.bounding_box()
+    assert box and box['x']>=0 and box['y']>=0 and box['x']+box['width']<=page.viewport_size['width']+1 and box['y']+box['height']<=page.viewport_size['height']+1,box
+    assert button.evaluate('(el)=>{const r=el.getBoundingClientRect();return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))}'),'button is covered'
+    point=(box['x']+box['width']/2,box['y']+box['height']/2)
+    if touch: page.touchscreen.tap(*point)
+    else: page.mouse.click(*point)
+
+
 def loaded(page,card):
     card.locator('.work-screen img').first.wait_for(state='visible')
     page.wait_for_function('(el)=>el.complete&&el.naturalWidth>0',arg=card.locator('.work-screen img').first.element_handle())
@@ -58,7 +69,7 @@ with sync_playwright() as pw:
                 if not card.locator('[data-landing-gallery]').count():
                     loaded(page,card)
                     for button in card.locator('.work-page-selector button').all():
-                        button.click()
+                        click_visible(page,button,touch=w<760)
                         try:
                             page.wait_for_function('(el)=>el.getAttribute("aria-pressed")==="true"',arg=button.element_handle(),timeout=8000)
                         except Exception:
