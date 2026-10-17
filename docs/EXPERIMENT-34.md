@@ -3,6 +3,7 @@
 ## Identidade e isolamento
 
 - Issue: https://github.com/selvalabs/SoberaniaHome/issues/34
+- PR de revisão: https://github.com/selvalabs/SoberaniaHome/pull/35, aberto em draft.
 - Branch: `feat/34-immersive-edition`.
 - Base remota inicial: `main`, `45ebfbbba3dd99fa64d62e6b5047901535568ef7`.
 - Continuação preservada: `feat/astro-gsap`, `32a3456f741c309f6b1bb46f0ab18fde6cdf2ed1`, incorporada por fast-forward na branch experimental depois de sua criação remota.
@@ -32,7 +33,7 @@ O motor agora usa a posição nativa do documento, cenas sticky e atualização 
 
 Foram preservados os originais e adicionados 55 WebP, 98 trechos de oito páginas de celular e uma imagem social de 1200×630. O conjunto selecionado caiu de **41.208.222 para 8.679.260 bytes (78,94%)**, sem contar a nova imagem social. A largura e a soma das alturas dos trechos reproduzem as capturas originais.
 
-Medição local em Chromium, contexto novo, viewport1440×960, evento load +1 segundo, sem rolar:
+Medição local em Chromium, contexto novo, viewport 1440×960, evento load +1 segundo, sem rolar:
 
 | Medida | Build anterior | Edição experimental |
 | --- | ---: | ---: |
@@ -44,15 +45,17 @@ Medição local em Chromium, contexto novo, viewport1440×960, evento load +1 se
 
 ## Validação executada
 
-- Astro **7.4.0**, Node24.13.0, TypeScript5.9.3: build estática e `tsc --noEmit` passaram.
+- Astro **7.4.0**, Node 24.13.0, TypeScript 5.9.3: build estática e `tsc --noEmit` passaram.
 - **32 testes Node**: contrato/limites/erros do Worker, origem, timeout, resposta malformada, política de publicação e noindex dos demos.
 - `npm audit`: zero vulnerabilidades; `pip-audit -r requirements-pages.txt`: nenhuma vulnerabilidade conhecida.
 - Verificador de build: metadados, JSON-LD, páginas/arquivos locais, imagens e sitemap da prévia.
-- Navegadores:390×844 e1440×900 para cenas, seis notas, nós, controles, modal, persistência, movimento reduzido dinâmico e ausência de renderização ociosa.
--320×680,390×844,768×1024: ausência de overflow, referências completas e interação local. HTML sem JavaScript: conteúdo legível e formulário incapaz de transmitir contexto.
+- Navegadores: 390×844 e 1440×900 para cenas, seis notas, nós, controles, modal, persistência, movimento reduzido dinâmico e ausência de renderização ociosa.
+- 320×680, 390×844, 768×1024: ausência de overflow, referências completas e interação local. HTML sem JavaScript: conteúdo legível e formulário incapaz de transmitir contexto.
 - Gestos: rolagem vertical/horizontal, arrasto e swipe; celular interno rola sem mover o documento; teclado percorre a galeria.
 - IA simulada no navegador: botão explícito, bloqueio durante espera, resposta/contexto associados, exportação local e mensagem correta após falha.
 - Revisão visual de todas as dobras; colagens móveis separadas dos parágrafos; nenhum recurso quebrado ou erro de execução nas verificações finais.
+
+A primeira execução da CI identificou duas entradas opcionais ausentes no lockfile, aceito pelo npm 11.6.2 local e recusado pelo npm 11.19.0 do runner. O lock foi completado pelo npm 11.19.0 em um diretório novo, sem alterar versões existentes. O resultado da validação Linux acompanha o SHA final nos checks do PR.
 
 ## Ambiente e entrega
 
