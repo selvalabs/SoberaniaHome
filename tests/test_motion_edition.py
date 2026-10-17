@@ -131,7 +131,7 @@ with sync_playwright() as pw:
         page.evaluate('''()=>{const r=document.querySelector('.choices-closing strong').getBoundingClientRect();
           scrollTo({top:scrollY+r.top+r.height/2-innerHeight*.49,behavior:'instant'});}''')
         page.wait_for_function('document.querySelector(".choices-closing [data-leaf-lit]")')
-        assert page.locator('.choices-closing [data-leaf-lit]').evaluate('el=>getComputedStyle(el).textShadow')!='none','leaf glow did not render'
+        assert page.locator('.choices-closing [data-leaf-lit] .leaf-ink').first.evaluate('el=>getComputedStyle(el).textShadow')!='none','leaf glow did not render'
         page.locator('#toggle-motion-footer').evaluate('el=>el.click()')
         page.wait_for_function('!__SL_DEBUG.leafEnabled')
         assert leaf_state(page)['hidden'],'reading mode left the leaf visible'

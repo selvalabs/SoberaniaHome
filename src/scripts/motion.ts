@@ -45,6 +45,23 @@ export function initMotion() {
   const metrics = {frames: 0, measurements: 0, idle: true};
   const scenes: Scene[] = [];
   let pendingSceneJump: {scene: Scene; index: number} | null = null;
+  // Cache editorial targets once. Product interfaces and controls keep their own colors.
+  const glowTargets = all<HTMLElement>('h1,h2,h3,p,figcaption,.technology-note,.knowledge-note', document.querySelector('main') || document)
+    .filter(el => !el.closest('button,a,.work-evidence,.process-panels,.orbit-view,#referencias,dialog'))
+    .flatMap(el => {
+      const marks=all<HTMLElement>('strong,em,.hero-future,.choices-pencil,.choices-paper,.choices-ink',el);
+      return marks.length ? marks : [el];
+    });
+  const litMarks = new Set<HTMLElement>();
+  for(const mark of glowTargets) {
+    mark.style.setProperty('--leaf-ink',getComputedStyle(mark).color);
+    // Paint the ink without replacing paper labels or other editorial backgrounds.
+    const walker=document.createTreeWalker(mark,NodeFilter.SHOW_TEXT);
+    const texts:Text[]=[];
+    while(walker.nextNode())if(walker.currentNode.textContent?.trim()&&!walker.currentNode.parentElement?.closest('.leaf-ink,a,button'))texts.push(walker.currentNode as Text);
+    const plainBlock=mark.childNodes.length===1&&getComputedStyle(mark).display==='block';
+    for(const text of texts){const ink=document.createElement('span');ink.className='leaf-ink';if(plainBlock)ink.style.display='block';text.replaceWith(ink);ink.append(text);}
+  }
   const processNodes = all<HTMLButtonElement>('#processo .process-node');
   const assembled = new Set<number>();
   let puzzleDrag: {id:number; pointer:number; x:number; y:number; dx:number; dy:number; moved:boolean} | null = null;
@@ -77,7 +94,7 @@ export function initMotion() {
     probe.remove();
     return result;
   }
-  function compactViewport() { return layoutHeight < (layoutWidth < 760 ? 700 : 540); }
+  function compactViewport() { return layoutHeight < (layoutWidth < 760 ? 620 : 540); }
 
   function syncControls() {
     const forcedReading = reduced.matches;
@@ -124,11 +141,16 @@ export function initMotion() {
     root.style.setProperty('--motion-mast-height',`${mastHeight}px`);
     for(const scene of scenes) {
       const steps=Math.max(1,scene.panels.length-1);
+      // On phones the gallery owns the viewport. Its header reserves space for
+      // the returning mast; the hidden mast no longer leaves a vacant strip.
+      const fullMobile=scene.kind==='horizontal'&&width<760;
+      scene.sequence.style.setProperty('--motion-stage-height',`${fullMobile?height:height-mastHeight}px`);
+      scene.sequence.style.setProperty('--motion-mast-height',`${fullMobile?0:mastHeight}px`);
       scene.flow=scene.kind==='process'&&width<760;
       scene.sequence.dataset.processFlow=String(scene.flow);
       scene.run=enabled&&!scene.flow ? Math.round(scene.kind==='horizontal'?steps*clamp(width*.66,430,900):scene.kind==='process'?clamp(height*1.8,1100,1650):clamp(height*1.25,760,1150)) : 0;
       scene.sequence.style.setProperty('--motion-run',`${scene.run}px`);
-      scene.sequence.style.height=enabled&&!scene.flow?`${height-mastHeight+scene.run}px`:'';
+      scene.sequence.style.height=enabled&&!scene.flow?`${(fullMobile?height:height-mastHeight)+scene.run}px`:'';
       if(scene.track) {
         // row-reverse already defines the laboratory's spatial direction.
         const viewport=scene.track.parentElement?.clientWidth||width;
@@ -138,7 +160,7 @@ export function initMotion() {
     }
     const y=scrollY;
     scenes.forEach(scene=>{
-      scene.start=scene.sequence.getBoundingClientRect().top+y-mastHeight;
+      scene.start=scene.sequence.getBoundingClientRect().top+y-(scene.kind==='horizontal'&&width<760?0:mastHeight);
       if(scene.flow&&leafEnabled){
         const first=scene.panels[0]?.getBoundingClientRect(),last=scene.panels.at(-1)?.getBoundingClientRect();
         if(first&&last){scene.start=first.top+y-mastHeight-scene.stageHeight-24;scene.run=Math.max(1,last.top-first.top);}
@@ -275,7 +297,9 @@ export function initMotion() {
     const breeze=phase*1.15,travel=smooth(launch);
     let x=mix(origin.x,width*(.5+Math.sin(breeze)*.34),travel);
     let ly=mix(origin.y-y,height*(.5+Math.sin(breeze*.83)*.055),travel);
-    let rz=118+travel*58+Math.sin(breeze*1.3)*32,rx=Math.sin(breeze*.9)*23,ry=Math.sin(breeze*1.4)*38;
+    // The sprite's long axis is vertical: a quarter turn lays it into the wind.
+    // Broad lateral arcs, shallow pitch and a small flutter keep it floating.
+    let rz=mix(118,90,travel)+Math.sin(breeze*.85)*16,rx=14+Math.sin(breeze*.9)*12,ry=Math.sin(breeze*1.4)*22;
     let scale=mix(width<760?.62:.82,width<760?.43:.65,travel);
     const scene=enabled?scenes.find(s=>s.kind==='horizontal'&&y>=s.start-height*.25&&y<=s.start+s.run+height*.25):undefined;
     if(scene) {
@@ -283,7 +307,7 @@ export function initMotion() {
       const weight=smooth((y-scene.start+height*.25)/(height*.25))*(1-smooth((y-scene.start-scene.run)/(height*.25)));
       x=mix(x,width*(.5+Math.sin(q*Math.PI*2)*.22*sign),weight);
       ly=mix(ly,height*(.49+Math.sin(q*Math.PI*3)*.035),weight);
-      rz+=sign*Math.sin(q*Math.PI*2)*38*weight;ry+=Math.sin(q*Math.PI*2)*28*weight;
+      rz+=sign*Math.sin(q*Math.PI*2)*9*weight;ry+=Math.sin(q*Math.PI*2)*12*weight;
     }
     const dockY=dock.y-y,land=smooth((height+180-dockY)/(height*.7+180));
     x=mix(x,dock.x,land);ly=mix(ly,dockY,land);rz=mix(rz,96,land);rx=mix(rx,7,land);ry=mix(ry,0,land);scale=mix(scale,.74,land);
@@ -312,20 +336,34 @@ export function initMotion() {
     flight.style.opacity=occluded?'0':String(mix(1,.62,travel));
     root.dataset.leafOccluded=occluded?'1':'0';root.dataset.leafDepth='front';
     debug.leaf={x,y:ly,rotation:rz,mode:land>.99?'rest':'flight',occlusionState:occluded?'occluded':'visible'};
-    // Limit geometry reads to the current chapter, only after input changes.
-    clearLeafGlow();
-    if(!occluded){
-      if(current)for(const mark of all<HTMLElement>('strong,em',current).slice(0,28)){
-        if(mark.closest('button,.work-evidence,.process-panels,.orbit-view'))continue;
-        const r=mark.getBoundingClientRect();if(!r.width||r.bottom<0||r.top>height)continue;
-        const distance=Math.hypot(Math.max(r.left-lightX,0,lightX-r.right)*.3,(r.top+r.bottom)/2-lightY);
-        const glow=1-clamp(distance/100);if(glow>.03){mark.dataset.leafLit='true';mark.style.setProperty('--leaf-glow',String(glow));}
+    // Light follows the same scroll position as the leaf, including the text
+    // alongside a foreground mockup. Occluding the sprite must not extinguish it.
+    const nextLit=new Set<HTMLElement>();
+    for(const [index,mark] of glowTargets.entries()){
+      if(mark.closest('[inert],[aria-hidden="true"]'))continue;
+      const r=mark.getBoundingClientRect();
+      if(!r.width||!r.height||r.bottom<mastHeight||r.top>height)continue;
+      const vertical=Math.max(r.top-lightY,0,lightY-r.bottom);
+      const horizontal=scene?0:Math.max(r.left-lightX,0,lightX-r.right)*.18;
+      const glow=1-smooth(Math.hypot(vertical,horizontal)/clamp(height*.17,95,170));
+      if(glow>.03){
+        nextLit.add(mark);mark.dataset.leafLit='true';
+        mark.style.setProperty('--leaf-glow',String(glow));
+        mark.style.setProperty('--leaf-hue',String((y*.16+index*47)%360));
+        mark.style.setProperty('--leaf-light-y',`${lightY-r.top}px`);
+        mark.style.setProperty('--leaf-lightness',mark.closest('.dark')?'74%':'32%');
       }
     }
+    for(const mark of litMarks)if(!nextLit.has(mark))resetLeafMark(mark);
+    litMarks.clear();nextLit.forEach(mark=>litMarks.add(mark));
   }
 
+  function resetLeafMark(mark:HTMLElement) {
+    delete mark.dataset.leafLit;
+    for(const property of ['--leaf-glow','--leaf-hue','--leaf-lightness','--leaf-light-y'])mark.style.removeProperty(property);
+  }
   function clearLeafGlow() {
-    all<HTMLElement>('[data-leaf-lit]').forEach(mark=>{delete mark.dataset.leafLit;mark.style.removeProperty('--leaf-glow');});
+    litMarks.forEach(resetLeafMark);litMarks.clear();
   }
 
   function scrollToY(top:number) { scrollTo({top:clamp(top,0,maxScroll),behavior:reduced.matches||!enabled||Math.abs(top-scrollY)>height*1.5?'instant':'smooth'});request(); }

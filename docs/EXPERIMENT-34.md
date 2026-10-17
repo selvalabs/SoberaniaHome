@@ -112,3 +112,16 @@ O site não tem canal comercial inventado: o contato leva ao GitHub confirmado o
 Publicação requer revisão/homologação, merge pelo GitHub, tag anotada, SHA aprovado e preflight. O workflow legado de Pages publica a edição antiga; não foi acionado. Esta versão pressupõe uma origem na raiz do domínio, não o subdiretório atual do Pages.
 
 Rollback da avaliação: continuar usando a versão anterior de `source`; o experimento está isolado. Rollback de produção não se aplica, pois nenhuma release foi feita. Mirror da VPS: não aplicável, sem acesso ou sincronização de VPS nesta tarefa.
+### Fluxo cromático, scrub mobile e queda da folha
+
+Passada vinculada à issue #34 e ao PR #35, a partir de `021ce6f19f9ebffb4842eca2b68db3a6768bd828`, na mesma branch `feat/34-immersive-edition`. O fetch confirmou a branch remota alinhada; a main permanece em `45ebfbbba3dd99fa64d62e6b5047901535568ef7`.
+
+O limite de 700 px desativava as cenas em celulares com barras do navegador visíveis. As galerias agora aproveitam a altura inteira da tela mobile, com cabeçalho de 60 px reservando espaço para a navbar quando retorna. O scrub permanece ativo a partir de 620 px no celular; alturas menores e desktop abaixo de 540 px mantêm leitura linear para evitar cortes. A expansão/retração da barra não troca o modo durante a navegação. Gesto vertical acompanha continuamente a posição horizontal; swipe e arrasto continuam disponíveis, e os mockups preservam os próprios gestos.
+
+A folha passa a oscilar perto de 90 graus, em vez de 176 graus, com inclinação e balanço menores. O fluxo de cor usa a altura real da folha e matiz ligado ao scroll. A tinta recebe uma faixa cromática sem substituir fundos e tarjas editoriais. O efeito alcança os textos visíveis e continua ao lado das interfaces mesmo quando a folha passa atrás delas. Sem loop de animação em repouso; modo leitura e preferência de movimento reduzido continuam soberanos.
+
+Regressões: `test_leaf_flow.py` usa toque vertical real em 360×640 e 390×690, roda do mouse em 1440×900, ambos os sentidos das galerias, saída no limite, gradiente de tinta, postura horizontal, repouso e modo leitura. `test_project_galleries.py` inclui 360×640 e 390×640, além das dimensões anteriores, verificando todas as imagens/abas e controles sem cortes. O teste novo integra a CI.
+
+Prévia: `.edition-builds/flow-fixed-20261017-05`, porta 4203 no Wi-Fi. O servidor local tem fila de 128 conexões; a fila padrão de cinco recusou recursos em testes concorrentes, sem erro de execução do site. Retorno da avaliação: snapshot e commit anterior `021ce6f`, porta 4197. Sem merge, tag/release, produção, migração ou mudança em VPS; mirror VPS não aplicável. O resultado imutável desta passada é registrado no commit e no PR.
+
+Validação local final: tipos, build e verificação estática, 32 testes Node, todas as seis suites de navegador (movimento, fluxo, galerias, navegação, toque e IA simulada), `git diff --check`, npm audit e pip-audit passaram. HTTP 200 confirmado no IP Wi-Fi `192.168.1.4:4203`. Capturas de 360×640 e 390×844 revisadas; CI Linux é registrada no PR para o SHA publicado.

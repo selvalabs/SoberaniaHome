@@ -28,7 +28,7 @@ def loaded(page,card):
 
 with sync_playwright() as pw:
     browser=pw.chromium.launch()
-    for w,h in [(390,844),(360,740),(1440,900)]:
+    for w,h in [(390,844),(360,740),(390,640),(360,640),(1440,900)]:
         context=browser.new_context(viewport={'width':w,'height':h},is_mobile=w<760,has_touch=w<760)
         page=context.new_page();errors=[]
         page.on('pageerror',lambda error:errors.append(str(error)))

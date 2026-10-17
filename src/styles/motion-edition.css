@@ -9,7 +9,12 @@ html.motion-edition.motion .sequence[data-motion-scene]>.scene-frame {position:s
 html.motion-edition.motion [data-motion-scene="horizontal"] .track-viewport {height:100%;min-height:0;touch-action:pan-x pan-y;}
 html.motion-edition.motion .portfolio-track {transition:none!important;}
 html.motion-edition.motion [data-motion-scene="horizontal"]>.scene-frame {outline-offset:-3px;}
-html.motion-edition [data-leaf-lit="true"] {text-shadow:0 0 10px rgba(212,169,89,var(--leaf-glow)),0 0 22px rgba(214,202,135,var(--leaf-glow));}
+html.motion-edition [data-leaf-lit="true"] .leaf-ink {
+ color:var(--leaf-ink)!important;
+ background-image:linear-gradient(to bottom,var(--leaf-ink) calc(var(--leaf-light-y) - 100px),hsl(var(--leaf-hue) 78% var(--leaf-lightness)) var(--leaf-light-y),var(--leaf-ink) calc(var(--leaf-light-y) + 100px));
+ background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+ text-shadow:0 0 5px hsl(var(--leaf-hue) 95% 60% / calc(var(--leaf-glow) * .32));
+}
 html.motion-edition #leaf-flight {transition:opacity .16s ease;pointer-events:none;}
 html.motion-edition.leaf-motion .wind-global,html.motion-edition.leaf-motion #leaf-flight {display:block;}
 html.motion-edition.leaf-motion .rest-leaf,html.motion-edition.leaf-motion .rest-footer-leaf {visibility:hidden;}
@@ -141,4 +146,14 @@ html.motion-edition:not(.motion) .scene-controls {display:none!important;}
  html.motion-edition #processo .process-panel h3 button{min-height:44px;gap:12px;padding:5px 0}
  html.motion-edition #processo .process-panel .process-body{font-size:16px!important;line-height:1.55!important;max-width:none}
  html.motion-edition:not(.leaf-motion) #processo .process-periphery{display:none!important}
+}
+
+/* The mobile mast may return over the scene header; content starts below it. */
+@media(max-width:759px){
+ html.motion-edition.motion [data-motion-scene="horizontal"] .scene-head{min-height:60px}
+}
+
+@media(max-width:759px) and (max-height:700px){
+ html.motion-edition.motion #trabalho .portfolio-track,
+ html.motion-edition.motion #laboratorio .portfolio-track{padding-block:8px}
 }
