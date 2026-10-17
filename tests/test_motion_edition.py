@@ -22,12 +22,31 @@ def open_index(page):
     box=page.locator('#open-index').bounding_box()
     page.mouse.click(box['x']+box['width']/2,box['y']+box['height']/2)
 
+def leaf_state(page):
+    return page.evaluate('''() => {
+      const flight=document.querySelector('#leaf-flight'),leaf=document.querySelector('#wind-leaf');
+      const rect=leaf.getBoundingClientRect(),style=getComputedStyle(leaf);
+      return {hidden:flight.hidden,display:getComputedStyle(document.querySelector('#wind-global')).display,
+        visibility:getComputedStyle(flight).visibility,opacity:Number(getComputedStyle(flight).opacity),
+        bounds:rect.toJSON(),asset:style.backgroundImage,pointer:style.pointerEvents,
+        hit:document.elementFromPoint(rect.x+rect.width/2,rect.y+rect.height/2)?.closest('#wind-global')!==null,
+        pseudo:getComputedStyle(flight,'::before').pointerEvents};
+    }''')
+
+def visible_leaf(page,w,h):
+    state=leaf_state(page);rect=state['bounds']
+    assert not state['hidden'] and state['display']!='none' and state['visibility']=='visible' and state['opacity']>0,state
+    assert rect['width']>15 and rect['height']>15 and 'leaf-a.webp' in state['asset'],state
+    assert rect['left']>=8 and rect['right']<=w-8 and rect['top']>=8 and rect['bottom']<=h-8,state
+    return state
+
 with sync_playwright() as pw:
     browser=pw.chromium.launch()
     for w,h in [(390,844),(1440,900)]:
         context=browser.new_context(viewport={'width':w,'height':h},is_mobile=w<760,has_touch=w<760)
         page=context.new_page();page.route_web_socket('**',lambda websocket: None);errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
         ready(page)
+        visible_leaf(page,w,h)
         assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'), 'horizontal page overflow'
         for sid in ['processo','espiral']:
             scene(page,sid,2)
@@ -61,7 +80,54 @@ with sync_playwright() as pw:
         page.emulate_media(reduced_motion='reduce');page.wait_for_function('!__SL_DEBUG.enabled')
         open_index(page);page.keyboard.press('Escape');page.wait_for_timeout(150)
         assert not page.evaluate('__SL_DEBUG.enabled'),'closing modal re-enabled reduced motion'
+        if w>=760:
+            page.emulate_media(reduced_motion='no-preference');page.wait_for_function('__SL_DEBUG.enabled')
+            page.set_viewport_size({'width':w,'height':500});page.wait_for_function('!__SL_DEBUG.enabled')
+            assert page.evaluate('__SL_DEBUG.leafEnabled'),'short desktop hid the leaf'
+            page.set_viewport_size({'width':w,'height':h});page.wait_for_function('__SL_DEBUG.enabled')
         assert not errors,errors
         print(f'PASS {w}x{h}: scenes, nodes, controls, modal, idle, reading, persistence, reduced motion',flush=True)
+        context.close()
+
+    # Browser toolbars change available height without changing the user's
+    # motion preference. Compact native flow must retain the leaf and glow.
+    for w,h,short in [(390,844,690),(360,740,640),(412,915,760),(390,640,740)]:
+        context=browser.new_context(viewport={'width':w,'height':h},is_mobile=True,has_touch=True)
+        page=context.new_page();ready(page)
+        state=visible_leaf(page,w,h)
+        assert state['pointer']=='none' and not state['hit'] and state['pseudo']=='none',state
+        enabled=page.evaluate('__SL_DEBUG.enabled')
+        if enabled: scene(page,'trabalho',1)
+        else:
+            assert page.evaluate('__SL_DEBUG.leafEnabled'),'compact layout hid the leaf'
+            assert not page.locator('[data-edition-reading]').is_disabled()
+        frame_position=page.locator('#trabalho .scene-frame').evaluate('el=>getComputedStyle(el).position')
+        for new_height in [short,h]:
+            page.set_viewport_size({'width':w,'height':new_height});page.wait_for_timeout(450)
+            assert page.evaluate('__SL_DEBUG.enabled')==enabled,'toolbar changed the scene layout mode'
+            assert page.evaluate('__SL_DEBUG.leafEnabled'),'toolbar disabled the leaf'
+            visible_leaf(page,w,new_height)
+            if enabled:
+                assert page.evaluate('__SL_DEBUG.scenes.find(s=>s.id==="trabalho").lastIndex')==1,'toolbar lost gallery position'
+                scene(page,'processo',2)
+                rows=page.locator('#processo .process-panel').evaluate_all('(els)=>els.map(e=>({bottom:e.getBoundingClientRect().bottom,scroll:e.scrollHeight,client:e.clientHeight}))')
+                assert all(r['bottom']<=new_height-35 and r['scroll']<=r['client']+2 for r in rows),('toolbar clipped process notes',w,new_height,rows)
+                scene(page,'trabalho',1)
+            assert page.locator('#trabalho .scene-frame').evaluate('el=>getComputedStyle(el).position')==frame_position,'toolbar changed the gallery layout'
+        page.evaluate('''()=>{const r=document.querySelector('.choices-closing strong').getBoundingClientRect();
+          scrollTo({top:scrollY+r.top+r.height/2-innerHeight*.49,behavior:'instant'});}''')
+        page.wait_for_function('document.querySelector(".choices-closing [data-leaf-lit]")')
+        assert page.locator('.choices-closing [data-leaf-lit]').evaluate('el=>getComputedStyle(el).textShadow')!='none','leaf glow did not render'
+        page.locator('#toggle-motion-footer').evaluate('el=>el.click()')
+        page.wait_for_function('!__SL_DEBUG.leafEnabled')
+        assert leaf_state(page)['hidden'],'reading mode left the leaf visible'
+        assert page.locator('[data-leaf-lit]').count()==0,'reading mode left the glow visible'
+        page.locator('#toggle-motion-footer').evaluate('el=>el.click()')
+        page.wait_for_function('__SL_DEBUG.leafEnabled')
+        page.emulate_media(reduced_motion='reduce');page.wait_for_function('!__SL_DEBUG.leafEnabled')
+        assert leaf_state(page)['hidden'],'system reduced-motion left the leaf visible'
+        page.set_viewport_size({'width':w,'height':short});page.wait_for_timeout(250)
+        assert not page.evaluate('__SL_DEBUG.leafEnabled'),'resize overrode reduced-motion'
+        print(f'PASS leaf {w}x{h}: rendered bounds, touch pass-through, toolbar resize, glow, reading and reduced motion',flush=True)
         context.close()
     browser.close()

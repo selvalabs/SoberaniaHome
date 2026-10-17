@@ -78,8 +78,18 @@ with sync_playwright() as pw:
         page.locator('#atelier-context').fill('Uma situação fictícia para organizar pedidos de uma feira.')
         page.locator('[data-atelier-form] button[type="submit"]').click()
         assert 'cenário preparado' in page.locator('[data-atelier-output-mode]').text_content()
+        # Compact/reading flow still contains each long landing page inside a phone.
+        phone=page.locator('.landing-phone-screen').first
+        phone.scroll_into_view_if_needed()
+        dimensions=phone.evaluate('(el)=>({viewport:el.clientHeight,page:el.scrollHeight})')
+        assert 180 < dimensions['viewport'] <= 560 and dimensions['page'] > dimensions['viewport']*2,dimensions
+        assert page.locator('.landing-project').evaluate('(el)=>el.offsetHeight') < 900
+        box=phone.bounding_box();page.mouse.move(box['x']+box['width']/2,box['y']+box['height']/2)
+        y=page.evaluate('scrollY');page.mouse.wheel(0,240);page.wait_for_timeout(200)
+        assert phone.evaluate('(el)=>el.scrollTop')>100
+        assert abs(page.evaluate('scrollY')-y)<2
         context.close()
-        print(f'PASS {width}x{height}: reduced motion, no overflow, full library, local interaction',flush=True)
+        print(f'PASS {width}x{height}: reduced motion, no overflow, full library, local interaction, contained phone scroll',flush=True)
     context=browser.new_context(java_script_enabled=False,viewport={'width':390,'height':844})
     page=context.new_page();page.goto(args.url,wait_until='load')
     assert page.locator('#atelier-context').is_disabled()

@@ -99,7 +99,7 @@
     if(window.SLMotion)window.SLMotion.setReading(event.target.checked);
     else {try{localStorage.setItem('sl-reading',String(event.target.checked));}catch{}}
   });
-  document.getElementById('toggle-motion-footer')?.addEventListener('click',()=>window.SLMotion?.setReading(document.documentElement.classList.contains('motion')));
+  document.getElementById('toggle-motion-footer')?.addEventListener('click',()=>window.SLMotion?.setReading(document.documentElement.dataset.reading==='false'));
   addEventListener('popstate',()=>{
     const wasOpen=index.open||dialog.open;
     const hash=location.hash;

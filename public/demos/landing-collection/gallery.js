@@ -12,7 +12,10 @@
       // Native snap competes with each wheel/drag update and pulls the rail back.
       rail.style.scrollSnapType='none';
       rail.style.scrollBehavior='auto';
-      rail.setAttribute('aria-label','Oito landing pages em mockups de celular. Role dentro da tela para ler a página. Arraste para os lados ou use Shift mais a roda do mouse para ver outras páginas.');
+      const touchPreview=window.matchMedia('(pointer: coarse)').matches;
+      rail.setAttribute('aria-label',touchPreview
+        ? 'Oito landing pages em mockups de celular. Deslize para cima ou para baixo dentro da tela para ler. Deslize para os lados para ver outras páginas.'
+        : 'Oito landing pages em mockups de celular. Role dentro da tela para ler a página. Arraste para os lados ou use Shift mais a roda do mouse para ver outras páginas.');
       const startScreens=[];
       projects.forEach(project=>{
         const card=document.createElement('article');
@@ -46,7 +49,7 @@
           screen.append(image);
         });
         frame.append(screen);
-        const hint=document.createElement('span');hint.className='landing-phone-scroll-hint';hint.textContent='Role na tela ↕ · Arraste ou Shift + roda ↔';
+        const hint=document.createElement('span');hint.className='landing-phone-scroll-hint';hint.textContent=touchPreview?'Deslize para ler ↕ · Outros sites ↔':'Role na tela ↕ · Arraste ou Shift + roda ↔';
         card.append(heading,frame,hint);rail.append(card);
       });
       rail.addEventListener('wheel',event=>{

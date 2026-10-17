@@ -45,6 +45,7 @@ python -m pip install -r requirements-pages.txt
 python -m playwright install chromium
 python tests/test_motion_edition.py --url http://127.0.0.1:4184/
 python tests/test_site_edition.py --url http://127.0.0.1:4184/
+python tests/test_landing_touch.py --url http://127.0.0.1:4184/
 python tests/test_atelier_edge_ui.py --url http://127.0.0.1:4184/
 ```
 

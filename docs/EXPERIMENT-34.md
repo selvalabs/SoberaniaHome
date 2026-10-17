@@ -59,7 +59,17 @@ A primeira execução da CI identificou duas entradas opcionais ausentes no lock
 
 ## Ambiente e entrega
 
-Prévia local completa disponível no Wi-Fi em porta própria. A build servida fica em `.edition-builds/preview-20261017-02`; é uma avaliação local, não uma release de produção. O processo da prévia final é um servidor Python limitado a essa pasta de arquivos públicos. O endereço do Wi-Fi pode mudar quando a rede atribuir outro IPv4.
+### Refinamento da experiência no celular
+
+A revisão após a primeira avaliação corrigiu a folha oculta em telas com menos de 700 px úteis. O movimento decorativo agora é independente das cenas fixas: telas curtas usam fluxo natural e continuam com folha/glow, respeitando modo de leitura e redução de movimento. O limite visual considera a folha rotacionada, mantendo-a dentro da tela. Sua camada não intercepta toques nem a rolagem dos mockups.
+
+As barras do navegador não alternam o layout da página ao variar a altura disponível; largura/orientação ainda recalculam a composição. Temporizadores de resize e medição de conteúdo foram separados. Redimensionamento de janela desktop continua adaptativo.
+
+No fluxo compacto ou de leitura, os mockups mantêm altura limitada e rolagem interna, em vez de crescerem até milhares de pixels. A legenda de pesquisa ganhou espaço próprio, os controles principais têm área de toque maior, os campos usam texto de 16 px e as dicas da galeria distinguem toque de mouse. Na dobra do processo, telas mais baixas reservam menos altura à ilustração e preservam as seis explicações sem reduzir a fonte.
+
+Regressões incluem limites visuais e glow da folha, barra móvel em quatro tamanhos, leitura/redução de movimento, altura dos mockups e gestos de toque reais via CDP em ambos os eixos. A prévia desta passada usa `.edition-builds/mobile-review-20261017-03`, preservando a primeira entrega para comparação.
+
+Prévia local completa disponível no Wi-Fi em porta própria. A primeira entrega fica em `.edition-builds/preview-20261017-02`, porta 4184; a passada mobile usa a build indicada acima, porta 4187. São avaliações locais, não releases de produção. Cada servidor Python fica limitado à sua pasta de arquivos públicos. O endereço do Wi-Fi pode mudar quando a rede atribuir outro IPv4.
 
 Não houve alteração de firewall, VPS, banco, segredos, DNS, serviço do Agentic MailBox ou publicação existente. Foram lidos apenas nomes de variáveis no projeto de correio para identificar possibilidade de integração; não há credencial confirmada de Workers nem segredo incorporado à branch.
 

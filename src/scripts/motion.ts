@@ -33,7 +33,9 @@ export function initMotion() {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   let requestedReading = false;
   try { requestedReading = localStorage.getItem('sl-reading') === 'true'; } catch { /* Storage is optional. */ }
-  let enabled = false, paused = false, raf = 0, resizeTimer = 0;
+  let enabled = false, leafEnabled = false, paused = false, raf = 0, resizeTimer = 0, layoutTimer = 0;
+  let layoutWidth = innerWidth, layoutLandscape = matchMedia('(orientation: landscape)').matches;
+  let layoutHeight = smallViewportHeight();
   let pausedAnchor: {id:string;offset:number}|null=null, modeChangedWhilePaused=false;
   let mastHeight = 72, height = innerHeight, width = innerWidth, maxScroll = 1;
   let previousY = scrollY, directionTravel = 0, activeId = 'hero', leafDrag: {x:number;y:number} | null = null;
@@ -63,26 +65,39 @@ export function initMotion() {
     scenes.push(scene);
   }
 
-  function compactViewport() { return innerHeight < (innerWidth < 760 ? 700 : 540); }
+  function smallViewportHeight() {
+    // svh represents the space with browser chrome present. Cache it until a
+    // width/orientation change: the URL bar must not rebuild the whole page.
+    const probe = document.createElement('span');
+    probe.style.cssText = 'position:fixed;visibility:hidden;pointer-events:none;height:100svh;width:0;';
+    document.body.append(probe);
+    const result = probe.getBoundingClientRect().height || innerHeight;
+    probe.remove();
+    return result;
+  }
+  function compactViewport() { return layoutHeight < (layoutWidth < 760 ? 700 : 540); }
 
   function syncControls() {
-    const forcedReading = reduced.matches || compactViewport();
+    const forcedReading = reduced.matches;
     const readingSwitch = document.getElementById('reading-switch') as HTMLInputElement | null;
-    if(readingSwitch) { readingSwitch.checked=!enabled; readingSwitch.disabled=forcedReading; }
+    if(readingSwitch) { readingSwitch.checked=!leafEnabled; readingSwitch.disabled=forcedReading; }
     const toggle = document.getElementById('toggle-motion-footer') as HTMLButtonElement | null;
-    if(toggle) { toggle.textContent=reduced.matches?'Movimento reduzido':enabled?'Modo de leitura':'Ativar experiência';toggle.disabled=forcedReading;toggle.setAttribute('aria-pressed',String(!enabled)); }
-    all<HTMLButtonElement>('[data-edition-reading]').forEach(button=>{button.setAttribute('aria-pressed',String(!enabled));button.textContent=reduced.matches?'Leitura tranquila':enabled?'Modo de leitura':'Ativar experiência';button.disabled=forcedReading;});
+    if(toggle) { toggle.textContent=reduced.matches?'Movimento reduzido':leafEnabled?'Modo de leitura':'Ativar experiência';toggle.disabled=forcedReading;toggle.setAttribute('aria-pressed',String(!leafEnabled)); }
+    all<HTMLButtonElement>('[data-edition-reading]').forEach(button=>{button.setAttribute('aria-pressed',String(!leafEnabled));button.textContent=reduced.matches?'Leitura tranquila':leafEnabled?'Modo de leitura':'Ativar experiência';button.disabled=forcedReading;});
     debug.enabled=enabled;
-    root.dataset.reading=String(!enabled);
+    debug.leafEnabled=leafEnabled;
+    root.dataset.reading=String(!leafEnabled);
   }
 
   function configure(preserve = true) {
     const anchor = preserve ? sections.find(item=>item.element.id===activeId)?.element : null;
     const oldOffset = anchor ? (scenes.some(scene=>scene.id===activeId&&scene.active)?mastHeight:anchor.getBoundingClientRect().top) : 0;
-    const nextEnabled=!requestedReading&&!reduced.matches&&!compactViewport();
+    leafEnabled=!requestedReading&&!reduced.matches;
+    const nextEnabled=leafEnabled&&!compactViewport();
     if(paused&&nextEnabled!==enabled)modeChangedWhilePaused=true;
     enabled=nextEnabled;
     root.classList.toggle('motion',enabled);
+    root.classList.toggle('leaf-motion',leafEnabled);
     root.classList.add('motion-edition');
     root.dataset.mastHidden='false';
     for(const item of all<HTMLElement>('#hero,#folha,#deslocamento-1,#deslocamento-2')) item.dataset.pin='false';
@@ -91,7 +106,8 @@ export function initMotion() {
       scene.track?.style.removeProperty('transform');
       scene.panels.forEach(panel=>{panel.inert=false;panel.removeAttribute('aria-hidden');panel.style.removeProperty('opacity');panel.hidden=false;});
     }
-    if(flight) flight.hidden=!enabled;
+    if(flight) flight.hidden=!leafEnabled;
+    if(!leafEnabled) clearLeafGlow();
     syncControls(); measure();
     if(anchor&&!paused) scrollTo({top:scrollY+anchor.getBoundingClientRect().top-oldOffset,behavior:'instant'});
     request();
@@ -170,7 +186,7 @@ export function initMotion() {
       if(prev)prev.disabled=scene.index===0;
       if(next)next.disabled=scene.index===scene.panels.length-1;
     }
-    if(enabled)renderLeaf(y);
+    if(leafEnabled)renderLeaf(y);
     debug.scenes=scenes.map(s=>({id:s.id,start:s.start,end:s.start+s.run,raw:s.progress*(s.panels.length-1),visual:s.progress*(s.panels.length-1),lastIndex:s.index,static:!enabled}));
     metrics.idle=true;
   }
@@ -241,7 +257,7 @@ export function initMotion() {
     let ly=mix(origin.y-y,height*.49,smooth(launch));
     let rz=118-Math.sin(p*Math.PI*12)*42+smooth(launch)*70,rx=Math.sin(p*Math.PI*9)*25,ry=Math.sin(p*Math.PI*13)*48;
     let scale=width<760?.66:.82;
-    const scene=scenes.find(s=>s.kind==='horizontal'&&y>=s.start-height*.25&&y<=s.start+s.run+height*.25);
+    const scene=enabled?scenes.find(s=>s.kind==='horizontal'&&y>=s.start-height*.25&&y<=s.start+s.run+height*.25):undefined;
     if(scene) {
       const q=scene.progress,sign=scene.reverse?-1:1;
       const weight=smooth((y-scene.start+height*.25)/(height*.25))*(1-smooth((y-scene.start-scene.run)/(height*.25)));
@@ -260,18 +276,29 @@ export function initMotion() {
     flight.style.transform=`translate3d(${x}px,${ly}px,0)`;
     depth.style.transform=`translate(-50%,-91%) scale(${scale})`;
     leaf.style.transform=`perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;
+    // Rotation extends beyond the stem's anchor. Keep the painted rectangle
+    // inside the screen rather than clamping only that one invisible point.
+    const bounds=leaf.getBoundingClientRect(),edge=10;
+    const dx=bounds.left<edge?edge-bounds.left:bounds.right>width-edge?width-edge-bounds.right:0;
+    const dy=bounds.top<edge?edge-bounds.top:bounds.bottom>height-edge?height-edge-bounds.bottom:0;
+    if(dx||dy){x+=dx;ly+=dy;flight.style.transform=`translate3d(${x}px,${ly}px,0)`;}
+    const lightX=bounds.left+dx+bounds.width/2,lightY=bounds.top+dy+bounds.height/2;
     root.dataset.leafOccluded=occluded?'1':'0';root.dataset.leafDepth='front';
     debug.leaf={x,y:ly,rotation:rz,mode:land>.99?'rest':'flight',occlusionState:occluded?'occluded':'visible'};
     // Limit geometry reads to the current chapter, only after input changes.
-    all<HTMLElement>('[data-leaf-lit]').forEach(mark=>{delete mark.dataset.leafLit;mark.style.removeProperty('--leaf-glow');});
+    clearLeafGlow();
     if(!occluded){
       const current=sections.find(s=>s.element.id===activeId)?.element;
       if(current)for(const mark of all<HTMLElement>('strong,em',current).slice(0,28)){
         const r=mark.getBoundingClientRect();if(!r.width||r.bottom<0||r.top>height)continue;
-        const distance=Math.hypot(Math.max(r.left-x,0,x-r.right)*.3,(r.top+r.bottom)/2-ly);
+        const distance=Math.hypot(Math.max(r.left-lightX,0,lightX-r.right)*.3,(r.top+r.bottom)/2-lightY);
         const glow=1-clamp(distance/100);if(glow>.03){mark.dataset.leafLit='true';mark.style.setProperty('--leaf-glow',String(glow));}
       }
     }
+  }
+
+  function clearLeafGlow() {
+    all<HTMLElement>('[data-leaf-lit]').forEach(mark=>{delete mark.dataset.leafLit;mark.style.removeProperty('--leaf-glow');});
   }
 
   function scrollToY(top:number) { scrollTo({top:clamp(top,0,maxScroll),behavior:reduced.matches||!enabled||Math.abs(top-scrollY)>height*1.5?'instant':'smooth'});request(); }
@@ -352,22 +379,31 @@ export function initMotion() {
   });
   orbitNodes.forEach((node,index)=>node.addEventListener('click',()=>{orbitSelection=index;orbitSelectionAt=sceneProgress.espiral||0;orbitNodes.forEach((item,i)=>item.setAttribute('aria-pressed',String(i===index)));updateOrbitNote(index);request();}));
   if(leaf){
-    leaf.addEventListener('pointerdown',event=>{if(!enabled||event.pointerType!=='mouse'||event.button!==0)return;event.preventDefault();leafDrag={x:event.clientX,y:event.clientY};leaf.setPointerCapture(event.pointerId);request();});
+    leaf.addEventListener('pointerdown',event=>{if(!leafEnabled||event.pointerType!=='mouse'||event.button!==0)return;event.preventDefault();leafDrag={x:event.clientX,y:event.clientY};leaf.setPointerCapture(event.pointerId);request();});
     leaf.addEventListener('pointermove',event=>{if(!leafDrag)return;leafDrag={x:event.clientX,y:event.clientY};request();});
     const release=(event:PointerEvent)=>{leafDrag=null;if(leaf.hasPointerCapture(event.pointerId))leaf.releasePointerCapture(event.pointerId);request();};
     leaf.addEventListener('pointerup',release);leaf.addEventListener('pointercancel',release);
   }
-  all<HTMLButtonElement>('[data-edition-reading]').forEach(button=>button.addEventListener('click',()=>window.SLMotion.setReading(enabled)));
+  all<HTMLButtonElement>('[data-edition-reading]').forEach(button=>button.addEventListener('click',()=>window.SLMotion.setReading(leafEnabled)));
   addEventListener('scroll',request,{passive:true});
-  addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=window.setTimeout(()=>configure(),140);},{passive:true});
+  addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=window.setTimeout(()=>{
+    const landscape=matchMedia('(orientation: landscape)').matches;
+    if(innerWidth!==layoutWidth||landscape!==layoutLandscape||(innerWidth>=760&&innerHeight!==layoutHeight)){
+      layoutWidth=innerWidth;layoutLandscape=landscape;layoutHeight=smallViewportHeight();configure();
+    }else{
+      const active=scenes.find(scene=>scene.active),progress=active?.progress;
+      measure();
+      if(active&&progress!==undefined&&!paused)scrollTo({top:active.start+active.run*progress,behavior:'instant'});
+    }
+  },140);},{passive:true});
   addEventListener('load',measure,{once:true});
   reduced.addEventListener('change',()=>configure());
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&raf){cancelAnimationFrame(raf);raf=0;metrics.idle=true;}else request();});
   mast?.addEventListener('focusin',()=>{root.dataset.mastHidden='false';});
   document.fonts?.ready.then(measure);
-  document.addEventListener('sl:layout-change',()=>{clearTimeout(resizeTimer);resizeTimer=window.setTimeout(measure,90);});
+  document.addEventListener('sl:layout-change',()=>{clearTimeout(layoutTimer);layoutTimer=window.setTimeout(measure,90);});
   // Images/details may change reading flow; observe chapter dimensions, not transforms.
-  const resizeObserver=new ResizeObserver(()=>{if(!paused){clearTimeout(resizeTimer);resizeTimer=window.setTimeout(measure,80);}});
+  const resizeObserver=new ResizeObserver(()=>{if(!paused){clearTimeout(layoutTimer);layoutTimer=window.setTimeout(measure,80);}});
   all<HTMLElement>('main > .section').forEach(section=>resizeObserver.observe(section));
   configure(false);render();debug.ready=true;
   if(document.querySelector('dialog[open]'))window.SLMotion.pause();

@@ -141,3 +141,15 @@ html.motion-edition .leaf-depth{width:72px}@media(max-width:759px){html.motion-e
  #deslocamento-2 .knowledge-collage{height:auto;min-height:0;max-height:none;aspect-ratio:1.08;margin:16px 0 20px}
  .atelier-heading h2{font-size:43px}
 }
+
+/* Keep the mobile controls as usable as the reading surface. */
+html.motion-edition:not(.motion) #laboratorio .landing-project [data-landing-gallery]{height:clamp(320px,68svh,560px);min-height:0}
+@media(max-width:759px){
+ .mast .wordmark{display:inline-flex;align-items:center;min-height:44px;gap:.35em}
+ .mast .edition-reading-button{min-height:44px}
+ .atelier-input select,.atelier-input textarea{font-size:16px}
+ .work-page-selector button{min-height:44px}
+ #deslocamento-2 .knowledge-collage{margin-bottom:54px}
+ #deslocamento-2 .note-research{top:calc(100% + 8px);bottom:auto;max-width:54%;transform:rotate(2deg)}
+ .landing-phone-scroll-hint{font-size:10px;line-height:1.4}
+}
