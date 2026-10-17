@@ -11,3 +11,9 @@ dist/
 .env
 .env.*
 
+
+.edition-builds/
+.wrangler/
+.env.local
+
+node_modules-baseline/
