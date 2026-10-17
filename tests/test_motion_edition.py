@@ -149,14 +149,19 @@ with sync_playwright() as pw:
     page=context.new_page();ready(page)
     page.locator('#folha').evaluate('el=>{if(parseFloat(getComputedStyle(el).paddingLeft)<20)throw new Error("Missing editorial gutter")}')
     hero_bottom=page.locator('#hero').evaluate('el=>el.getBoundingClientRect().bottom+scrollY')
-    previous=None;positions=[]
+    previous=None;positions=[];attitudes=[]
     for y in range(0,int(hero_bottom+844*2.5),20):
         page.evaluate('(y)=>scrollTo({top:y,behavior:"instant"})',y);page.wait_for_timeout(20)
         point=page.evaluate('({...__SL_DEBUG.leaf})')
         if previous: assert abs(point['x']-previous['x'])<30,('leaf path jumps',y,previous,point)
-        if y>hero_bottom: positions.append(point['x'])
+        if y>hero_bottom:
+            positions.append(point['x']);attitudes.append(point)
         previous=point
     assert max(positions)-min(positions)>150,'leaf remains parked beside the page'
+    assert all(abs(point['rotation']-90)<30 for point in attitudes),'free-flight blade stops being horizontal'
+    assert max(p['pitch'] for p in attitudes)-min(p['pitch'] for p in attitudes)>25,'torsion remains rigid'
+    assert max(p['y'] for p in attitudes)-min(p['y'] for p in attitudes)>35,'glide has no rising turns'
+    assert all(.38*844<p['y']<.62*844 for p in attitudes),'leaf leaves the middle of the reading viewport'
     page.evaluate('SLMotion.jumpScene("trabalho",0)');page.wait_for_timeout(500)
     rect=page.locator('.work-analytics .work-evidence').bounding_box()
     leaf_rect=page.locator('#wind-leaf').bounding_box()

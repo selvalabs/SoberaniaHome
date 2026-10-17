@@ -1,4 +1,5 @@
 import '../styles/motion-edition.css';
+import { createLeafFlight } from './leaf-physics';
 
 /** One source of movement: the document's native scroll position.
  * Scenes use CSS sticky, never JS pin spacers. All rendering sleeps at rest. */
@@ -42,6 +43,7 @@ export function initMotion() {
   let previousY = scrollY, directionTravel = 0, activeId = 'hero', leafDrag: {x:number;y:number} | null = null;
   let sections: {element: HTMLElement; top: number; bottom: number}[] = [];
   let origin = {x: innerWidth * .31, y: 240}, dock = {x: innerWidth * .65, y: 0};
+  const leafFlight = createLeafFlight();
   const metrics = {frames: 0, measurements: 0, idle: true};
   const scenes: Scene[] = [];
   let pendingSceneJump: {scene: Scene; index: number} | null = null;
@@ -290,32 +292,36 @@ export function initMotion() {
 
   function renderLeaf(y:number) {
     if(!flight||!leaf||!depth)return;
-    const hero=sections[0],phase=y/Math.max(height,1);
+    const hero=sections[0];
     const launch=clamp(y/Math.max(1,(hero?.bottom||height)-height*.32));
-    // One continuous path from the tree to the footer. Its phase follows
-    // distance travelled, without a branch that teleports it to a margin.
-    const breeze=phase*1.15,travel=smooth(launch);
-    let x=mix(origin.x,width*(.5+Math.sin(breeze)*.34),travel);
-    let ly=mix(origin.y-y,height*(.5+Math.sin(breeze*.83)*.055),travel);
-    // The sprite's long axis is vertical: a quarter turn lays it into the wind.
-    // Broad lateral arcs, shallow pitch and a small flutter keep it floating.
-    let rz=mix(118,90,travel)+Math.sin(breeze*.85)*16,rx=14+Math.sin(breeze*.9)*12,ry=Math.sin(breeze*1.4)*22;
-    let scale=mix(width<760?.62:.82,width<760?.43:.65,travel);
+    const travel=smooth(launch);
+    // Scroll is the clock, not the force. Replaying the same position restores
+    // the same inertial state, even after a jump, reversal or toolbar resize.
+    const physics=leafFlight(y/Math.max(layoutHeight,1)*2.4);
+    const degrees=180/Math.PI;
+    const lateral=Math.tanh((physics.x-.95)*1.35);
+    let x=mix(origin.x,width*(.5+lateral*.37),travel);
+    // A following camera removes the mean descent. Kinetic energy exchanged
+    // for height gives the shallow rising cusps at the ends of each glide.
+    const dip=physics.vx**2/(2*1.45);
+    let ly=mix(origin.y-y,height*(.465+dip*.28+(physics.fallSpeed-.92)*.045),travel);
+    let rz=mix(118,90+physics.bank*degrees*.72+physics.wind*9,travel);
+    let rx=mix(7,18+physics.twist*degrees*1.6,travel);
+    let ry=mix(0,physics.vx*22+physics.angularSpeed*10,travel);
+    let scale=mix(width<760?.62:.82,(width<760?.46:.68)*(1+physics.twist*.08),travel);
+    // Scene entry never restarts the wind or substitutes a second sine path.
     const scene=enabled?scenes.find(s=>s.kind==='horizontal'&&y>=s.start-height*.25&&y<=s.start+s.run+height*.25):undefined;
-    if(scene) {
-      const q=scene.progress,sign=scene.reverse?-1:1;
-      const weight=smooth((y-scene.start+height*.25)/(height*.25))*(1-smooth((y-scene.start-scene.run)/(height*.25)));
-      x=mix(x,width*(.5+Math.sin(q*Math.PI*2)*.22*sign),weight);
-      ly=mix(ly,height*(.49+Math.sin(q*Math.PI*3)*.035),weight);
-      rz+=sign*Math.sin(q*Math.PI*2)*9*weight;ry+=Math.sin(q*Math.PI*2)*12*weight;
-    }
     const dockY=dock.y-y,land=smooth((height+180-dockY)/(height*.7+180));
     x=mix(x,dock.x,land);ly=mix(ly,dockY,land);rz=mix(rz,96,land);rx=mix(rx,7,land);ry=mix(ry,0,land);scale=mix(scale,.74,land);
     if(y>=maxScroll-1){x=dock.x;ly=dockY;rz=96;rx=7;ry=0;}
     if(leafDrag){x=leafDrag.x;ly=leafDrag.y;}
     flight.style.visibility='visible';
     flight.style.transform=`translate3d(${x}px,${ly}px,0)`;
-    depth.style.transform=`translate(-50%,-91%) scale(${scale})`;
+    const pivot=mix(91,50,travel);
+    depth.style.transformOrigin=`50% ${pivot}%`;
+    leaf.style.transformOrigin=`50% ${pivot}%`;
+    depth.style.transform=`translate(-50%,-${pivot}%) scale(${scale})`;
+    leaf.style.filter=`brightness(${.96+.08*Math.cos(rx*Math.PI/180)}) drop-shadow(0 2px 2px #1c211a20)`;
     leaf.style.transform=`perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;
     // Rotation extends beyond the stem's anchor. Keep the painted rectangle
     // inside the screen rather than clamping only that one invisible point.
@@ -335,7 +341,7 @@ export function initMotion() {
     const occluded=(covered||activeId==='referencias')&&!leafDrag;
     flight.style.opacity=occluded?'0':String(mix(1,.62,travel));
     root.dataset.leafOccluded=occluded?'1':'0';root.dataset.leafDepth='front';
-    debug.leaf={x,y:ly,rotation:rz,mode:land>.99?'rest':'flight',occlusionState:occluded?'occluded':'visible'};
+    debug.leaf={x,y:ly,rotation:rz,pitch:rx,yaw:ry,wind:physics.wind,lateralSpeed:physics.vx,fallSpeed:physics.fallSpeed,mode:land>.99?'rest':'flight',occlusionState:occluded?'occluded':'visible'};
     // Light follows the same scroll position as the leaf, including the text
     // alongside a foreground mockup. Occluding the sprite must not extinguish it.
     const nextLit=new Set<HTMLElement>();
