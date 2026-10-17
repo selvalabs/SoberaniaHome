@@ -1,148 +1,81 @@
-# Soberania Labs — V8.5.6
+# Soberania Labs — edição experimental
 
-## Edição pública: quatro dobras e Em construção
+Versão completa para avaliação na issue [#34](https://github.com/selvalabs/SoberaniaHome/issues/34), branch `feat/34-immersive-edition`. A publicação atual e a `main` permanecem independentes. Este código não publica automaticamente no GitHub Pages nem na Cloudflare.
 
-A fonte selecionada para publicação fica em `site/`. O rascunho da raiz não é
-enviado ao GitHub Pages. O pacote público contém somente as quatro dobras,
-citação, rodapé e nove imagens aprovadas; não inclui os produtos em preparação.
+## Executar
 
-Validação: instalar `requirements-pages.txt`, executar
-`python tools/build_pages_release.py` e `python tests/test_pages_release.py`.
-JavaScript nativo, sem dependências de runtime ou compilação. A auditoria de
-dependências cobre o Playwright usado na validação; não há banco ou segredos.
-
-Publicação: depois da revisão e homologação do PR, criar uma tag **anotada**
-`vMAJOR.MINOR.PATCH` no SHA de merge de `main` e enviá-la. Iniciar o workflow
-`pages.yml` a partir de `main` com `release_tag` igual a essa tag. O ambiente
-Pages permite somente esse contexto; o checkout da aplicação usa a tag
-imutável selecionada. O workflow confirma
-que a tag aponta para um commit integrado em `main`, valida o site e publica
-exclusivamente `.pages-release/`. O arquivo `release.json` identifica o SHA no ar.
-Não há deploy automático por push de branch ou tag. O dispatch exige uma tag anotada.
-
-Verificação: abrir `https://selvalabs.github.io/SoberaniaHome/`, conferir
-`release.json`, quatro seções, imagens, índice, leitura e animação no rodapé.
-Rollback: preservar as tags anteriores. O alvo anterior é `v0.1.2`
-(`600d985f863592a53365d368d72cfc9aa8f2d244`), que usa a estrutura antiga da
-raiz e não pode ser publicado pelo novo workflow sem uma adaptação. Se for
-necessário restaurá-lo, abrir uma issue/PR de rollback que promove a fonte
-daquele SHA para `site/`, validar, homologar e publicar uma nova tag anotada.
-Esse rollback restaura também a edição antiga com quinze seções: confirmar o
-impacto antes de autorizar. Releases posteriores com `site/` podem ser
-republicadas por dispatch da respectiva tag, sempre com autorização e preflight.
-
-## Execução local
-
-Para abrir a landing page, sirva este diretório como arquivos estáticos. Por
-exemplo, com Python:
+Requer Node **22.22+** (validado com 24.13), npm e as dependências fixadas no lockfile. Em um checkout novo:
 
 ```powershell
-python -m http.server 4173
+npm ci
+npm run dev -- --host 0.0.0.0 --port 4184
 ```
 
-Para executar os testes funcionais, instale as dependências e os navegadores
-do Playwright:
+A implementação é Astro 7 estático, TypeScript e CSS. O movimento usa rolagem nativa e cenas sticky; não há GSAP, vídeo de fundo, canvas contínuo ou serviço externo necessário para visitar a página.
+
+Para uma prévia estática, use sempre uma pasta nova de build:
 
 ```powershell
-python -m pip install -r requirements.txt
+$env:BUILD_DIR='.edition-builds/minha-revisao-01'
+npm run build
+python -m http.server 4184 --bind 0.0.0.0 --directory .edition-builds/minha-revisao-01
+```
+
+O endereço no Wi-Fi usa o IPv4 atual do computador e a porta escolhida. O servidor deve apontar somente para a pasta de build. Não sirva a raiz do repositório nem arquivos de ambiente. Builds anteriores são preservadas; não há comando de limpeza automática neste fluxo.
+
+## O que explorar
+
+- A abertura preserva a mensagem completa e a colagem editorial da main: árvore integrada ao título, tarja de tecnologia, destaques sobre trabalho, conhecimento e autonomia, com a assinatura Sistemas brasileiros.
+- Trabalho e laboratório aceitam rolagem, arrasto, toque e teclado. Arrastos/swipes encaixam no projeto mais próximo; resize mantém o destino, e as telas iniciais carregam antecipadamente com prioridade baixa. Cada celular mantém sua própria rolagem; a galeria de celulares também aceita movimento horizontal.
+- O processo monta seis peças com as explicações ao lado no desktop. No celular, o quadro acompanha a leitura vertical das seis etapas, com texto de 16 px. A cena de conexões reúne headline, órbitas e nove nós selecionáveis.
+- Autonomia apresenta acesso, documentação e portabilidade. Soberania permite explorar três caminhos de infraestrutura.
+- A mesa de possibilidades produz cenários locais exportáveis; há um endpoint opcional de IA separado, desabilitado por padrão.
+- O caça-palavras usa 110 referências, uma lista acessível e uma nova rodada após cinco segundos de tinta. Referência não significa endosso.
+- Manifesto com consequências práticas e Caderno com seis notas originais completas.
+- Modo de leitura, movimento reduzido, HTML sem JavaScript, FAQ e índice documental para assistentes.
+
+## Validação
+
+```powershell
+npm run check
+npm test
+npm audit --audit-level=low
+node scripts/check-static.mjs .edition-builds/minha-revisao-01
+python -m pip install -r requirements-pages.txt
 python -m playwright install chromium
-python -m pytest -q
+python tests/test_motion_edition.py --url http://127.0.0.1:4184/
+python tests/test_project_galleries.py --url http://127.0.0.1:4184/
+python tests/test_site_edition.py --url http://127.0.0.1:4184/
+python tests/test_landing_touch.py --url http://127.0.0.1:4184/
+python tests/test_atelier_edge_ui.py --url http://127.0.0.1:4184/
 ```
 
-O `scrollY` do documento é a única fonte da narrativa visual. Em ponteiros
-finos, a roda do mouse controla uma desaceleração do próprio documento; a
-folha e as cenas são atualizadas diretamente a partir da posição que está
-visível. Toque, teclado, barra de rolagem e movimento reduzido continuam
-nativos e imediatos.
+O último teste simula a API no navegador. Os testes do Worker simulam os bindings: eles não comprovam inferência real na Cloudflare. A CI valida build, tipos, segurança de dependências, política de indexação e interações principais. Os testes antigos `tests/common.py`/`test_pages_release.py` pertencem à edição anterior e não são o protocolo desta branch.
 
-Focused correction round.
+## IA na borda
 
-## Alterado nesta rodada
+[Guia do Worker](docs/EDGE-AI.md): contrato, limites, bindings e configuração para um serviço separado. `PUBLIC_EDGE_AI=true` habilita a consulta de disponibilidade no frontend; `ENABLE_AI=true` habilita o Worker somente se os bindings obrigatórios estiverem disponíveis. A geração exige uma ação explícita e informa o processamento externo.
 
-### Folha
-- curva contínua Catmull–Rom em vez de parar/recomeçar em cada dobra;
-- inércia com spring-damper;
-- rajadas em frequências diferentes;
-- inclinação reage à velocidade lateral;
-- a folha não é mais reparentada para containers locais que podiam cortá-la;
-- opacidade permanece integral: texto denso desvia a trajetória, não faz a folha desaparecer.
+Não há credencial no repositório. Um token de DNS não é tratado como autorização ou credencial de deploy de Workers. A conexão efetiva, domínio, namespace de limite e quotas devem ser configurados no ambiente aprovado.
 
-### “Precisamos de … melhores”
-- frases permanecem próximas;
-- aparecem cumulativamente uma abaixo da outra;
-- reveal curto + pequena subida;
-- frase atual recebe foco sem remover as anteriores;
-- distância de scroll reduzida.
+## Publicação e descoberta
 
-Nenhuma outra seção foi redesenhada nesta rodada.
+[Política SEO/GEO](docs/SEO-GEO.md): a prévia é `noindex`; o sitemap fica vazio. Só uma origem HTTPS confirmada com `PUBLIC_SITE_URL` e `PUBLIC_INDEXABLE=true` habilita os metadados de produção. Esta edição usa caminhos a partir da raiz do domínio e precisa de adaptação específica antes de ser publicada em um subdiretório do GitHub Pages.
 
+Produção segue issue → branch → PR → revisão/homologação → merge no GitHub → tag anotada e SHA imutável → preflight → publicação e verificação. Não usar o workflow legado `pages.yml` para publicar esta edição experimental.
 
-## V8.4
-- integra o Leaf Motion Lab ao site real;
-- folha com profundidade, perspectiva e microflutuação;
-- sem mudanças estruturais nas demais dobras.
+## Arquivos e ativos
 
+- `src/components/sections/`: conteúdo em HTML estático.
+- `src/styles/edition*.css`: linguagem visual desta revisão; `motion-edition.css` define as cenas.
+- `src/scripts/motion.ts`: motor de movimento e acessibilidade; `atelier.ts`: demonstração e integração opcional.
+- `edge/`: Worker independente e template de configuração.
+- `public/assets/edition/`: imagens WebP otimizadas; originais preservados.
+- `public/demos/landing-collection/screens/tiles/`: páginas de celular em trechos carregados conforme a leitura.
+- `scripts/optimize-edition-assets.py`: geração reproduzível dos ativos, usando Pillow. A imagem social usa fontes locais Arial/Georgia; `--font-dir` permite indicar os mesmos arquivos em outra máquina.
 
-## V8.5 — Leaf Motion 3.0
-- árvore mobile reposicionada para revelar tronco;
-- folha inicial menor, junto à copa;
-- desprendimento no primeiro scroll sem subida;
-- queda pendular, sustentação, rajadas e inércia;
-- rotateX/rotateY/rotateZ com tumbles de 180°;
-- rajada impulsiva nas duas seções horizontais;
-- escala variável para profundidade;
-- pouso deitado, com bounce e integração sob a camada frontal da pilha.
+[Relatório da revisão](docs/EXPERIMENT-34.md) · [Documentação da edição pública anterior](docs/LEGACY-PUBLIC-EDITION.md)
 
+A revisão do movimento mantém scrub nas galerias mobile a partir de 620 px de altura útil, com faixa de cor acompanhando a folha deitada. `python tests/test_leaf_flow.py --url http://127.0.0.1:4204/` verifica gesto vertical, direção, saída das cenas e tinta; detalhes e retorno estão no relatório da edição.
 
-## V8.5.4
-- corrige sumiço da folha durante o Caderno/Jornal;
-- landing agora depende da geometria real da pilha;
-- folha só é reparentada quando a pilha está visível;
-- bottom final normalizado para chegar em estado `rest`.
-
-
-## V8.5.6
-- playhead visual com velocidade máxima para amortecer roda, trackpad e touch;
-- sincronização imediata preservada apenas para navegação explícita e layout;
-- pouso final determinístico no ponto físico da pilha;
-- estado `rest` sem microflutuação residual;
-- testes de scroll rápido e pouso final baseados em condições reais;
-- dependências do Playwright documentadas para reprodução local.
-
-
-## V8.5.7
-- transição da folha sincronizada com o playhead visual;
-- estados explícitos `entering`, `occluded`, `exiting` e `visible` nas áreas escuras;
-- ocultação real por `visibility` e `opacity`, além da composição por camadas;
-- `processo` e `espiral` tratados como passagens escuras independentes;
-- retorno gradual da folha após a faixa de saída;
-- testes específicos para entrada, ocultação e reentrada.
-
-
-## V8.5.8
-- removida toda microanimação baseada em tempo da folha;
-- posição, rotação e escala passam a responder apenas ao scroll e ao assentamento físico curto;
-- RAF encerra quando a folha e as cenas alcançam seus alvos;
-- novo teste garante que o contador de frames não avança após o repouso.
-
-
-## V8.5.9
-- playhead amortecido apenas durante eventos ativos de scroll;
-- após 80 ms sem entrada, posição visual e folha sincronizam no mesmo frame;
-- novo teste garante que a folha para imediatamente após o gesto.
-
-
-## V8.6
-- folha convertida para uma visualização diretamente dirigida pelo scroll;
-- removidas mola, inércia, impulsos e qualquer força autônoma;
-- trajetória vertical monotônica: ao rolar para baixo, a folha nunca sobe;
-
-## V8.6.1
-- removido o playhead visual amortecido que atrasava folha e cenas em relação
-  ao documento;
-- a desaceleração da roda passa a avançar o `scrollY` real, antes da renderização;
-- folha, transições e cenas são uma projeção imediata do `scrollY` atual;
-- toque, teclado, seleção de texto, campos de edição e preferências de
-  movimento reduzido não são interceptados.
-- rajadas e espiral afetam apenas posição horizontal e rotação;
-- novo teste verifica a queda contínua até a pilha.
+A folha usa agora um modelo reduzido de flutter com inércia, arrasto e torção (`src/scripts/leaf-physics.ts`), amostrado pelo scroll e sem loop em repouso. Prévia desta passada: porta 4205; referência física, limites e retorno estão no relatório.

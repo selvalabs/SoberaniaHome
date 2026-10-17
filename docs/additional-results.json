@@ -1,0 +1,142 @@
+[
+  {
+    "test": "all 15 index destinations match active section",
+    "pass": true,
+    "detail": [
+      {
+        "id": "hero",
+        "active": "hero",
+        "hash": "#hero"
+      },
+      {
+        "id": "folha",
+        "active": "folha",
+        "hash": "#folha"
+      },
+      {
+        "id": "deslocamento-1",
+        "active": "deslocamento-1",
+        "hash": "#deslocamento-1"
+      },
+      {
+        "id": "deslocamento-2",
+        "active": "deslocamento-2",
+        "hash": "#deslocamento-2"
+      },
+      {
+        "id": "trabalho",
+        "active": "trabalho",
+        "hash": "#trabalho"
+      },
+      {
+        "id": "processo",
+        "active": "processo",
+        "hash": "#processo"
+      },
+      {
+        "id": "editor",
+        "active": "editor",
+        "hash": "#editor"
+      },
+      {
+        "id": "laboratorio",
+        "active": "laboratorio",
+        "hash": "#laboratorio"
+      },
+      {
+        "id": "espiral",
+        "active": "espiral",
+        "hash": "#espiral"
+      },
+      {
+        "id": "soberania",
+        "active": "soberania",
+        "hash": "#soberania"
+      },
+      {
+        "id": "referencias",
+        "active": "referencias",
+        "hash": "#referencias"
+      },
+      {
+        "id": "sobre",
+        "active": "sobre",
+        "hash": "#sobre"
+      },
+      {
+        "id": "manifesto",
+        "active": "manifesto",
+        "hash": "#manifesto"
+      },
+      {
+        "id": "caderno",
+        "active": "caderno",
+        "hash": "#caderno"
+      },
+      {
+        "id": "contato",
+        "active": "contato",
+        "hash": "#contato"
+      }
+    ]
+  },
+  {
+    "test": "native touch swipe moves page and horizontal scene",
+    "pass": true,
+    "detail": {
+      "delta": 285,
+      "phase": 0.5352008020246851
+    }
+  },
+  {
+    "test": "geometry cache stable during scroll",
+    "pass": true,
+    "detail": {
+      "before": 2,
+      "after": 2
+    }
+  },
+  {
+    "test": "spiral leaf reversible at same progress",
+    "pass": true,
+    "detail": 0.0
+  },
+  {
+    "test": "final landing matches physical pile anchor",
+    "pass": true,
+    "detail": {
+      "leaf": {
+        "x": 210.59375,
+        "y": 622.921875,
+        "rotation": 1152,
+        "mode": "rest",
+        "opacity": 1
+      },
+      "dock": {
+        "x": 210.59375,
+        "y": 622.921875,
+        "width": 1,
+        "height": 1,
+        "top": 622.921875,
+        "right": 211.59375,
+        "bottom": 623.921875,
+        "left": 210.59375
+      }
+    }
+  },
+  {
+    "test": "direct article hash opens on load",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "direct hash close returns to notebook",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "resize preserves current portfolio phase",
+    "pass": true,
+    "detail": 3.0005612932195778
+  }
+]

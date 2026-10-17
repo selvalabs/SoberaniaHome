@@ -1,0 +1,41 @@
+---
+import references from "../../data/references.json";
+---
+
+<section id="referencias" class="section prose-section references" data-number="11">
+  <div class="section-label"><span>11</span><span>As referências</span></div>
+  <h2>Não começamos do zero.</h2>
+  <div class="reference-search-top">
+    <p>110 vozes, quatro campos de conversa. Uma curadoria aberta de pensamento — não uma lista de endossos.</p>
+    <div><button type="button" class="text-link" id="open-map">ABRIR O MAPA ↗</button></div>
+  </div>
+  <div class="reference-search" data-reference-search>
+    <div class="reference-toolbar">
+      <span data-reference-round>Uma rodada · nomes da curadoria</span>
+      <button type="button" class="reference-shuffle" data-reference-shuffle>
+        <span>Cobrir e embaralhar</span>
+        <small>5 segundos</small>
+      </button>
+    </div>
+    <div class="reference-search-layout">
+      <div class="reference-board-shell" data-reference-board>
+        <div class="reference-grid" data-reference-grid role="img" aria-label="Caça-palavras com nomes da curadoria"></div>
+        <div class="reference-ink" aria-hidden="true"></div>
+      </div>
+      <aside class="reference-clues">
+        <div class="reference-clues-head">
+          <span>Nomes nesta rodada</span>
+          <span data-reference-found>0 encontrados</span>
+        </div>
+        <ul data-reference-targets></ul>
+        <details class="reference-library">
+          <summary>Ver as 110 pessoas da curadoria</summary>
+          <div data-reference-library-list class="reference-library-list">{references.map(group => <section><h4>{group.field}</h4><p>{group.people.join(" · ")}</p></section>)}</div>
+        </details>
+      </aside>
+    </div>
+    <p class="reference-status" data-reference-status aria-live="polite">Explore as letras com o mouse ou toque. Você também pode escolher um nome na lista para encontrá-lo.</p>
+  </div>
+</section>
+
+<script id="reference-data" type="application/json" set:html={JSON.stringify(references)} />

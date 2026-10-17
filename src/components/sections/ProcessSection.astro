@@ -1,0 +1,36 @@
+---
+const steps = [
+  {name:'Entender', text:'Escutar quem vive o problema. Conhecer o contexto antes de escolher a ferramenta.'},
+  {name:'Investigar', text:'Pesquisar, confrontar hipóteses e aproveitar o conhecimento que já existe.'},
+  {name:'Prototipar', text:'Tornar a ideia visível. Experimentar cedo, em escala pequena, para poder mudar.'},
+  {name:'Construir', text:'Transformar o que funcionou em sistemas claros, interoperáveis e documentados.'},
+  {name:'Testar', text:'Verificar com pessoas reais. Aprender com o uso e corrigir antes de ampliar.'},
+  {name:'Transferir', text:'Entregar acesso, documentação e conhecimento. Autonomia faz parte do produto.'}
+];
+---
+<section id="processo" class="section process-section dark" data-number="6">
+  <div class="sequence process-sequence" data-kind="process" data-states="6" data-puzzle-master="true" data-puzzle-board="true">
+    <div class="scene-frame">
+      <div class="prose-section section-intro process-intro">
+        <div class="section-label"><span>06</span><span>O processo</span></div>
+        <h2>Tecnologia começa <em>antes do código.</em></h2>
+      </div>
+      <header class="scene-head"><span>Conectar as partes. Construir com sentido.</span><span class="scene-count">01 / 06</span></header>
+      <div class="process-stage">
+        <div class="process-periphery" aria-label="Seis peças do processo. Selecione uma peça para conhecer sua etapa.">
+          <div class="process-board">
+            {steps.map((step,index)=><button type="button" class="process-node" data-process-piece={index} aria-label={`Etapa ${index+1}: ${step.name}`} aria-pressed={index===0?'true':'false'}><span>{String(index+1).padStart(2,'0')}</span><b>{step.name}</b></button>)}
+          </div>
+          <span class="process-board-note">O resultado depende de como as partes se encontram.</span>
+        </div>
+        <div class="process-panels" aria-label="Caderno de campo: as seis etapas">
+          {steps.map((step,index)=><article class="process-panel">
+            <h3><button type="button" data-process-step={index}><span class="process-step-number">{String(index+1).padStart(2,'0')}</span>{step.name}</button></h3>
+            <div class="process-body"><p>{step.text}</p></div>
+          </article>)}
+        </div>
+      </div>
+      <footer class="scene-foot"><span class="scene-hint">Role para montar · selecione uma etapa</span><div class="scene-progress" aria-hidden="true"><i></i></div><div class="scene-controls"><button type="button" data-prev aria-label="Etapa anterior">←</button><button type="button" data-next aria-label="Próxima etapa">→</button></div></footer>
+    </div>
+  </div>
+</section>
