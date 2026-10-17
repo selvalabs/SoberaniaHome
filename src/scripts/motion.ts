@@ -35,6 +35,7 @@ export function initMotion() {
   try { requestedReading = localStorage.getItem('sl-reading') === 'true'; } catch { /* Storage is optional. */ }
   let enabled = false, leafEnabled = false, paused = false, raf = 0, resizeTimer = 0, layoutTimer = 0;
   let layoutWidth = innerWidth, layoutLandscape = matchMedia('(orientation: landscape)').matches;
+  let resizedWidth = document.documentElement.clientWidth, resizedHeight = innerHeight;
   let layoutHeight = smallViewportHeight();
   let pausedAnchor: {id:string;offset:number}|null=null, modeChangedWhilePaused=false;
   let mastHeight = 72, height = innerHeight, width = innerWidth, maxScroll = 1;
@@ -43,6 +44,7 @@ export function initMotion() {
   let origin = {x: innerWidth * .31, y: 240}, dock = {x: innerWidth * .65, y: 0};
   const metrics = {frames: 0, measurements: 0, idle: true};
   const scenes: Scene[] = [];
+  let pendingSceneJump: {scene: Scene; index: number} | null = null;
   const processNodes = all<HTMLButtonElement>('#processo .process-node');
   const assembled = new Set<number>();
   let puzzleDrag: {id:number; pointer:number; x:number; y:number; dx:number; dy:number; moved:boolean} | null = null;
@@ -198,6 +200,10 @@ export function initMotion() {
       if(prev)prev.disabled=scene.index===0;
       if(next)next.disabled=scene.index===scene.panels.length-1;
     }
+    if(pendingSceneJump){
+      const {scene,index}=pendingSceneJump;
+      if(Math.abs(y-(scene.start+scene.run*index/Math.max(1,scene.panels.length-1)))<2)pendingSceneJump=null;
+    }
     if(leafEnabled)renderLeaf(y);
     debug.scenes=scenes.map(s=>({id:s.id,start:s.start,end:s.start+s.run,raw:s.progress*(s.panels.length-1),visual:s.progress*(s.panels.length-1),lastIndex:s.index,static:!enabled,flow:s.flow}));
     metrics.idle=true;
@@ -326,13 +332,13 @@ export function initMotion() {
   function jumpSection(id:string) {
     const section=document.getElementById(id);if(!section)return;
     const top=section.getBoundingClientRect().top+scrollY-mastHeight;
-    root.dataset.mastHidden='false';scrollToY(top);request();
+    pendingSceneJump=null;root.dataset.mastHidden='false';scrollToY(top);request();
   }
   function jumpScene(id:string,index:number) {
     const scene=scenes.find(item=>item.id===id);if(!scene){jumpSection(id);return;}
     const i=clamp(index,0,scene.panels.length-1);
     if(scene.flow&&leafEnabled)scrollToY(scrollY+scene.panels[i].getBoundingClientRect().top-mastHeight-scene.stageHeight-24);
-    else if(enabled)scrollToY(scene.start+scene.run*i/Math.max(1,scene.panels.length-1));
+    else if(enabled){pendingSceneJump={scene,index:i};scrollToY(scene.start+scene.run*i/Math.max(1,scene.panels.length-1));}
     else scene.panels[i]?.scrollIntoView({block:'center',behavior:'instant'});
   }
   window.SLMotion={
@@ -367,7 +373,11 @@ export function initMotion() {
       const sign=scene.reverse?1:-1;
       scrollTo({top:clamp(drag.scroll+dx*sign*1.3,scene.start-height*.15,scene.start+scene.run+height*.15),behavior:'instant'});
     });
-    const release=(event:PointerEvent)=>{if(drag?.pointer!==event.pointerId)return;drag=null;delete root.dataset.lateralDragging;if(scene.frame.hasPointerCapture(event.pointerId))scene.frame.releasePointerCapture(event.pointerId);};
+    const settle=()=>{
+      if(scrollY<scene.start||scrollY>scene.start+scene.run)return;
+      jumpScene(scene.id,Math.round((scrollY-scene.start)/scene.run*(scene.panels.length-1)));
+    };
+    const release=(event:PointerEvent)=>{if(drag?.pointer!==event.pointerId)return;const moved=drag.moved;drag=null;delete root.dataset.lateralDragging;if(scene.frame.hasPointerCapture(event.pointerId))scene.frame.releasePointerCapture(event.pointerId);if(moved&&event.type==='pointerup')settle();};
     scene.frame.addEventListener('pointerup',release);scene.frame.addEventListener('pointercancel',release);scene.frame.addEventListener('lostpointercapture',release);
     scene.frame.addEventListener('dragstart',event=>{if(!(event.target as Element).closest(controls))event.preventDefault();});
     let touch:{x:number;y:number;last:number;horizontal:boolean}|null=null;
@@ -382,7 +392,7 @@ export function initMotion() {
       if(event.cancelable)event.preventDefault();
       scrollBy({top:(x-touch.last)*(scene.reverse?1:-1)*1.5,behavior:'instant'});touch.last=x;
     },{passive:false});
-    scene.frame.addEventListener('touchend',()=>touch=null,{passive:true});scene.frame.addEventListener('touchcancel',()=>touch=null,{passive:true});
+    scene.frame.addEventListener('touchend',()=>{const horizontal=touch?.horizontal;touch=null;if(horizontal)settle();},{passive:true});scene.frame.addEventListener('touchcancel',()=>touch=null,{passive:true});
     scene.frame.addEventListener('wheel',event=>{
       if(!enabled||!scene.active||event.ctrlKey||(event.target as Element).closest(controls)||Math.abs(event.deltaX)<=Math.abs(event.deltaY))return;
       if(!event.cancelable)return;event.preventDefault();
@@ -408,14 +418,28 @@ export function initMotion() {
   }
   all<HTMLButtonElement>('[data-edition-reading]').forEach(button=>button.addEventListener('click',()=>window.SLMotion.setReading(leafEnabled)));
   addEventListener('scroll',request,{passive:true});
-  addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=window.setTimeout(()=>{
+  // Direct input takes over from a requested card transition.
+  for(const type of ['wheel','touchstart','pointerdown','keydown'])addEventListener(type,()=>{pendingSceneJump=null;},{passive:true,capture:true});
+  addEventListener('resize',()=>{
+    const active=scenes.find(scene=>scene.active&&!scene.flow);
+    const jump=pendingSceneJump?.scene===active?pendingSceneJump:null;
+    // Capture the logical position before content/ResizeObserver measurements
+    // change scene coordinates, rather than sampling a half-finished frame.
+    const progress=jump?jump.index/Math.max(1,jump.scene.panels.length-1):active?.progress;
+    clearTimeout(resizeTimer);resizeTimer=window.setTimeout(()=>{
+    // Mobile browsers also emit resize without a geometry change. Re-applying
+    // an intermediate scroll position here aborts an in-flight smooth jump.
+    if(document.documentElement.clientWidth===resizedWidth&&innerHeight===resizedHeight)return;
+    resizedWidth=document.documentElement.clientWidth;resizedHeight=innerHeight;
     const landscape=matchMedia('(orientation: landscape)').matches;
     if(innerWidth!==layoutWidth||landscape!==layoutLandscape||(innerWidth>=760&&innerHeight!==layoutHeight)){
       layoutWidth=innerWidth;layoutLandscape=landscape;layoutHeight=smallViewportHeight();configure();
     }else{
-      const active=scenes.find(scene=>scene.active&&!scene.flow),progress=active?.progress;
       measure();
-      if(active&&progress!==undefined&&!paused)scrollTo({top:active.start+active.run*progress,behavior:'instant'});
+      if(active&&progress!==undefined&&!paused){
+        if(jump){pendingSceneJump=jump;scrollToY(active.start+active.run*progress);}
+        else scrollTo({top:active.start+active.run*progress,behavior:'instant'});
+      }
     }
   },140);},{passive:true});
   addEventListener('load',measure,{once:true});

@@ -1,10 +1,11 @@
 /* Native sticky scenes. Scoped overrides replace the historical layered pins. */
 html.motion-edition {scroll-behavior:auto;}
+html.motion-edition.motion .sequence[data-motion-scene] {overflow-anchor:none;}
 html.motion-edition .mast {transition:transform .24s ease,background .24s ease;will-change:transform;}
 html.motion-edition[data-mast-hidden="true"] .mast:not(:focus-within) {transform:translateY(-110%);}
 html.motion-edition[data-lateral-dragging="true"] {cursor:grabbing;user-select:none;}
 html.motion-edition.motion .sequence[data-motion-scene] {height:calc(var(--motion-stage-height) + var(--motion-run))!important;position:relative!important;}
-html.motion-edition.motion .sequence[data-motion-scene]>.scene-frame {position:sticky!important;top:var(--motion-mast-height)!important;height:var(--motion-stage-height)!important;max-height:var(--motion-stage-height)!important;min-height:0!important;overflow:clip!important;display:grid!important;grid-template-rows:44px minmax(0,1fr) 50px!important;}
+html.motion-edition.motion .sequence[data-motion-scene]>.scene-frame {position:sticky!important;top:var(--motion-mast-height)!important;height:var(--motion-stage-height)!important;max-height:var(--motion-stage-height)!important;min-height:0!important;overflow:clip!important;display:grid!important;grid-template-rows:auto minmax(0,1fr) auto!important;}
 html.motion-edition.motion [data-motion-scene="horizontal"] .track-viewport {height:100%;min-height:0;touch-action:pan-x pan-y;}
 html.motion-edition.motion .portfolio-track {transition:none!important;}
 html.motion-edition.motion [data-motion-scene="horizontal"]>.scene-frame {outline-offset:-3px;}
@@ -16,7 +17,7 @@ html.motion-edition #leaf-flight::before {content:none!important;pointer-events:
 html.motion-edition #wind-leaf {pointer-events:none!important;touch-action:pan-y;}
 @media(hover:hover) and (pointer:fine) {html.motion-edition.leaf-motion #wind-leaf {pointer-events:auto!important;}}
 html.motion-edition.motion #processo .process-sequence>.scene-frame,
-html.motion-edition.motion #espiral .spiral-sequence>.scene-frame {grid-template-rows:auto 36px minmax(0,1fr) 46px!important;}
+html.motion-edition.motion #espiral .spiral-sequence>.scene-frame {grid-template-rows:auto auto minmax(0,1fr) auto!important;}
 html.motion-edition #processo .process-intro,
 html.motion-edition #espiral .spiral-intro {display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;gap:24px!important;padding:clamp(18px,3vh,30px) var(--pad)!important;background:#282a29!important;border-bottom:1px solid #55594e!important;}
 html.motion-edition #processo .process-intro h2,

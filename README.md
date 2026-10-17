@@ -26,7 +26,7 @@ O endereço no Wi-Fi usa o IPv4 atual do computador e a porta escolhida. O servi
 ## O que explorar
 
 - A abertura preserva a mensagem completa e a colagem editorial da main: árvore integrada ao título, tarja de tecnologia, destaques sobre trabalho, conhecimento e autonomia, com a assinatura Sistemas brasileiros.
-- Trabalho e laboratório aceitam rolagem, arrasto, toque e teclado. Cada celular mantém sua própria rolagem; a galeria de celulares também aceita movimento horizontal.
+- Trabalho e laboratório aceitam rolagem, arrasto, toque e teclado. Arrastos/swipes encaixam no projeto mais próximo; resize mantém o destino, e as telas iniciais carregam antecipadamente com prioridade baixa. Cada celular mantém sua própria rolagem; a galeria de celulares também aceita movimento horizontal.
 - O processo monta seis peças com as explicações ao lado no desktop. No celular, o quadro acompanha a leitura vertical das seis etapas, com texto de 16 px. A cena de conexões reúne headline, órbitas e nove nós selecionáveis.
 - Autonomia apresenta acesso, documentação e portabilidade. Soberania permite explorar três caminhos de infraestrutura.
 - A mesa de possibilidades produz cenários locais exportáveis; há um endpoint opcional de IA separado, desabilitado por padrão.
@@ -44,6 +44,7 @@ node scripts/check-static.mjs .edition-builds/minha-revisao-01
 python -m pip install -r requirements-pages.txt
 python -m playwright install chromium
 python tests/test_motion_edition.py --url http://127.0.0.1:4184/
+python tests/test_project_galleries.py --url http://127.0.0.1:4184/
 python tests/test_site_edition.py --url http://127.0.0.1:4184/
 python tests/test_landing_touch.py --url http://127.0.0.1:4184/
 python tests/test_atelier_edge_ui.py --url http://127.0.0.1:4184/

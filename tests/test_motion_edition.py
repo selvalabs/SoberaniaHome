@@ -19,8 +19,12 @@ def scene(page,sid,index):
     page.wait_for_timeout(300)
 
 def open_index(page):
+    # The preceding upward scroll reveals the mast. Wait for its transition
+    # before sampling coordinates; locator auto-scroll can move a sticky mast.
+    page.wait_for_function('document.querySelector("#mast").getBoundingClientRect().top>=-1')
     box=page.locator('#open-index').bounding_box()
     page.mouse.click(box['x']+box['width']/2,box['y']+box['height']/2)
+    page.wait_for_function('document.querySelector("#index-dialog").open')
 
 def leaf_state(page):
     return page.evaluate('''() => {

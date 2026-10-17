@@ -93,6 +93,16 @@ O texto dos três parágrafos foi comparado com a main renderizada e coincide ap
 
 Prévia da restauração: `.edition-builds/hero-restored-20261017-01`, porta 4192. Base desta passada: `1406439d02af003efcb92ad260f8b38fe83160db`. A comparação da main foi somente de leitura; nenhuma atualização ou publicação da main foi realizada. A prévia anterior permanece na porta 4190 para comparação e retorno. Release/tag, produção, VPS e mirror não se aplicam a esta avaliação local.
 
+### Correção das duas galerias de projetos
+
+A investigação reproduziu três falhas: um evento móvel de resize sem mudança de tamanho interrompia a navegação entre cards; o carregamento lazy podia deixar interfaces vazias dentro da faixa transformada; cabeçalho/rodapé tinham linhas de grid menores que suas alturas mínimas, cortando controles. A navegação agora ignora resize redundante, conserva o destino solicitado durante mudanças reais de altura e não concorre com a ancoragem automática do navegador dentro das cenas.
+
+Arrastos e swipes horizontais encaixam no card mais próximo ao terminar. A rolagem vertical continua nativa e os gestos dentro dos celulares permanecem independentes. As oito interfaces iniciais WebP somam 441.132 bytes e carregam antecipadamente com prioridade baixa; a hero mantém prioridade alta, e as demais telas continuam sob demanda. As linhas de cabeçalho/rodapé respeitam o tamanho real dos controles.
+
+O novo teste `test_project_galleries.py` falhou na prévia anterior ao reproduzir a parada entre cards. Na versão corrigida passou em 360×740, 390×844 e 1440×900, verificando centro físico e progresso final de cada card, resize durante a transição, todas as abas e imagens decodificadas, textos completos, controles dentro da tela, swipe real CDP e arrasto em ambos os sentidos. Também passaram tipos, build, 32 testes Node, auditorias npm/Python, recursos estáticos e as suites completas de movimento, site, toque interno e IA simulada. A interação com o índice no teste de movimento espera a navbar terminar de aparecer antes do clique, sem auto-scroll artificial do botão sticky.
+
+Prévia desta correção: `.edition-builds/projects-fixed-20261017-04`, porta 4197, IPv4 Wi-Fi verificado `192.168.1.4`. Base da passada: `ce7a35dbbfbf01e8264a2939008856458744f55b`; resultado identificado pelo head do PR #35. A prévia anterior da hero permanece na porta 4192 para comparação/retorno. Main preservada em `45ebfbbba3dd99fa64d62e6b5047901535568ef7`; sem merge, tag, release, deploy, migração ou sincronização de mirror VPS. As medições de transferência na tabela anterior pertencem à primeira revisão, antes deste carregamento antecipado das interfaces.
+
 ## Limites e próxima publicação
 
 O Worker está implementado, testado com bindings simulados e desligado por padrão. Inferência real, custo, conta, domínio, namespace de quota e deploy ainda precisam de configuração e validação no destino aprovado. O limite de requisições da Cloudflare é por localidade e não é um teto global de faturamento.

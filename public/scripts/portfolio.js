@@ -36,7 +36,6 @@
     const image=figure.querySelector('img'),caption=figure.querySelector('figcaption');
     let current=0,requestId=0;
     image.id=`work-image-${key}`;
-    if(key === "circulo" || key === "analytics") image.src=`./assets/${pages[0].asset}`;
     image.alt=pages[0].alt;
     caption.textContent=pages[0].caption;
     const selector=document.createElement('div');
