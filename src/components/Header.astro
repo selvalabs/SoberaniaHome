@@ -12,7 +12,12 @@
     <a href="#contato" data-jump>Conversar ↗</a>
   </nav>
   <div class="mast-index">
+    <button type="button" class="edition-reading-button" data-edition-reading aria-pressed="false">Modo leitura</button>
     <span id="section-counter" aria-label="Seção atual">01 / 15</span>
     <button type="button" id="open-index" aria-haspopup="dialog">Índice <span aria-hidden="true">+</span></button>
   </div>
 </header>
+<noscript>
+  <style>.mast-index{display:none}.static-index{display:flex;flex-wrap:wrap;gap:12px;padding:12px var(--pad);font:12px var(--mono);border-bottom:1px solid var(--rule)}</style>
+  <nav class="static-index" aria-label="Atalhos sem JavaScript"><a href="#trabalho">Trabalho</a><a href="#processo">Processo</a><a href="#laboratorio">Laboratório</a><a href="#manifesto">Manifesto</a><a href="#contato">Contato</a></nav>
+</noscript>

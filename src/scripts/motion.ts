@@ -1,1052 +1,376 @@
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import '../styles/motion-edition.css';
 
-gsap.registerPlugin(ScrollTrigger);
-
-declare global {
-  interface Window {
-    SLMotion: any;
-    __SL_DEBUG: any;
-    gsap: typeof gsap;
-    ScrollTrigger: typeof ScrollTrigger;
-  }
-}
-
-// Utilitários matemáticos para a física da folha
-const clamp = (v: number, a = 0, b = 1) => Math.max(a, Math.min(b, v));
-const mix = (a: number, b: number, t: number) => a + (b - a) * t;
-const smooth = (t: number) => { t = clamp(t); return t * t * (3 - 2 * t); };
-const range = (a: number, b: number, t: number) => smooth((t - a) / (b - a));
-const hold = (t: number) => range(0.18, 0.82, t);
-const smoother = (t: number) => { t = clamp(t); return t * t * t * (t * (t * 6 - 15) + 10); };
-const bell = (a: number, b: number, v: number) => {
-  if (v <= a || v >= b) return 0;
-  const q = (v - a) / (b - a);
-  return Math.sin(q * Math.PI) ** 2;
+/** One source of movement: the document's native scroll position.
+ * Scenes use CSS sticky, never JS pin spacers. All rendering sleeps at rest. */
+type SceneKind = 'horizontal' | 'process' | 'spiral';
+type Scene = {
+  id: string; kind: SceneKind; section: HTMLElement; sequence: HTMLElement;
+  frame: HTMLElement; panels: HTMLElement[]; track: HTMLElement | null;
+  reverse: boolean; start: number; run: number; progress: number; index: number;
+  offsets: number[]; active: boolean; stage?: HTMLElement; stageWidth: number; stageHeight: number;
 };
-const catmull = (p0: number, p1: number, p2: number, p3: number, t: number) => {
-  const t2 = t * t, t3 = t2 * t;
-  return 0.5 * ((2 * p1) + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 + (-p0 + 3 * p1 - 3 * p2 + p3) * t3);
+type MotionApi = {
+  pause: () => void; resume: () => void; jumpSection: (id: string) => void;
+  jumpScene: (id: string, index: number) => void; setReading: (reading: boolean) => void;
+  request: () => void; getActive: () => string;
 };
-const mobile = () => window.innerWidth < 760;
+declare global { interface Window { SLMotion: MotionApi; __SL_DEBUG: any; } }
 
-// Waypoints oficiais do Leaf Motion 5.0 (Dança Pendular Contínua & Fluida)
-interface LeafKey { p: number; x: number; y: number; s: number; rz: number; rx: number; ry: number; phase: string; }
-const leafKeys: LeafKey[] = [
-  { p: 0.00, x: 0.58, y: 0.44, s: 0.85, rz: 88, rx: 20, ry: 28, phase: 'origem' },
-  { p: 0.09, x: 0.68, y: 0.46, s: 1.15, rz: 58, rx: -10, ry: 36, phase: 'deriva-dir' },
-  { p: 0.18, x: 0.32, y: 0.48, s: 1.20, rz: 112, rx: 18, ry: -34, phase: 'danca-esq-1' },
-  { p: 0.28, x: 0.68, y: 0.50, s: 0.96, rz: 62, rx: -16, ry: 30, phase: 'danca-dir-2' },
-  { p: 0.38, x: 0.30, y: 0.48, s: 0.82, rz: 114, rx: 16, ry: -36, phase: 'danca-esq-3' },
-  { p: 0.49, x: 0.70, y: 0.51, s: 1.18, rz: 60, rx: -18, ry: 34, phase: 'trabalho-dir' },
-  { p: 0.60, x: 0.28, y: 0.49, s: 0.84, rz: 116, rx: 18, ry: -34, phase: 'processo-esq' },
-  { p: 0.70, x: 0.72, y: 0.52, s: 1.15, rz: 58, rx: -16, ry: 32, phase: 'laboratorio-dir' },
-  { p: 0.80, x: 0.30, y: 0.53, s: 0.80, rz: 114, rx: 18, ry: -36, phase: 'espiral-esq' },
-  { p: 0.89, x: 0.68, y: 0.56, s: 1.12, rz: 62, rx: -12, ry: 28, phase: 'caderno-dir' },
-  { p: 0.95, x: 0.40, y: 0.68, s: 0.90, rz: 98, rx: 12, ry: -16, phase: 'descida-final' },
-  { p: 1.00, x: 0.54, y: 0.80, s: 0.74, rz: 96, rx: 6, ry: 0, phase: 'pouso' }
-];
-
-const leafGusts = [
-  { c: 0.12, w: 0.12, amp: 0.14, twist: 8 },
-  { c: 0.30, w: 0.14, amp: -0.12, twist: -7 },
-  { c: 0.50, w: 0.15, amp: 0.16, twist: 9 },
-  { c: 0.72, w: 0.14, amp: -0.13, twist: -8 },
-  { c: 0.90, w: 0.11, amp: 0.12, twist: 7 }
-];
-
-const tumbleSteps = [
-  { a: 0.130, b: 0.210, axis: 'ry', deg: 180 },
-  { a: 0.330, b: 0.420, axis: 'rx', deg: -180 },
-  { a: 0.570, b: 0.660, axis: 'ry', deg: -180 },
-  { a: 0.840, b: 0.910, axis: 'rz', deg: 180 }
-];
-
-// O estado e a geometria da janela para projeção exata
-let geometry: any = null;
-let enabled = true;
-
-const docRect = (el: HTMLElement) => {
-  const r = el.getBoundingClientRect();
-  return { left: r.left, top: r.top + window.scrollY, width: r.width, height: r.height, right: r.right, bottom: r.bottom + window.scrollY };
-};
-
-export function initMotion() {
-  const root = document.documentElement;
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  enabled = !reduced;
-
-  root.classList.toggle('motion', enabled);
-  root.dataset.reading = enabled ? 'false' : 'true';
-
-  // Configurar stages para os holds se não existirem
-  const setupStage = (id: string, stageClass: string) => {
-    const el = document.getElementById(id);
-    if (el && !el.querySelector('.' + stageClass)) {
-      const stage = document.createElement('div');
-      stage.className = stageClass;
-      stage.append(...Array.from(el.childNodes));
-      el.append(stage);
-      return { el, stage };
-    }
-    return { el, stage: el?.querySelector('.' + stageClass) as HTMLElement };
-  };
-
-  const hero = document.getElementById('hero');
-  const choicesData = setupStage('folha', 'choices-stage');
-  const technologyData = setupStage('deslocamento-1', 'technology-stage');
-  const knowledgeData = setupStage('deslocamento-2', 'knowledge-cover-stage');
-
-  const els = {
-    mast: document.getElementById('mast') as HTMLElement,
-    flight: document.getElementById('leaf-flight') as HTMLElement,
-    depth: document.getElementById('leaf-depth') as HTMLElement,
-    leaf: document.getElementById('wind-leaf') as HTMLElement,
-    origin: document.getElementById('leaf-origin') as HTMLElement,
-    dock: document.getElementById('leaf-dock') as HTMLElement,
-    pile: document.getElementById('leaf-pile') as HTMLElement,
-    counter: document.getElementById('section-counter') as HTMLElement
-  };
-
-  if (!els.flight || !els.leaf) return;
-
-  // Medir layout e definir holds nativos
-  function measure() {
-    if (!enabled) return;
-    const vh = window.innerHeight;
-    const vw = document.documentElement.clientWidth;
-    const mast = els.mast?.getBoundingClientRect().height || 0;
-
-    const coverHeight = vh;
-    const heroViewport = Math.max(1, coverHeight - mast);
-    const heroRun = Math.round(clamp(heroViewport * 3.6, 1200, 5000) * 0.9);
-
-    if (hero) {
-      hero.style.setProperty('--hero-viewport', heroViewport + 'px');
-      hero.style.setProperty('--hero-hold', heroRun + 'px');
-      hero.dataset.pin = 'true';
-    }
-    const heroHold = heroRun;
-
-    const choices = choicesData.el;
-    const choicesStage = choicesData.stage;
-    if (choices && choicesStage) {
-      choices.dataset.pin = 'false';
-      choices.style.setProperty('--choices-viewport', heroViewport + 'px');
-      choices.style.setProperty('--choices-hold', Math.round(heroViewport * 2.4) + 'px');
-      if (heroHold && choicesStage.scrollHeight <= heroViewport + 2) choices.dataset.pin = 'true';
-    }
-
-    const technology = technologyData.el;
-    const technologyStage = technologyData.stage;
-    if (technology && technologyStage) {
-      technology.dataset.pin = choices?.dataset.pin === 'true' ? 'true' : 'false';
-      technology.style.setProperty('--technology-viewport', heroViewport + 'px');
-      technology.style.setProperty('--technology-hold', Math.round(heroViewport * 2.4) + 'px');
-      if (technologyStage.scrollHeight > heroViewport + 2) technology.dataset.pin = 'false';
-    }
-
-    const knowledge = knowledgeData.el;
-    const knowledgeStage = knowledgeData.stage;
-    if (knowledge && knowledgeStage) {
-      knowledge.dataset.pin = technology?.dataset.pin === 'true' ? 'true' : 'false';
-      knowledge.style.setProperty('--knowledge-viewport', heroViewport + 'px');
-      knowledge.style.setProperty('--knowledge-hold', Math.round(heroViewport * 2.6) + 'px');
-      if (knowledgeStage.scrollHeight > heroViewport + 2) knowledge.dataset.pin = 'false';
-    }
-
-    geometry = {
-      width: vw, height: vh, mast, heroHold, coverHeight,
-      maxScroll: Math.max(0, document.documentElement.scrollHeight - vh),
-      origin: els.origin ? docRect(els.origin) : { left: vw*0.35, top: vh*0.35, width: 0, height: 0 },
-      dock: els.dock ? docRect(els.dock) : { top: vh*2, left: vw*0.5 },
-      pile: els.pile ? docRect(els.pile) : { top: vh*2.5, left: vw*0.5 }
-    };
-
-    if (heroHold && els.origin) {
-      geometry.origin.top -= Math.min(window.scrollY, heroHold);
-    }
-
-    if (choices?.dataset.pin === 'true') {
-      const start = docRect(choices).top - mast;
-      const run = parseFloat(choices.style.getPropertyValue('--choices-hold') || '0');
-      geometry.choices = { start, end: start + run, run, viewport: heroViewport };
-    }
-    if (technology?.dataset.pin === 'true') {
-      const start = docRect(technology).top - mast;
-      const run = parseFloat(technology.style.getPropertyValue('--technology-hold') || '0');
-      geometry.technology = { start, end: start + run, run, viewport: heroViewport };
-    }
-    if (knowledge?.dataset.pin === 'true') {
-      const start = docRect(knowledge).top - mast;
-      const run = parseFloat(knowledge.style.getPropertyValue('--knowledge-hold') || '0');
-      geometry.knowledge = { start, end: start + run, run, viewport: heroViewport };
-    }
-  }
-
-  // Inicializar seções GSAP
-  setupEyebrowRainbow();
-  setupTextHighlights();
-  setupHorizontalTrack('trabalho', '.portfolio-track', '.portfolio-sequence', false);
-  setupProcessAssembly();
-  setupHorizontalTrack('laboratorio', '.portfolio-track', '.portfolio-sequence', true);
-  setupSpiralOrbit();
-  setupJournalTrack();
-  setupSectionCounter(els.counter);
-
-  // A folha depende das dimensões pós-GSAP pins
-  measure();
-  window.addEventListener('resize', measure);
-  ScrollTrigger.addEventListener('refresh', measure);
-
-  // Motor vanilla de folha
-  setupVanillaLeaf(els);
-  setupInteractiveLeafDrag(els);
-
-  window.SLMotion = {
-    pause: () => ScrollTrigger.getAll().forEach(st => st.disable()),
-    resume: () => ScrollTrigger.getAll().forEach(st => st.enable()),
-    jumpSection: (id: string) => { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: 'smooth' }); },
-    setReading: (isReading: boolean) => {
-      enabled = !isReading;
-      root.classList.toggle('motion', enabled);
-      root.dataset.reading = enabled ? 'false' : 'true';
-      const switchEl = document.getElementById('reading-switch') as HTMLInputElement | null;
-      if (switchEl) switchEl.checked = isReading;
-      els.flight.style.display = enabled ? '' : 'none';
-      if (!enabled) ScrollTrigger.getAll().forEach(st => st.disable());
-      else ScrollTrigger.getAll().forEach(st => st.enable());
-    }
-  };
-}
-
-// ---- FÍSICA VANILLA DA FOLHA (Restaurada) ----
-
-function splineKeyTarget(p: number) {
-  let i = 0;
-  while (i < leafKeys.length - 2 && p > leafKeys[i + 1].p) i++;
-  const p1 = leafKeys[i], p2 = leafKeys[Math.min(leafKeys.length - 1, i + 1)];
-  const p0 = leafKeys[Math.max(0, i - 1)], p3 = leafKeys[Math.min(leafKeys.length - 1, i + 2)];
-  const u = clamp((p - p1.p) / Math.max(0.0001, p2.p - p1.p));
-  const val = (prop: keyof LeafKey) => catmull(p0[prop] as number, p1[prop] as number, p2[prop] as number, p3[prop] as number, u);
-  return { x: val('x') * geometry.width, y: val('y') * geometry.height, scale: val('s'), rx: val('rx'), ry: val('ry'), rz: val('rz') };
-}
-
-function gustAt(p: number) {
-  let gx = 0, twist = 0;
-  for (const g of leafGusts) {
-    const env = bell(g.c - g.w, g.c + g.w, p);
-    gx += g.amp * env; twist += g.twist * env;
-  }
-  return { gx, twist };
-}
-
-function tumbleAt(p: number) {
-  const out = { rx: 0, ry: 0, rz: 0 };
-  for (const e of tumbleSteps) out[e.axis as keyof typeof out] += e.deg * smoother(range(e.a, e.b, p));
-  return out;
-}
-
-function releaseTarget(y: number) {
-  if (!geometry) return { x: 0, y: 0, scale: 1, rx: 0, ry: 0, rz: 0, releasePx: 0 };
-  const { width: w, origin, mast, coverHeight, height: h } = geometry;
-  const releasePx = geometry.heroHold || (mobile() ? 270 : h * 3);
-  const raw = clamp(y / releasePx);
-  const q = smoother(raw);
-  let fall = Math.pow(raw, 1.12);
-  if (raw > 0.78) {
-    const u = (raw - 0.78) / 0.22, u2 = u * u, u3 = u2 * u;
-    const start = Math.pow(0.78, 1.12), tangent = 0.22 * 1.12 * Math.pow(0.78, 0.12);
-    fall = (2 * u3 - 3 * u2 + 1) * start + (u3 - 2 * u2 + u) * tangent + (-2 * u3 + 3 * u2);
-  }
-  const endX = w * 0.564, endY = Math.max(origin.top + 3, h - clamp(h * 0.085, 52, 88));
-  const broadSway = Math.sin(raw * Math.PI * 3) * w * (mobile() ? 0.12 : 0.11) * (0.72 + raw * 0.28);
-  const fineSway = Math.sin(raw * Math.PI * 6) * w * 0.018;
-  const floatBob = Math.sin(raw * Math.PI * 3) * h * 0.018 * (1 - raw * 0.28) * (1 - smoother(range(0.78, 1, raw)));
-  return {
-    x: mix(origin.left, endX, q) + broadSway + fineSway,
-    y: y <= 1 ? origin.top + 3 : Math.max(mast + 22, mix(origin.top + 3, endY, fall) + floatBob),
-    scale: mix(mobile() ? 0.64 : 0.72, mobile() ? 0.80 : 0.84, q),
-    rx: mix(0, 24, q) + Math.sin(raw * Math.PI * 2) * 18,
-    ry: mix(-5, 38, q) + Math.sin(raw * Math.PI * 2.3) * 42,
-    rz: mix(mobile() ? 128 : 142, 88, q) + Math.sin(raw * Math.PI * 2.15) * 34,
-    releasePx
-  };
-}
-
-function carriedDistance(distance: number, total: number) {
-  const d = clamp(distance, 0, total), r = Math.min(total / 3, clamp((geometry.coverHeight || geometry.height) * 0.12, 80, 120));
-  const entry = (v: number) => { const u = clamp(v / r); return r * (u * u * u - 0.5 * u * u * u * u); };
-  if (d < r) return entry(d);
-  if (d > total - r) return total - r - entry(total - d);
-  return d - r / 2;
-}
-
-function carriedPose(pose: any, distance: number, total: number, toX: number) {
-  const p = clamp(distance / total), q = smoother(p);
-  const flutter = Math.sin(p * Math.PI * 2) * Math.pow(Math.sin(p * Math.PI), 2);
-  return {
-    ...pose, x: mix(pose.x, toX, q) + geometry.width * 0.018 * flutter,
-    y: pose.y - carriedDistance(distance, total),
-    rx: mix(pose.rx, 14, q) + flutter * 8,
-    ry: mix(pose.ry, 12, q) + flutter * 16,
-    rz: mix(pose.rz, 90, q) + flutter * 22
-  };
-}
-
-function choicesFall(p: number) {
-  const c = geometry.choices, end = releaseTarget(geometry.heroHold);
-  const travel = c.start - geometry.heroHold;
-  const start = carriedPose(end, travel, travel, geometry.width * 0.18);
-  const q = smoother(p), sway = Math.sin(p * Math.PI * 3) * Math.pow(Math.sin(p * Math.PI), 2);
-  return {
-    ...end, x: mix(start.x, end.x, q) + geometry.width * 0.18 * sway, y: mix(start.y, end.y, q),
-    rx: mix(start.rx, 12, q) + Math.sin(p * Math.PI * 4) * 12 * Math.pow(Math.sin(p * Math.PI), 2),
-    ry: mix(start.ry, 18, q) + sway * 38, rz: mix(start.rz, 102, q) + sway * 40
-  };
-}
-
-function chapterTarget(y: number) {
-  const c = geometry.choices; if (!c || y <= geometry.heroHold) return null;
-  const end = releaseTarget(geometry.heroHold);
-  if (y < c.start) return carriedPose(end, y - geometry.heroHold, c.start - geometry.heroHold, geometry.width * 0.18);
-  if (y <= c.end) return choicesFall(clamp((y - c.start) / c.run));
-  const tech = geometry.technology;
-  if (tech) {
-    const passage = tech.start - c.end;
-    if (y < tech.start) return carriedPose(choicesFall(1), y - c.end, passage, geometry.width * 0.82);
-    if (y <= tech.end) return technologyFall(clamp((y - tech.start) / tech.run));
-    const k = geometry.knowledge;
-    if (k) {
-      if (y < k.start) return carriedPose(technologyFall(1), y - tech.end, k.start - tech.end, geometry.width * 0.78);
-      if (y <= k.end) return knowledgeFall(clamp((y - k.start) / k.run));
-      if (y <= k.end + k.viewport) return carriedPose(knowledgeFall(1), y - k.end, k.viewport, geometry.width * 0.18);
-      return null;
-    }
-    if (y <= tech.end + tech.viewport) return carriedPose(technologyFall(1), y - tech.end, tech.viewport, geometry.width * 0.78);
-    return null;
-  }
-  if (y <= c.end + c.viewport) return carriedPose(choicesFall(1), y - c.end, c.viewport, geometry.width * 0.82);
-  return null;
-}
-
-function technologyFall(p: number) {
-  const c = geometry.choices, tech = geometry.technology, end = releaseTarget(geometry.heroHold);
-  const start = carriedPose(choicesFall(1), tech.start - c.end, tech.start - c.end, geometry.width * 0.82);
-  const q = smoother(p), sway = Math.sin(p * Math.PI * 3) * Math.pow(Math.sin(p * Math.PI), 2);
-  return {
-    ...end, x: mix(start.x, geometry.width * 0.24, q) + geometry.width * 0.16 * sway, y: mix(start.y, end.y, q),
-    rx: mix(start.rx, 12, q) + sway * 10, ry: mix(start.ry, 18, q) + sway * 32, rz: mix(start.rz, 102, q) + sway * 38
-  };
-}
-
-function knowledgeFall(p: number) {
-  const tech = geometry.technology, k = geometry.knowledge, end = releaseTarget(geometry.heroHold);
-  const start = carriedPose(technologyFall(1), k.start - tech.end, k.start - tech.end, geometry.width * 0.78);
-  const q = smoother(p), sway = Math.sin(p * Math.PI * 3) * Math.pow(Math.sin(p * Math.PI), 2);
-  return {
-    ...end, x: mix(start.x, geometry.width * 0.3, q) + geometry.width * 0.16 * sway, y: mix(start.y, end.y, q),
-    rx: mix(start.rx, 12, q) + sway * 10, ry: mix(start.ry, 18, q) + sway * 32, rz: mix(start.rz, 102, q) + sway * 38
-  };
-}
-
-let dragOffset = { x: 0, y: 0 };
-
-function setupVanillaLeaf(els: any) {
-  gsap.ticker.add(() => {
-    if (!enabled || !geometry) return;
-    const y = window.scrollY;
-    const release = releaseTarget(y);
-    let t: any;
-    let depth = 'mid';
-
-    if (y <= release.releasePx) {
-      t = release;
-    } else {
-      const chapter = chapterTarget(y);
-      if (chapter) {
-        t = chapter;
-      } else {
-        const { width: w, height: h, dock, mast, maxScroll } = geometry;
-        const flightP = clamp((y - release.releasePx) / Math.max(1, maxScroll - release.releasePx));
-        const releaseEnd = releaseTarget(release.releasePx);
-        t = splineKeyTarget(flightP);
-
-        const tb = tumbleAt(flightP);
-        const now = performance.now() * 0.0014;
-
-        // Microflutuação sutil de ar ambiente em repouso
-        const idleY = Math.sin(now * 2.0) * 3.2;
-        const idleX = Math.cos(now * 1.5) * 2.5;
-        const idleRot = Math.sin(now * 1.7) * 2.0;
-
-        t.x += idleX;
-        t.y += idleY;
-        t.rz += tb.rz + idleRot;
-        t.ry += tb.ry;
-        t.rx += tb.rx;
-
-        // Transição inicial de descolamento suave do topo
-        const takeoffBlend = smoother(range(0, 0.05, flightP));
-        if (takeoffBlend < 1) {
-          t.x = mix(releaseEnd.x, t.x, takeoffBlend);
-          t.y = mix(releaseEnd.y, t.y, takeoffBlend);
-          t.scale = mix(releaseEnd.scale, t.scale, takeoffBlend);
-          t.rx = mix(releaseEnd.rx, t.rx, takeoffBlend);
-          t.ry = mix(releaseEnd.ry, t.ry, takeoffBlend);
-          t.rz = mix(releaseEnd.rz, t.rz, takeoffBlend);
-        }
-
-        const exitRun = clamp(h * 2.8, 1600, 3000), exitP = clamp((y - release.releasePx) / exitRun);
-        if (!geometry.choices && exitP < 1) {
-          const before = releaseTarget(release.releasePx - 1);
-          const u = clamp(exitP / 0.55), u2 = u * u, u3 = u2 * u, leftX = w * 0.16;
-          const tangent = (releaseEnd.x - before.x) * exitRun * 0.55;
-          const traverse = (2 * u3 - 3 * u2 + 1) * releaseEnd.x + (u3 - 2 * u2 + u) * tangent + (-2 * u3 + 3 * u2) * leftX;
-          const linger = bell(0.55, 0.72, exitP) * Math.sin(range(0.55, 0.72, exitP) * Math.PI * 2) * w * 0.018;
-          const bridge = smoother(clamp((exitP - 0.60) / 0.40)), turn = smoother(clamp(exitP / 0.42));
-          const flutter = bell(0, 0.72, exitP);
-          t.x = mix(traverse + linger, t.x, bridge);
-          t.y = mix(releaseEnd.y + Math.sin(exitP * Math.PI * 4) * 3 * flutter, t.y, bridge);
-          t.rz = mix(mix(releaseEnd.rz, 90, turn) + Math.sin(turn * Math.PI) * 35 + Math.sin(exitP * Math.PI * 4) * 9 * flutter, t.rz, bridge);
-          t.ry = mix(mix(releaseEnd.ry, 12, turn) + Math.sin(turn * Math.PI) * 20, t.ry, bridge);
-          t.rx = mix(mix(releaseEnd.rx, 8, turn) + Math.sin(exitP * Math.PI * 4) * 6 * flutter, t.rx, bridge);
-          t.scale = mix(releaseEnd.scale, t.scale, bridge);
-        }
-
-        if (geometry.choices) {
-          const c = geometry.knowledge || geometry.technology || geometry.choices, joinStart = c.end + c.viewport;
-          const join = smoother(clamp((y - joinStart) / c.viewport));
-          if (join < 1) {
-            const pose = carriedPose(geometry.knowledge ? knowledgeFall(1) : geometry.technology ? technologyFall(1) : choicesFall(1), c.viewport, c.viewport, geometry.width * (geometry.knowledge ? 0.18 : geometry.technology ? 0.78 : 0.82));
-            for (const key of ['x', 'y', 'scale', 'rx', 'ry', 'rz']) t[key as keyof typeof t] = mix(pose[key as keyof typeof pose], t[key as keyof typeof t], join);
-          }
-        }
-
-        // Condução elegante nos capítulos de rolagem horizontal (Trabalho e Laboratório)
-        for (const s of horizontalScenes) {
-          const start = s.getStart();
-          const end = s.getEnd();
-          const run = Math.max(1, end - start);
-          const transition = (h - mast) * 0.45;
-          const enter = smoother(clamp((y - (start - transition)) / transition));
-          const leave = 1 - smoother(clamp((y - end) / transition));
-          const weight = enter * leave;
-          if (weight <= 0) continue;
-
-          const progress = clamp((y - start) / run);
-          const phase = progress * Math.PI * 2;
-          const dir = s.reverse ? -1 : 1;
-          const sway = Math.sin(phase);
-          const centre = mast + (h - mast) * (0.48 + 0.06 * sway);
-
-          t.y = mix(t.y, centre, weight);
-          t.x = mix(t.x, w * (0.5 + dir * (mobile() ? 0.18 : 0.24) * sway), weight);
-          t.rz += dir * (180 * smoother(progress) * enter + 32 * sway * weight);
-          t.ry += dir * 85 * Math.sin(phase) * weight;
-          t.rx += 18 * Math.cos(phase) * weight;
-          t.scale *= 1 + (0.18 * Math.sin(phase) * weight);
-          depth = 'front';
-        }
-
-        // Aproximação final fluida diretamente conectada à geometria do rodapé
-        const dockViewportY = geometry.dock.top - y;
-        const startBand = mobile() ? 260 : 360;
-        const startLanding = dockViewportY < h + startBand;
-        let landPhase = 'none', contactAmt = 0, settleAmt = 0;
-        
-        if (startLanding) {
-          const near = clamp((h + startBand - dockViewportY) / (startBand + h * 0.55));
-          const approach = smoother(near);
-          contactAmt = smoother(range(0.56, 0.84, near));
-          settleAmt = smoother(range(0.82, 1, near));
-          
-          t.x = mix(t.x, geometry.dock.left, approach);
-          t.y = mix(t.y, dockViewportY, approach);
-          t.scale = mix(t.scale, mobile() ? 0.76 : 0.74, approach);
-          t.rx = mix(t.rx, mix(16, 7, contactAmt), approach);
-          t.ry = mix(t.ry, 0, approach);
-          t.rz = mix(t.rz, mix(110, 96, contactAmt), approach);
-          depth = 'front';
-          
-          if (settleAmt > 0.985) landPhase = 'rest';
-          else if (contactAmt > 0.02) landPhase = settleAmt > 0.1 ? 'settle' : 'contact';
-          else landPhase = 'approach';
-        }
-
-        if (y >= geometry.maxScroll - 1) {
-          t.x = geometry.dock.left;
-          t.y = dockViewportY;
-          t.scale = mobile() ? 0.76 : 0.74;
-          t.rx = 7; t.ry = 0; t.rz = 96;
-          depth = 'front';
-          landPhase = 'rest'; contactAmt = 1; settleAmt = 1;
-        }
-      }
-    }
-
-    // Oclusão geométrica em seções escuras (Processo e Espiral)
-    const occlusion = checkOcclusion(y);
-    const isOccluded = occlusion.state === 'occluded';
-    document.documentElement.dataset.leafOccluded = isOccluded ? '1' : '0';
-
-    if (isOccluded || occlusion.state === 'entering') {
-      depth = 'back';
-    }
-
-    const leafOpacity = occlusion.state === 'entering'
-      ? 1 - occlusion.progress
-      : occlusion.state === 'exiting'
-      ? occlusion.progress
-      : isOccluded ? 0 : 1;
-
-    els.flight.style.opacity = leafOpacity.toFixed(3);
-    els.flight.style.visibility = isOccluded ? 'hidden' : 'visible';
-    document.documentElement.dataset.leafDepth = depth;
-
-    if (isNaN(t.x) || isNaN(t.y)) {
-      console.error('Leaf coordinates became NaN!', t);
-    }
-
-    els.flight.style.transform = `translate3d(${t.x + dragOffset.x}px, ${t.y + dragOffset.y}px, 0)`;
-    els.depth.style.transform = `translate(-50%, -91%) scale(${t.scale})`;
-    els.leaf.style.transform = `perspective(${mobile() ? 610 : 860}px) rotateX(${t.rx}deg) rotateY(${t.ry}deg) rotateZ(${t.rz}deg)`;
-    els.leaf.style.filter = `saturate(0.96) contrast(1.03) drop-shadow(0 6px 14px rgba(28,33,26,0.18))`;
-
-    // Renders physical distance highlights
-    try {
-      renderHighlights(t.x, t.y, y);
-    } catch (err) {
-      console.error('Highlights error:', err);
-    }
-  });
-}
-
-function checkOcclusion(y: number) {
-  if (!geometry) return { state: 'visible', progress: 0 };
-  const h = geometry.height;
-  const darkSections = ['processo', 'espiral']
-    .map(id => document.getElementById(id))
-    .filter(Boolean) as HTMLElement[];
-
-  for (const sec of darkSections) {
-    const rect = docRect(sec);
-    const entryStart = rect.top - h * 0.40;
-    const entryEnd = rect.top + h * 0.15;
-    const exitStart = rect.bottom - h * 0.35;
-    const exitEnd = rect.bottom + h * 0.15;
-
-    if (y < entryStart || y > exitEnd) continue;
-    if (y < entryEnd) {
-      return { state: 'entering', progress: smoother(range(entryStart, entryEnd, y)) };
-    }
-    if (y <= exitStart) {
-      return { state: 'occluded', progress: 1 };
-    }
-    return { state: 'exiting', progress: smoother(range(exitStart, exitEnd, y)) };
-  }
-  return { state: 'visible', progress: 0 };
-}
-
+const clamp = (n: number, min = 0, max = 1) => Math.max(min, Math.min(max, n));
+const mix = (a: number, b: number, p: number) => a + (b - a) * p;
+const smooth = (n: number) => { const p = clamp(n); return p * p * (3 - 2 * p); };
+const all = <T extends Element = HTMLElement>(selector: string, scope: ParentNode = document) => Array.from(scope.querySelectorAll<T>(selector));
+const controls = 'a,button,input,textarea,select,summary,[contenteditable],dialog,.landing-phone-rail,.landing-phone-screen,[data-independent-scroll]';
 export const sceneProgress: Record<string, number> = {};
 
-function setupInteractiveLeafDrag(els: any) {
-  let isDragging = false;
-  let startX = 0, startY = 0;
+export function initMotion() {
+  if (window.__SL_DEBUG?.ready) return;
+  const root = document.documentElement;
+  const mast = document.getElementById('mast');
+  const flight = document.getElementById('leaf-flight');
+  const depth = document.getElementById('leaf-depth');
+  const leaf = document.getElementById('wind-leaf');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  let requestedReading = false;
+  try { requestedReading = localStorage.getItem('sl-reading') === 'true'; } catch { /* Storage is optional. */ }
+  let enabled = false, paused = false, raf = 0, resizeTimer = 0;
+  let pausedAnchor: {id:string;offset:number}|null=null, modeChangedWhilePaused=false;
+  let mastHeight = 72, height = innerHeight, width = innerWidth, maxScroll = 1;
+  let previousY = scrollY, directionTravel = 0, activeId = 'hero', leafDrag: {x:number;y:number} | null = null;
+  let sections: {element: HTMLElement; top: number; bottom: number}[] = [];
+  let origin = {x: innerWidth * .31, y: 240}, dock = {x: innerWidth * .65, y: 0};
+  const metrics = {frames: 0, measurements: 0, idle: true};
+  const scenes: Scene[] = [];
+  const processNodes = all<HTMLButtonElement>('#processo .process-node');
+  const assembled = new Set<number>();
+  let puzzleDrag: {id:number; pointer:number; x:number; y:number; dx:number; dy:number; moved:boolean} | null = null;
+  let puzzleSuppressClick = false;
+  let orbitSelection: number | null = null, orbitSelectionAt = 0;
+  const orbitNodes = all<HTMLButtonElement>('#espiral [data-orbit-node]');
+  const processOrigins = [[20,88],[518,88],[1016,88],[20,507],[518,507],[1016,507]];
+  const debug: any = window.__SL_DEBUG = {ready:false,enabled:false,activeId:'hero',scenes:[],leaf:{},metrics,scroll:scrollY,maxScroll:1};
 
-  els.leaf.addEventListener('pointerdown', (e: PointerEvent) => {
-    isDragging = true;
-    startX = e.clientX - dragOffset.x;
-    startY = e.clientY - dragOffset.y;
-    els.leaf.setPointerCapture(e.pointerId);
-  });
-
-  window.addEventListener('pointermove', (e: PointerEvent) => {
-    if (!isDragging) return;
-    dragOffset.x = e.clientX - startX;
-    dragOffset.y = e.clientY - startY;
-  });
-
-  const endDrag = () => {
-    if (!isDragging) return;
-    isDragging = false;
-    gsap.to(dragOffset, { x: 0, y: 0, duration: 1.2, ease: 'elastic.out(1, 0.4)' });
-  };
-
-  window.addEventListener('pointerup', endDrag);
-  window.addEventListener('pointercancel', endDrag);
-}
-
-// ---- EFEITOS GSAP (Mantidos e limpos) ----
-
-function setupEyebrowRainbow() {
-  const hero = document.getElementById('hero');
-  if (!hero) return;
-  const eyebrowGlyphs = gsap.utils.toArray<HTMLElement>('.eyebrow-glyph');
-  ScrollTrigger.create({
-    trigger: hero, start: 'top top', end: 'bottom top', scrub: true,
-    onUpdate: (self) => {
-      const p = self.progress;
-      eyebrowGlyphs.forEach((glyph, i) => {
-        const hue = (185 + p * 790 + i * 19) % 360;
-        glyph.style.color = p === 0 ? '' : `hsl(${hue} 90% 23%)`;
-        glyph.style.textShadow = p === 0 ? '' : `0 0 1px #fff9e8,0 0 4px hsl(${hue} 100% 60% / .85),0 0 9px hsl(${(hue + 65) % 360} 100% 60% / .55)`;
-      });
-    }
-  });
-}
-
-const markSelector = 'strong, em, .technology-note, .knowledge-note, .hero-future';
-let highlightElements: HTMLElement[] = [];
-let litMarks = new Set<HTMLElement>();
-
-function setupTextHighlights() {
-  highlightElements = gsap.utils.toArray<HTMLElement>(markSelector);
-}
-
-function renderHighlights(leafX: number, leafY: number, y: number) {
-  if (!enabled || !geometry) return;
-  const radius = clamp(window.innerHeight * 0.12, 65, 120);
-  const nextLit = new Set<HTMLElement>();
-  
-  highlightElements.forEach((mark, i) => {
-    const r = mark.getBoundingClientRect();
-    if (r.width === 0 || r.height === 0 || r.bottom < 0 || r.top > window.innerHeight) return;
-    
-    const centre = (r.top + r.bottom) / 2;
-    const dx = Math.max(r.left - leafX, 0, leafX - r.right);
-    const lateral = sceneProgress['trabalho'] > 0 || sceneProgress['laboratorio'] > 0;
-    const vertical = lateral ? Math.max(r.top - leafY, 0, leafY - r.bottom) : leafY - centre;
-    const distance = Math.hypot(vertical, dx * 0.18);
-    
-    const amount = 1 - smoother(clamp(distance / (lateral ? radius : r.height / 2 + radius)));
-    
-    if (amount >= 0.001) {
-      const hue = (y * 0.43 + i * 47) % 360;
-      mark.style.textShadow = `0 0 2px hsl(${hue} 100% 80% / ${amount * 0.95}),0 0 6px hsl(${hue} 100% 60% / ${amount}),0 0 15px hsl(${(hue + 65) % 360} 100% 55% / ${amount * 0.8})`;
-      nextLit.add(mark);
-    }
-  });
-
-  litMarks.forEach(mark => {
-    if (!nextLit.has(mark)) mark.style.textShadow = '';
-  });
-  litMarks = nextLit;
-}
-
-function setupSectionCounter(counterEl: HTMLElement | null) {
-  const allSections = Array.from(document.querySelectorAll<HTMLElement>('main > .section'));
-  allSections.forEach(section => {
-    const num = section.dataset.number || '01';
-    ScrollTrigger.create({ trigger: section, start: 'top center', end: 'bottom center', onEnter: () => { if(counterEl) counterEl.textContent = `${num.padStart(2, '0')} / 15`; }, onEnterBack: () => { if(counterEl) counterEl.textContent = `${num.padStart(2, '0')} / 15`; } });
-  });
-}
-
-interface HorizontalSceneInfo {
-  id: string;
-  reverse: boolean;
-  getStart: () => number;
-  getEnd: () => number;
-}
-const horizontalScenes: HorizontalSceneInfo[] = [];
-
-function setupHorizontalTrack(sectionId: string, trackSel: string, seqSel: string, reverse = false) {
-  const section = document.getElementById(sectionId);
-  const track = section?.querySelector<HTMLElement>(trackSel);
-  const seq = section?.querySelector<HTMLElement>(seqSel);
-  const cards = section?.querySelectorAll<HTMLElement>('.portfolio-card');
-  const progressMeter = section?.querySelector<HTMLElement>('.scene-progress i');
-  const counter = section?.querySelector<HTMLElement>('.scene-count');
-  const prevBtn = section?.querySelector<HTMLButtonElement>('[data-prev]');
-  const nextBtn = section?.querySelector<HTMLButtonElement>('[data-next]');
-
-  if (!section || !track || !seq || !cards || cards.length === 0) return;
-
-  const count = cards.length;
-
-  function renderHorizontal(p: number) {
-    const v = p * (count - 1);
-    const index = Math.max(0, Math.min(count - 1, Math.round(v)));
-
-    if (progressMeter) progressMeter.style.transform = `scaleX(${p})`;
-    if (counter) counter.textContent = `0${index + 1} / 0${count}`;
-    if (prevBtn) prevBtn.disabled = index === 0;
-    if (nextBtn) nextBtn.disabled = index === count - 1;
-
-    const stageWidth = track!.parentElement?.clientWidth || window.innerWidth;
-    const offsets = Array.from(cards!).map(c => c.offsetLeft + c.offsetWidth / 2 - stageWidth / 2);
-
-    const i0 = Math.floor(v);
-    const i1 = Math.min(count - 1, i0 + 1);
-    const frac = v - i0;
-
-    if (reverse) {
-      const revIdx0 = count - 1 - i0;
-      const revIdx1 = Math.max(0, count - 2 - i0);
-      const revOffset = (offsets[revIdx0] || 0) + ((offsets[revIdx1] || 0) - (offsets[revIdx0] || 0)) * frac;
-      track!.style.transform = `translate3d(${-revOffset}px, 0, 0)`;
-    } else {
-      const targetOffset = (offsets[i0] || 0) + ((offsets[i1] || 0) - (offsets[i0] || 0)) * frac;
-      track!.style.transform = `translate3d(${-targetOffset}px, 0, 0)`;
-    }
-
-    cards!.forEach((card, i) => {
-      const logicalV = reverse ? count - 1 - v : v;
-      const dist = Math.abs(i - logicalV);
-      card.style.opacity = String(0.64 + 0.36 * (1 - clamp(dist)));
-    });
+  for (const [id,kind] of [['trabalho','horizontal'],['processo','process'],['laboratorio','horizontal'],['espiral','spiral']] as const) {
+    const section = document.getElementById(id);
+    const sequence = section?.querySelector<HTMLElement>('.sequence');
+    const frame = sequence?.querySelector<HTMLElement>('.scene-frame');
+    if (!section || !sequence || !frame) continue;
+    const panels = all<HTMLElement>(kind === 'horizontal' ? '.portfolio-card' : kind === 'process' ? '.process-panel' : '.spiral-caption', section);
+    const scene: Scene = {id,kind,section,sequence,frame,panels,track:section.querySelector('.portfolio-track'),reverse:id==='laboratorio',start:0,run:1,progress:0,index:0,offsets:[],active:false,stageWidth:0,stageHeight:0};
+    scene.stage = section.querySelector<HTMLElement>(kind === 'process' ? '.process-periphery' : '.orbit-view') || undefined;
+    sequence.dataset.motionScene = kind;
+    if(kind==='horizontal') { frame.tabIndex=0; frame.setAttribute('aria-label',id==='trabalho'?'Projetos. Use as setas para explorar.':'Laboratório. Use as setas para explorar.'); }
+    scenes.push(scene);
   }
 
-  const tween = ScrollTrigger.create({
-    trigger: seq,
-    pin: true,
-    scrub: true,
-    start: () => 'top ' + (geometry?.mast || 64) + 'px',
-    end: () => `+=${Math.max(1600, track!.scrollWidth * 1.1)}`,
-    invalidateOnRefresh: true,
-    onUpdate: (self) => {
-      sceneProgress[sectionId] = self.progress;
-      renderHorizontal(self.progress);
+  function compactViewport() { return innerHeight < (innerWidth < 760 ? 700 : 540); }
+
+  function syncControls() {
+    const forcedReading = reduced.matches || compactViewport();
+    const readingSwitch = document.getElementById('reading-switch') as HTMLInputElement | null;
+    if(readingSwitch) { readingSwitch.checked=!enabled; readingSwitch.disabled=forcedReading; }
+    const toggle = document.getElementById('toggle-motion-footer') as HTMLButtonElement | null;
+    if(toggle) { toggle.textContent=reduced.matches?'Movimento reduzido':enabled?'Modo de leitura':'Ativar experiência';toggle.disabled=forcedReading;toggle.setAttribute('aria-pressed',String(!enabled)); }
+    all<HTMLButtonElement>('[data-edition-reading]').forEach(button=>{button.setAttribute('aria-pressed',String(!enabled));button.textContent=reduced.matches?'Leitura tranquila':enabled?'Modo de leitura':'Ativar experiência';button.disabled=forcedReading;});
+    debug.enabled=enabled;
+    root.dataset.reading=String(!enabled);
+  }
+
+  function configure(preserve = true) {
+    const anchor = preserve ? sections.find(item=>item.element.id===activeId)?.element : null;
+    const oldOffset = anchor ? (scenes.some(scene=>scene.id===activeId&&scene.active)?mastHeight:anchor.getBoundingClientRect().top) : 0;
+    const nextEnabled=!requestedReading&&!reduced.matches&&!compactViewport();
+    if(paused&&nextEnabled!==enabled)modeChangedWhilePaused=true;
+    enabled=nextEnabled;
+    root.classList.toggle('motion',enabled);
+    root.classList.add('motion-edition');
+    root.dataset.mastHidden='false';
+    for(const item of all<HTMLElement>('#hero,#folha,#deslocamento-1,#deslocamento-2')) item.dataset.pin='false';
+    for(const scene of scenes) {
+      scene.sequence.style.removeProperty('height');
+      scene.track?.style.removeProperty('transform');
+      scene.panels.forEach(panel=>{panel.inert=false;panel.removeAttribute('aria-hidden');panel.style.removeProperty('opacity');panel.hidden=false;});
     }
-  });
+    if(flight) flight.hidden=!enabled;
+    syncControls(); measure();
+    if(anchor&&!paused) scrollTo({top:scrollY+anchor.getBoundingClientRect().top-oldOffset,behavior:'instant'});
+    request();
+  }
 
-  prevBtn?.addEventListener('click', () => {
-    const currentP = sceneProgress[sectionId] || 0;
-    const currentIndex = Math.round(currentP * (count - 1));
-    const targetP = clamp((currentIndex - 1) / (count - 1));
-    window.scrollTo({ top: tween.start + targetP * (tween.end - tween.start), behavior: 'smooth' });
-  });
-
-  nextBtn?.addEventListener('click', () => {
-    const currentP = sceneProgress[sectionId] || 0;
-    const currentIndex = Math.round(currentP * (count - 1));
-    const targetP = clamp((currentIndex + 1) / (count - 1));
-    window.scrollTo({ top: tween.start + targetP * (tween.end - tween.start), behavior: 'smooth' });
-  });
-
-  horizontalScenes.push({
-    id: sectionId,
-    reverse,
-    getStart: () => tween.start,
-    getEnd: () => tween.end
-  });
-
-  renderHorizontal(0);
-}
-
-// Geometria e montagem do tabuleiro de processo
-const processScatter = {
-  desktop: [
-    [12, 18], // 01 ENTENDER (superior esquerdo)
-    [34, 15], // 02 INVESTIGAR (superior centro)
-    [56, 19], // 03 PROTOTIPAR (superior direito)
-    [13, 58], // 04 CONSTRUIR (inferior esquerdo)
-    [35, 63], // 05 TESTAR (inferior centro)
-    [57, 59]  // 06 TRANSFERIR (inferior direito)
-  ],
-  mobile: [
-    [16, 12],
-    [50, 9],
-    [84, 12],
-    [16, 32],
-    [50, 37],
-    [84, 32]
-  ]
-};
-const processOrigins = [[20, 88], [518, 88], [1016, 88], [20, 507], [518, 507], [1016, 507]];
-const processCrop = { width: 662, height: 568, left: 82, top: 72, sourceWidth: 1536, sourceHeight: 1024 };
-
-function setupProcessAssembly() {
-  const processSection = document.getElementById('processo');
-  const seq = processSection?.querySelector<HTMLElement>('.process-sequence');
-  const stage = processSection?.querySelector<HTMLElement>('.process-stage');
-  const board = processSection?.querySelector<HTMLElement>('.process-board');
-  const nodes = processSection?.querySelectorAll<HTMLElement>('.process-node');
-  const panels = processSection?.querySelectorAll<HTMLElement>('.process-panel');
-  const counter = processSection?.querySelector<HTMLElement>('.scene-count');
-  const meter = processSection?.querySelector<HTMLElement>('.scene-progress i');
-
-  if (!processSection || !seq || !stage || !nodes || !panels) return;
-
-  const state = {
-    assembled: [false, false, false, false, false, false],
-    dragging: -1,
-    points: Array(6).fill(null),
-    pointerId: null as number | null,
-    movedAt: -Infinity
-  };
-
-  function renderProcess(p: number) {
-    const isMob = mobile();
-    const w = stage!.clientWidth || window.innerWidth;
-    const h = stage!.clientHeight || (window.innerHeight - 150);
-    const scatter = isMob ? processScatter.mobile : processScatter.desktop;
-    const basePieceWidth = isMob ? clamp(w * 0.26, 105, 145) : clamp(h * 0.33, 145, 205);
-    const pieceWidth = basePieceWidth;
-    const scale = pieceWidth / processCrop.width;
-    const centreX = isMob ? w * 0.5 : w * 0.34;
-    const centreY = isMob ? h * 0.40 : h * 0.50;
-
-    if (board) {
-      board.style.width = `${processCrop.sourceWidth * scale}px`;
-      board.style.height = `${processCrop.sourceHeight * scale}px`;
-      board.style.left = `${centreX}px`;
-      board.style.top = `${centreY}px`;
-    }
-
-    const currentIndex = Math.min(5, Math.floor(p * 6));
-    if (counter) counter.textContent = `0${currentIndex + 1} / 06`;
-    if (meter) meter.style.transform = `scaleX(${p})`;
-
-    const builds = Array.from(nodes!).map((_, i) => {
-      if (state.assembled[i]) return 1;
-      const startP = i * 0.15;
-      const endP = Math.min(1, startP + 0.25);
-      return clamp((p - startP) / (endP - startP));
-    });
-
-    nodes!.forEach((n, i) => {
-      const built = builds[i];
-      const [originX, originY] = processOrigins[i];
-      const target = {
-        x: centreX - (processCrop.sourceWidth * scale) / 2 + (originX - processCrop.left + processCrop.width / 2) * scale,
-        y: centreY - (processCrop.sourceHeight * scale) / 2 + (originY - processCrop.top + processCrop.height / 2) * scale
-      };
-      let x = mix((w * scatter[i][0]) / 100, target.x, built);
-      let y = mix((h * scatter[i][1]) / 100, target.y, built);
-
-      if (state.dragging === i && state.points[i]) {
-        x = state.points[i].x;
-        y = state.points[i].y;
+  function measure() {
+    if(paused) return;
+    metrics.measurements++;
+    width=document.documentElement.clientWidth;height=innerHeight;
+    mastHeight=mast?.offsetHeight||64;
+    root.style.setProperty('--motion-stage-height',`${Math.max(1,height-mastHeight)}px`);
+    root.style.setProperty('--motion-mast-height',`${mastHeight}px`);
+    for(const scene of scenes) {
+      const steps=Math.max(1,scene.panels.length-1);
+      scene.run=enabled ? Math.round(scene.kind==='horizontal'?steps*clamp(width*.66,430,900):scene.kind==='process'?clamp(height*1.8,1100,1650):clamp(height*1.25,760,1150)) : 0;
+      scene.sequence.style.setProperty('--motion-run',`${scene.run}px`);
+      scene.sequence.style.height=enabled?`${height-mastHeight+scene.run}px`:'';
+      if(scene.track) {
+        // row-reverse already defines the laboratory's spatial direction.
+        const viewport=scene.track.parentElement?.clientWidth||width;
+        scene.offsets=scene.panels.map(card=>card.offsetLeft+card.offsetWidth/2-viewport/2);
       }
+      scene.stageWidth=scene.stage?.clientWidth||0;scene.stageHeight=scene.stage?.clientHeight||0;
+    }
+    const y=scrollY;
+    scenes.forEach(scene=>{scene.start=scene.sequence.getBoundingClientRect().top+y-mastHeight;});
+    sections=all<HTMLElement>('main > .section').map(element=>{const r=element.getBoundingClientRect();return{element,top:r.top+y,bottom:r.bottom+y};});
+    maxScroll=Math.max(1,document.documentElement.scrollHeight-height);
+    const o=(document.getElementById('leaf-origin')||document.getElementById('cover-origin'))?.getBoundingClientRect();
+    const d=document.getElementById('leaf-dock')?.getBoundingClientRect();
+    if(o)origin={x:o.left+o.width/2,y:o.top+y};
+    if(d)dock={x:d.left+d.width/2,y:d.top+y};
+    debug.maxScroll=maxScroll;
+    request();
+  }
 
-      const active = i === currentIndex;
-      const tilt = (i % 2 ? 1 : -1) * mix(8, 0, built);
-      const pieceScale = mix(active ? 1.04 : 0.97, 1, built);
+  function request() {
+    if(raf||paused||document.hidden)return;
+    metrics.idle=false;
+    raf=requestAnimationFrame(render);
+  }
 
-      n.style.width = `${processCrop.width * scale}px`;
-      n.style.height = `${processCrop.height * scale}px`;
-      n.style.left = `${(originX - processCrop.left) * scale}px`;
-      n.style.top = `${(originY - processCrop.top) * scale}px`;
-      n.style.transform = `translate3d(${x - target.x}px, ${y - target.y}px, 0) rotate(${tilt}deg) scale(${pieceScale})`;
-      n.style.opacity = String(0.82 + 0.18 * mix(built, active ? 1 : 0.88, 0.4));
+  function render() {
+    raf=0;if(paused||document.hidden){metrics.idle=true;return;}
+    const y=scrollY;metrics.frames++;debug.scroll=y;
+    const numbered=sections.filter(item=>item.element.dataset.number);
+    const at=numbered.find(section=>section.top<=y+height*.4&&section.bottom>y+height*.4)||[...numbered].reverse().find(section=>section.top<=y+height*.4)||numbered[0];
+    if(at) {
+      activeId=at.element.id;debug.activeId=activeId;
+      const counter=document.getElementById('section-counter');
+      if(counter)counter.textContent=`${String(at.element.dataset.number||1).padStart(2,'0')} / ${String(numbered.length).padStart(2,'0')}`;
+      all<HTMLAnchorElement>('.main-nav [data-jump]').forEach(link=>{if(link.hash===`#${activeId}`)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current');});
+    }
+    const delta=y-previousY;
+    if(Math.sign(delta)!==Math.sign(directionTravel))directionTravel=0;
+    directionTravel+=delta;
+    if(y<80||directionTravel<-8||mast?.contains(document.activeElement))root.dataset.mastHidden='false';
+    else if(directionTravel>36&&!document.querySelector('dialog[open]'))root.dataset.mastHidden='true';
+    previousY=y;
+    for(const scene of scenes) {
+      scene.progress=enabled?clamp((y-scene.start)/Math.max(1,scene.run)):1;
+      scene.active=enabled&&y>=scene.start-2&&y<=scene.start+scene.run+2;
+      scene.index=Math.round(scene.progress*Math.max(1,scene.panels.length-1));
+      sceneProgress[scene.id]=scene.progress;
+      if(enabled) {
+        if(scene.kind==='horizontal')renderTrack(scene);
+        if(scene.kind==='process')renderProcess(scene);
+        if(scene.kind==='spiral')renderSpiral(scene);
+      }
+      const meter=scene.section.querySelector<HTMLElement>('.scene-progress i');
+      if(meter)meter.style.transform=`scaleX(${scene.progress})`;
+      const counter=scene.section.querySelector('.scene-count');
+      if(counter)counter.textContent=`${String(scene.index+1).padStart(2,'0')} / ${String(scene.panels.length).padStart(2,'0')}`;
+      const prev=scene.section.querySelector<HTMLButtonElement>('[data-prev]');
+      const next=scene.section.querySelector<HTMLButtonElement>('[data-next]');
+      if(prev)prev.disabled=scene.index===0;
+      if(next)next.disabled=scene.index===scene.panels.length-1;
+    }
+    if(enabled)renderLeaf(y);
+    debug.scenes=scenes.map(s=>({id:s.id,start:s.start,end:s.start+s.run,raw:s.progress*(s.panels.length-1),visual:s.progress*(s.panels.length-1),lastIndex:s.index,static:!enabled}));
+    metrics.idle=true;
+  }
 
-      n.classList.toggle('is-assembled', built > 0.96);
-      n.classList.toggle('is-active', active);
-      n.classList.toggle('is-dragging', state.dragging === i);
-    });
-
-    panels!.forEach((panel, i) => {
-      const active = i === currentIndex;
-      panel.style.opacity = active ? '1' : '0';
-      panel.classList.toggle('is-active', active);
+  function renderTrack(scene:Scene) {
+    const p=scene.progress*(scene.panels.length-1),a=Math.floor(p),b=Math.min(scene.panels.length-1,a+1);
+    const x=mix(scene.offsets[a]||0,scene.offsets[b]||0,p-a);
+    if(scene.track)scene.track.style.transform=`translate3d(${-x}px,0,0)`;
+    scene.panels.forEach((card,index)=>{
+      const current=index===scene.index;
+      card.inert=!current;card.setAttribute('aria-hidden',String(!current));
+      card.classList.toggle('is-current',current);
+      card.style.opacity=String(.5+.5*(1-clamp(Math.abs(index-p))));
     });
   }
 
-  // Interatividade de arrastar e clicar para encaixar peças
-  nodes!.forEach((node, i) => {
-    node.addEventListener('pointerdown', (e: PointerEvent) => {
-      if (e.pointerType !== 'mouse' || window.innerWidth < 760) return;
-      e.preventDefault();
-      e.stopPropagation();
-      const r = stage!.getBoundingClientRect();
-      state.dragging = i;
-      state.pointerId = e.pointerId;
-      state.points[i] = { x: clamp(e.clientX - r.left, 0, r.width), y: clamp(e.clientY - r.top, 0, r.height) };
-      node.setPointerCapture?.(e.pointerId);
-      renderProcess(sceneProgress['processo'] || 0);
+  function renderProcess(scene:Scene) {
+    const board=scene.section.querySelector<HTMLElement>('.process-board');
+    const w=scene.stageWidth,h=scene.stageHeight;
+    const scale=Math.min(w*.78/1536,h*.79/1024);
+    if(board){board.style.width=`${1536*scale}px`;board.style.height=`${1024*scale}px`;}
+    processNodes.forEach((node,index)=>{
+      const built=assembled.has(index)?1:smooth((scene.progress-index*.14)/.3);
+      const [ox,oy]=processOrigins[index];
+      const dx=(index%3-1)*w*.11*(1-built),dy=(index<3?-1:1)*h*.18*(1-built);
+      node.style.left=`${(ox-82)*scale}px`;node.style.top=`${(oy-72)*scale}px`;
+      node.style.width=`${662*scale}px`;node.style.height=`${568*scale}px`;
+      const drag=puzzleDrag?.id===index?puzzleDrag:null;
+      node.style.transform=`translate3d(${dx+(drag?.dx||0)}px,${dy+(drag?.dy||0)}px,0) rotate(${(index%2?1:-1)*10*(1-built)}deg)`;
+      node.classList.toggle('is-active',index===scene.index);node.classList.toggle('is-assembled',built>.98);
+      node.setAttribute('aria-pressed',String(index===scene.index));
     });
-
-    node.addEventListener('pointermove', (e: PointerEvent) => {
-      if (state.dragging !== i || state.pointerId !== e.pointerId) return;
-      e.preventDefault();
-      const r = stage!.getBoundingClientRect();
-      state.points[i] = { x: clamp(e.clientX - r.left, 0, r.width), y: clamp(e.clientY - r.top, 0, r.height) };
-      renderProcess(sceneProgress['processo'] || 0);
+    scene.panels.forEach((panel,index)=>{
+      panel.classList.toggle('is-active',index===scene.index);panel.classList.toggle('is-past',index<scene.index);
+      panel.style.setProperty('--step-light',index<=scene.index?'1':'.45');
+      const button=panel.querySelector('button');if(index===scene.index)button?.setAttribute('aria-current','step');else button?.removeAttribute('aria-current');
     });
+  }
 
-    const release = (e: PointerEvent) => {
-      if (state.dragging !== i || state.pointerId !== e.pointerId) return;
-      const r = stage!.getBoundingClientRect();
-      const dropped = { x: clamp(e.clientX - r.left, 0, r.width), y: clamp(e.clientY - r.top, 0, r.height) };
-      const isMob = mobile();
-      const w = stage!.clientWidth || window.innerWidth;
-      const h = stage!.clientHeight || (window.innerHeight - 150);
-      const pieceWidth = isMob ? clamp(w * 0.26, 105, 145) : clamp(h * 0.33, 145, 205);
-      const scale = pieceWidth / processCrop.width;
-      const centreX = isMob ? w * 0.5 : w * 0.34;
-      const centreY = isMob ? h * 0.40 : h * 0.50;
-      const [originX, originY] = processOrigins[i];
-      const target = {
-        x: centreX - (processCrop.sourceWidth * scale) / 2 + (originX - processCrop.left + processCrop.width / 2) * scale,
-        y: centreY - (processCrop.sourceHeight * scale) / 2 + (originY - processCrop.top + processCrop.height / 2) * scale
-      };
-      state.assembled[i] = Math.hypot(dropped.x - target.x, dropped.y - target.y) < Math.min(w, h) * 0.17;
-      state.points[i] = null;
-      state.dragging = -1;
-      state.pointerId = null;
-      state.movedAt = performance.now();
-      if (node.hasPointerCapture?.(e.pointerId)) node.releasePointerCapture(e.pointerId);
-      renderProcess(sceneProgress['processo'] || 0);
-    };
-
-    node.addEventListener('pointerup', release);
-    node.addEventListener('pointercancel', release);
-
-    node.addEventListener('click', () => {
-      if (window.innerWidth < 760) return;
-      if (performance.now() - state.movedAt < 280) return;
-      state.assembled[i] = true;
-      renderProcess(sceneProgress['processo'] || 0);
+  function renderSpiral(scene:Scene) {
+    if(orbitSelection!==null&&Math.abs(scene.progress-orbitSelectionAt)>.13)orbitSelection=null;
+    const selected=orbitSelection??[0,3,4,7][scene.index]??0;
+    const w=scene.stageWidth,h=scene.stageHeight,base=Math.min(w,h);
+    orbitNodes.forEach((node,index)=>{
+      const angle=index/orbitNodes.length*Math.PI*2-Math.PI/2+scene.progress*.7;
+      const radius=base*(index%2?.36:.43);
+      node.style.left=`${w/2+Math.cos(angle)*radius}px`;node.style.top=`${h/2+Math.sin(angle)*radius*.84}px`;
+      node.setAttribute('aria-pressed',String(index===selected));
     });
-  });
+    const ring=scene.section.querySelector<HTMLElement>('.ring-outer');if(ring)ring.style.transform=`translate(-50%,-50%) rotate(${scene.progress*70}deg)`;
+    scene.panels.forEach((panel,index)=>{panel.hidden=index!==scene.index;panel.inert=index!==scene.index;});
+    updateOrbitNote(selected);
+  }
 
-  ScrollTrigger.create({
-    trigger: seq,
-    pin: true,
-    scrub: true,
-    start: () => 'top ' + (geometry?.mast || 64) + 'px',
-    end: '+=2600',
-    onUpdate: (self) => {
-      sceneProgress['processo'] = self.progress;
-      renderProcess(self.progress);
+  function updateOrbitNote(index:number) {
+    const node=orbitNodes[index];if(!node)return;
+    const title=document.getElementById('orbit-note-title'),text=document.getElementById('orbit-note-text');
+    if(title&&title.textContent!==node.dataset.orbitTitle)title.textContent=node.dataset.orbitTitle||node.textContent;
+    if(text&&text.textContent!==node.dataset.orbitText)text.textContent=node.dataset.orbitText||'';
+  }
+
+  function renderLeaf(y:number) {
+    if(!flight||!leaf||!depth)return;
+    const p=clamp(y/maxScroll),hero=sections[0];
+    const launch=clamp(y/Math.max(1,(hero?.bottom||height)-height*.32));
+    let x=mix(origin.x,width*.53,smooth(launch))+Math.sin(p*Math.PI*12)*width*.15*Math.sin(launch*Math.PI/2);
+    if(launch>=1)x=width*(.075+Math.sin(p*Math.PI*10)*.022);
+    let ly=mix(origin.y-y,height*.49,smooth(launch));
+    let rz=118-Math.sin(p*Math.PI*12)*42+smooth(launch)*70,rx=Math.sin(p*Math.PI*9)*25,ry=Math.sin(p*Math.PI*13)*48;
+    let scale=width<760?.66:.82;
+    const scene=scenes.find(s=>s.kind==='horizontal'&&y>=s.start-height*.25&&y<=s.start+s.run+height*.25);
+    if(scene) {
+      const q=scene.progress,sign=scene.reverse?-1:1;
+      const weight=smooth((y-scene.start+height*.25)/(height*.25))*(1-smooth((y-scene.start-scene.run)/(height*.25)));
+      x=mix(x,width*(.5+Math.sin(q*Math.PI*2)*.22*sign),weight);
+      ly=mix(ly,height*(.49+Math.sin(q*Math.PI*3)*.035),weight);
+      rz+=sign*q*180*weight;ry+=Math.sin(q*Math.PI*2)*50*weight;
     }
-  });
-
-  renderProcess(0);
-}
-
-function setupSpiralOrbit() {
-  const spiral = document.getElementById('espiral');
-  const seq = spiral?.querySelector<HTMLElement>('.spiral-sequence');
-  const orbitView = spiral?.querySelector<HTMLElement>('.orbit-view');
-  const orbitWords = spiral?.querySelectorAll<HTMLElement>('.orbit-word');
-  const captions = spiral?.querySelectorAll<HTMLElement>('.spiral-caption');
-  const ringOuter = spiral?.querySelector<HTMLElement>('.ring-outer');
-  const ringInner = spiral?.querySelector<HTMLElement>('.ring-inner');
-  const counter = spiral?.querySelector<HTMLElement>('.scene-count');
-  const meter = spiral?.querySelector<HTMLElement>('.scene-progress i');
-
-  if (!spiral || !seq || !orbitWords) return;
-
-  function renderSpiral(p: number) {
-    const isMob = mobile();
-    const ow = orbitView ? orbitView.clientWidth : (isMob ? 320 : 600);
-    const oh = orbitView ? orbitView.clientHeight : (isMob ? 240 : 400);
-    const base = Math.min(ow, oh);
-    const twist = p * Math.PI * 4.15;
-    const compress = range(0.22, 0.70, p) * (1 - range(0.76, 1, p));
-    const radii = [0.43, 0.31, 0.48, 0.37, 0.44, 0.29, 0.47, 0.34, 0.40];
-
-    orbitWords!.forEach((n, i) => {
-      const a = (i / orbitWords!.length) * Math.PI * 2 + twist - Math.PI / 2 + (i % 2 ? -0.10 : 0.08);
-      const r = base * radii[i % radii.length] * (1 - compress * 0.46);
-      const ellipseX = 1 + (i % 3) * 0.07;
-      const ellipseY = 0.82 + (i % 2) * 0.11;
-      const x = ow * 0.5 + Math.cos(a) * r * ellipseX;
-      const y = oh * 0.50 + Math.sin(a) * r * ellipseY;
-      n.style.left = `${x}px`;
-      n.style.top = `${y}px`;
-      n.style.transform = `translate(-50%, -50%) rotate(${Math.sin(a) * 5}deg)`;
-
-      const currentQuadrant = Math.min(3, Math.floor(p * 4));
-      const windowStart = (currentQuadrant * 2) % orbitWords!.length;
-      const rel = (i - windowStart + orbitWords!.length) % orbitWords!.length;
-      const visible = !isMob || rel < 5;
-      n.style.opacity = visible ? (rel === 0 ? '1' : '0.58') : '0';
-    });
-
-    if (ringOuter) ringOuter.style.transform = `translate(-50%, -50%) rotate(${p * 220}deg)`;
-    if (ringInner) ringInner.style.transform = `translate(-50%, -50%) rotate(${-p * 180}deg)`;
-
-    const currentQuadrant = Math.min(3, Math.floor(p * 4));
-    if (counter) counter.textContent = `0${currentQuadrant + 1} / 04`;
-    if (meter) meter.style.transform = `scaleX(${p})`;
-
-    if (captions) {
-      captions.forEach((cap, i) => {
-        const d = p * 3 - i;
-        const alpha = Math.round(p * 3) === i ? 1 : 0;
-        cap.style.opacity = String(alpha);
-        cap.style.transform = `translate3d(0, ${-d * 16}px, 0)`;
-        cap.style.pointerEvents = alpha === 1 ? 'auto' : 'none';
-      });
+    const dockY=dock.y-y,land=smooth((height+180-dockY)/(height*.7+180));
+    x=mix(x,dock.x,land);ly=mix(ly,dockY,land);rz=mix(rz,96,land);rx=mix(rx,7,land);ry=mix(ry,0,land);scale=mix(scale,.74,land);
+    if(y>=maxScroll-1){x=dock.x;ly=dockY;rz=96;rx=7;ry=0;}
+    if(leafDrag){x=leafDrag.x;ly=leafDrag.y;}
+    // The leaf passes behind the dark fields, retaining a faint ecological trace.
+    const dark=sections.find(s=>['processo','espiral'].includes(s.element.id)&&y+ly>s.top&&y+ly<s.bottom);
+    const occluded=(!!dark||activeId==='referencias')&&!leafDrag;
+    flight.style.opacity=occluded?'0':scene||launch<1||leafDrag?'1':'.68';flight.style.visibility=occluded?'hidden':'visible';
+    flight.style.transform=`translate3d(${x}px,${ly}px,0)`;
+    depth.style.transform=`translate(-50%,-91%) scale(${scale})`;
+    leaf.style.transform=`perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;
+    root.dataset.leafOccluded=occluded?'1':'0';root.dataset.leafDepth='front';
+    debug.leaf={x,y:ly,rotation:rz,mode:land>.99?'rest':'flight',occlusionState:occluded?'occluded':'visible'};
+    // Limit geometry reads to the current chapter, only after input changes.
+    all<HTMLElement>('[data-leaf-lit]').forEach(mark=>{delete mark.dataset.leafLit;mark.style.removeProperty('--leaf-glow');});
+    if(!occluded){
+      const current=sections.find(s=>s.element.id===activeId)?.element;
+      if(current)for(const mark of all<HTMLElement>('strong,em',current).slice(0,28)){
+        const r=mark.getBoundingClientRect();if(!r.width||r.bottom<0||r.top>height)continue;
+        const distance=Math.hypot(Math.max(r.left-x,0,x-r.right)*.3,(r.top+r.bottom)/2-ly);
+        const glow=1-clamp(distance/100);if(glow>.03){mark.dataset.leafLit='true';mark.style.setProperty('--leaf-glow',String(glow));}
+      }
     }
   }
 
-  ScrollTrigger.create({
-    trigger: seq,
-    pin: true,
-    scrub: true,
-    start: () => 'top ' + (geometry?.mast || 64) + 'px',
-    end: '+=2000',
-    onUpdate: (self) => {
-      sceneProgress['espiral'] = self.progress;
-      renderSpiral(self.progress);
-    }
-  });
+  function scrollToY(top:number) { scrollTo({top:clamp(top,0,maxScroll),behavior:reduced.matches||!enabled||Math.abs(top-scrollY)>height*1.5?'instant':'smooth'});request(); }
+  function jumpSection(id:string) {
+    const section=document.getElementById(id);if(!section)return;
+    const top=section.getBoundingClientRect().top+scrollY-mastHeight;
+    root.dataset.mastHidden='false';scrollToY(top);request();
+  }
+  function jumpScene(id:string,index:number) {
+    const scene=scenes.find(item=>item.id===id);if(!scene){jumpSection(id);return;}
+    const i=clamp(index,0,scene.panels.length-1);
+    if(enabled)scrollToY(scene.start+scene.run*i/Math.max(1,scene.panels.length-1));
+    else scene.panels[i]?.scrollIntoView({block:'center',behavior:'instant'});
+  }
+  window.SLMotion={
+    pause(){const anchor=sections.find(s=>s.element.id===activeId)?.element;pausedAnchor=anchor?{id:activeId,offset:scenes.some(scene=>scene.id===activeId&&scene.active)?mastHeight:anchor.getBoundingClientRect().top}:null;paused=true;root.dataset.mastHidden='false';if(raf)cancelAnimationFrame(raf);raf=0;metrics.idle=true;},
+    resume(){paused=false;measure();if(modeChangedWhilePaused&&pausedAnchor){const anchor=document.getElementById(pausedAnchor.id);if(anchor)scrollTo({top:scrollY+anchor.getBoundingClientRect().top-pausedAnchor.offset,behavior:'instant'});}modeChangedWhilePaused=false;pausedAnchor=null;previousY=scrollY;request();},
+    jumpSection,jumpScene,
+    setReading(value){requestedReading=!!value;try{localStorage.setItem('sl-reading',String(requestedReading));}catch{}configure();},
+    request,getActive:()=>activeId
+  };
 
-  renderSpiral(0);
-}
-
-function setupJournalTrack() {
-  const journal = document.getElementById('caderno');
-  const seq = journal?.querySelector<HTMLElement>('.journal-sequence');
-  const strip = journal?.querySelector<HTMLElement>('.newspaper-strip');
-  const paper = journal?.querySelector<HTMLElement>('.newspaper-window');
-  const counter = journal?.querySelector<HTMLElement>('.scene-count');
-  const meter = journal?.querySelector<HTMLElement>('.scene-progress i');
-
-  if (!journal || !seq || !strip || !paper) return;
-
-  function renderJournal(p: number) {
-    const paperTravel = Math.max(0, strip!.scrollHeight - paper!.clientHeight);
-    strip!.style.transform = `translate3d(0, ${-paperTravel * p}px, 0)`;
-    if (meter) meter.style.transform = `scaleX(${p})`;
-    if (counter) {
-      const idx = Math.min(5, Math.floor(p * 6));
-      counter.textContent = `0${idx + 1} / 06`;
-    }
+  for(const scene of scenes) {
+    scene.section.querySelector('[data-prev]')?.addEventListener('click',()=>jumpScene(scene.id,scene.index-1));
+    scene.section.querySelector('[data-next]')?.addEventListener('click',()=>jumpScene(scene.id,scene.index+1));
+    if(scene.kind!=='horizontal')continue;
+    scene.frame.addEventListener('keydown',event=>{
+      if((event.target as Element).closest(controls))return;
+      if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+      event.preventDefault();
+      const step=(event.key==='ArrowRight'?1:-1)*(scene.reverse?-1:1);
+      jumpScene(scene.id,event.key==='Home'?0:event.key==='End'?scene.panels.length-1:scene.index+step);
+    });
+    let drag:{pointer:number;x:number;y:number;scroll:number;moved:boolean}|null=null;
+    scene.frame.addEventListener('pointerdown',event=>{
+      if(!enabled||!scene.active||event.pointerType!=='mouse'||event.button!==0||(event.target as Element).closest(controls))return;
+      drag={pointer:event.pointerId,x:event.clientX,y:event.clientY,scroll:scrollY,moved:false};
+    });
+    scene.frame.addEventListener('pointermove',event=>{
+      if(!drag||drag.pointer!==event.pointerId)return;
+      const dx=event.clientX-drag.x,dy=event.clientY-drag.y;
+      if(!drag.moved&&(Math.abs(dx)<8||Math.abs(dy)>Math.abs(dx)))return;
+      drag.moved=true;scene.frame.setPointerCapture(event.pointerId);event.preventDefault();root.dataset.lateralDragging='true';
+      const sign=scene.reverse?1:-1;
+      scrollTo({top:clamp(drag.scroll+dx*sign*1.3,scene.start-height*.15,scene.start+scene.run+height*.15),behavior:'instant'});
+    });
+    const release=(event:PointerEvent)=>{if(drag?.pointer!==event.pointerId)return;drag=null;delete root.dataset.lateralDragging;if(scene.frame.hasPointerCapture(event.pointerId))scene.frame.releasePointerCapture(event.pointerId);};
+    scene.frame.addEventListener('pointerup',release);scene.frame.addEventListener('pointercancel',release);scene.frame.addEventListener('lostpointercapture',release);
+    scene.frame.addEventListener('dragstart',event=>{if(!(event.target as Element).closest(controls))event.preventDefault();});
+    let touch:{x:number;y:number;last:number;horizontal:boolean}|null=null;
+    scene.frame.addEventListener('touchstart',event=>{
+      if(!enabled||!scene.active||event.touches.length!==1||(event.target as Element).closest(controls)){touch=null;return;}
+      touch={x:event.touches[0].clientX,y:event.touches[0].clientY,last:event.touches[0].clientX,horizontal:false};
+    },{passive:true});
+    scene.frame.addEventListener('touchmove',event=>{
+      if(!touch||event.touches.length!==1)return;
+      const x=event.touches[0].clientX,y=event.touches[0].clientY,dx=x-touch.x,dy=y-touch.y;
+      if(!touch.horizontal){if(Math.abs(dy)>Math.abs(dx)+5){touch=null;return;}if(Math.abs(dx)<10)return;touch.horizontal=true;}
+      if(event.cancelable)event.preventDefault();
+      scrollBy({top:(x-touch.last)*(scene.reverse?1:-1)*1.5,behavior:'instant'});touch.last=x;
+    },{passive:false});
+    scene.frame.addEventListener('touchend',()=>touch=null,{passive:true});scene.frame.addEventListener('touchcancel',()=>touch=null,{passive:true});
+    scene.frame.addEventListener('wheel',event=>{
+      if(!enabled||!scene.active||event.ctrlKey||(event.target as Element).closest(controls)||Math.abs(event.deltaX)<=Math.abs(event.deltaY))return;
+      if(!event.cancelable)return;event.preventDefault();
+      const unit=event.deltaMode===1?16:event.deltaMode===2?width:1;
+      scrollBy({top:event.deltaX*unit*(scene.reverse?-1:1),behavior:'instant'});
+    },{passive:false});
   }
 
-  ScrollTrigger.create({
-    trigger: seq,
-    pin: true,
-    scrub: true,
-    start: () => 'top ' + (geometry?.mast || 64) + 'px',
-    end: '+=1800',
-    onUpdate: (self) => {
-      sceneProgress['caderno'] = self.progress;
-      renderJournal(self.progress);
-    }
+  all<HTMLButtonElement>('[data-process-step]').forEach(button=>button.addEventListener('click',()=>jumpScene('processo',Number(button.dataset.processStep))));
+  processNodes.forEach((node,index)=>{
+    node.addEventListener('click',()=>{if(puzzleSuppressClick){puzzleSuppressClick=false;return;}assembled.add(index);jumpScene('processo',index);request();});
+    node.addEventListener('pointerdown',event=>{if(!enabled||event.pointerType!=='mouse'||event.button!==0)return;puzzleDrag={id:index,pointer:event.pointerId,x:event.clientX,y:event.clientY,dx:0,dy:0,moved:false};node.setPointerCapture(event.pointerId);});
+    node.addEventListener('pointermove',event=>{if(puzzleDrag?.pointer!==event.pointerId)return;puzzleDrag.dx=event.clientX-puzzleDrag.x;puzzleDrag.dy=event.clientY-puzzleDrag.y;puzzleDrag.moved=Math.hypot(puzzleDrag.dx,puzzleDrag.dy)>6;if(puzzleDrag.moved)event.preventDefault();request();});
+    const release=(event:PointerEvent)=>{if(puzzleDrag?.pointer!==event.pointerId)return;const scene=scenes.find(s=>s.id==='processo');if(puzzleDrag.moved&&scene){const board=scene.section.querySelector('.process-board')?.getBoundingClientRect();if(board&&event.clientX>board.left&&event.clientX<board.right&&event.clientY>board.top&&event.clientY<board.bottom)assembled.add(index);puzzleSuppressClick=true;}puzzleDrag=null;if(node.hasPointerCapture(event.pointerId))node.releasePointerCapture(event.pointerId);request();};
+    node.addEventListener('pointerup',release);node.addEventListener('pointercancel',release);
   });
-
-  renderJournal(0);
+  orbitNodes.forEach((node,index)=>node.addEventListener('click',()=>{orbitSelection=index;orbitSelectionAt=sceneProgress.espiral||0;orbitNodes.forEach((item,i)=>item.setAttribute('aria-pressed',String(i===index)));updateOrbitNote(index);request();}));
+  if(leaf){
+    leaf.addEventListener('pointerdown',event=>{if(!enabled||event.pointerType!=='mouse'||event.button!==0)return;event.preventDefault();leafDrag={x:event.clientX,y:event.clientY};leaf.setPointerCapture(event.pointerId);request();});
+    leaf.addEventListener('pointermove',event=>{if(!leafDrag)return;leafDrag={x:event.clientX,y:event.clientY};request();});
+    const release=(event:PointerEvent)=>{leafDrag=null;if(leaf.hasPointerCapture(event.pointerId))leaf.releasePointerCapture(event.pointerId);request();};
+    leaf.addEventListener('pointerup',release);leaf.addEventListener('pointercancel',release);
+  }
+  all<HTMLButtonElement>('[data-edition-reading]').forEach(button=>button.addEventListener('click',()=>window.SLMotion.setReading(enabled)));
+  addEventListener('scroll',request,{passive:true});
+  addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=window.setTimeout(()=>configure(),140);},{passive:true});
+  addEventListener('load',measure,{once:true});
+  reduced.addEventListener('change',()=>configure());
+  document.addEventListener('visibilitychange',()=>{if(document.hidden&&raf){cancelAnimationFrame(raf);raf=0;metrics.idle=true;}else request();});
+  mast?.addEventListener('focusin',()=>{root.dataset.mastHidden='false';});
+  document.fonts?.ready.then(measure);
+  document.addEventListener('sl:layout-change',()=>{clearTimeout(resizeTimer);resizeTimer=window.setTimeout(measure,90);});
+  // Images/details may change reading flow; observe chapter dimensions, not transforms.
+  const resizeObserver=new ResizeObserver(()=>{if(!paused){clearTimeout(resizeTimer);resizeTimer=window.setTimeout(measure,80);}});
+  all<HTMLElement>('main > .section').forEach(section=>resizeObserver.observe(section));
+  configure(false);render();debug.ready=true;
+  if(document.querySelector('dialog[open]'))window.SLMotion.pause();
+  document.dispatchEvent(new CustomEvent('sl:ready'));
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

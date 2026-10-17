@@ -1,15 +1,25 @@
 ---
+import '../styles/global.css';
+import '../styles/edition.css';
+import { canonicalUrl, pageStructuredData, publication, publicUrl, serializeStructuredData, siteIdentity } from '../lib/seo';
+
 interface Props {
   title?: string;
   description?: string;
+  interactive?: boolean;
+  noindex?: boolean;
 }
 
 const {
-  title = "Soberania Labs — Tecnologia para ampliar autonomia",
-  description = "Soberania Labs. Software, processos inteligentes, infraestrutura e pesquisa para ampliar autonomia."
+  title = siteIdentity.title,
+  description = siteIdentity.description,
+  interactive = true,
+  noindex = false,
 } = Astro.props;
-
-import '../styles/global.css';
+const indexable = publication.indexable && !noindex;
+const canonical = noindex ? undefined : canonicalUrl(Astro.url.pathname);
+const socialImage = publicUrl(siteIdentity.image);
+const structuredData = pageStructuredData(Astro.url.pathname, title, description);
 ---
 
 <!doctype html>
@@ -18,22 +28,46 @@ import '../styles/global.css';
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#eee9df" />
+  <meta name="color-scheme" content="light" />
   <meta name="description" content={description} />
-  <meta name="robots" content="noindex,nofollow" />
+  <meta name="robots" content={indexable ? 'index,follow,max-image-preview:large' : 'noindex,follow'} />
+  {canonical && <link rel="canonical" href={canonical} />}
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content={siteIdentity.name} />
+  <meta property="og:locale" content="pt_BR" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  {canonical && <meta property="og:url" content={canonical} />}
+  <meta property="og:image" content={socialImage} />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content={siteIdentity.imageAlt} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={socialImage} />
+  <meta name="twitter:image:alt" content={siteIdentity.imageAlt} />
   <title>{title}</title>
+  <script type="application/ld+json" set:html={serializeStructuredData(structuredData)} />
+  <slot name="head" />
 </head>
-<body>
+<body data-interactive={String(interactive)}>
   <a class="skip-link" href="#conteudo">Ir ao conteúdo</a>
   <slot />
 
   <script>
-    import { initMotion } from '../scripts/motion';
-    
-    // Inicializa o motor completo desenvolvido nativamente com GSAP
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => initMotion());
-    } else {
-      initMotion();
+    if (document.body.dataset.interactive === 'true') {
+      const startMotion = async () => {
+        const { initMotion } = await import('../scripts/motion');
+        initMotion();
+      };
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', startMotion, { once: true });
+      } else {
+        startMotion();
+      }
     }
   </script>
 </body>

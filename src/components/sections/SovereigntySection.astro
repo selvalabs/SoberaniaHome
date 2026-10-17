@@ -1,24 +1,43 @@
 ---
+const routes = [
+  {key:'hospedar', label:'Hospedar', title:'Seu sistema pode encontrar outra casa.', path:['Aplicação','Configuração documentada','Infraestrutura escolhida'], text:'Conhecer a arquitetura, os requisitos e o processo de instalação abre a possibilidade de mudar a hospedagem. A decisão considera custo, capacidade de operação e proteção dos dados.', note:'Dependências visíveis. Decisões conscientes.'},
+  {key:'migrar', label:'Levar os dados', title:'A memória do trabalho pode seguir com você.', path:['Dados','Exportação e validação','Novo destino'], text:'Exportar é o começo. Preservar significado, relações e histórico exige formatos compreensíveis, documentação e uma conferência do que chegou ao outro lado.', note:'Portabilidade precisa ser praticável.'},
+  {key:'integrar', label:'Conectar', title:'Uma ferramenta pode conversar com outras.', path:['Ferramenta','Interface e permissões','Outros sistemas'], text:'Integrações explícitas e permissões delimitadas permitem compor ferramentas. APIs e fluxos controlados por MCP são caminhos possíveis, de acordo com o contexto de cada projeto.', note:'Cooperar também é uma decisão de arquitetura.'}
+];
 ---
 
-<section id="soberania" class="section prose-section sovereignty" data-number="10">
-  <div class="section-label"><span>10</span><span>Soberania</span></div>
-  <div class="two-columns">
-    <div>
-      <h2>Soberania é poder escolher.</h2>
-      <p class="lead">Não é se isolar.</p>
-      <p>É conhecer as dependências, abrir caminhos alternativos e não entregar o próprio futuro a uma única plataforma.</p>
+<section id="soberania" class="section sovereignty route-section" data-number="10" aria-labelledby="route-title">
+  <div class="route-heading">
+    <div class="section-label"><span>10</span><span>Soberania</span></div>
+    <h2 id="route-title">Poder escolher.<br /><em>E mudar de caminho.</em></h2>
+    <p>Autonomia se constrói conhecendo as dependências e mantendo alternativas possíveis. Escolha um caminho para explorar.</p>
+  </div>
+  <div class="sovereign-instrument" data-edition-tabs data-active="hospedar">
+    <nav class="route-tabs" data-edition-tablist aria-label="Caminhos de autonomia">
+      {routes.map((route,index)=><a href={`#caminho-${route.key}`} data-edition-tab={route.key}><span>0{index+1}</span>{route.label}<i aria-hidden="true">↗</i></a>)}
+    </nav>
+    <div class="route-diagram" aria-hidden="true">
+      <div class="route-coordinate coordinate-top">CAMPO DE POSSIBILIDADES / 03 ROTAS</div>
+      <svg class="route-wires" viewBox="0 0 1000 360" preserveAspectRatio="none">
+        <defs><pattern id="route-grid" width="25" height="25" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".7" fill="currentColor" opacity=".2" /></pattern></defs>
+        <rect width="1000" height="360" fill="url(#route-grid)" />
+        <path class="route-wire" data-route-line="hospedar" d="M140 180 H345 Q390 180 390 135 V100 Q390 65 435 65 H845" />
+        <path class="route-wire" data-route-line="migrar" d="M140 180 H845" />
+        <path class="route-wire" data-route-line="integrar" d="M140 180 H345 Q390 180 390 225 V260 Q390 295 435 295 H845" />
+        <circle class="route-junction" cx="390" cy="180" r="6" />
+      </svg>
+      <div class="route-source"><span>O que você<br />construiu</span><i>●</i></div>
+      <div class="route-destination destination-host" data-route-node="hospedar"><span>Infraestrutura</span><b>Outra casa</b></div>
+      <div class="route-destination destination-data" data-route-node="migrar"><span>Memória</span><b>Dados portáveis</b></div>
+      <div class="route-destination destination-connect" data-route-node="integrar"><span>Cooperação</span><b>Novas conexões</b></div>
+      <div class="route-coordinate coordinate-bottom">O FUTURO NÃO PRECISA TER UM ÚNICO DESTINO.</div>
     </div>
-    <div class="sovereignty-list">
-      <p>Poder levar seus dados.</p>
-      <p>Poder trocar de fornecedor.</p>
-      <p>Poder entender uma decisão.</p>
-      <p>Poder modificar uma ferramenta.</p>
-      <p>Poder hospedar em outro lugar.</p>
-      <p>Poder trabalhar com outras pessoas.</p>
-      <p>Poder continuar funcionando.</p>
-      <p>E poder desligar o que deixou de servir.</p>
-      <a class="text-link" href="#manifesto" data-jump>LER O MANIFESTO ↘</a>
+    <div class="route-readout">
+      {routes.map((route,index)=><article id={`caminho-${route.key}`} data-edition-panel={route.key} class="route-panel">
+        <div class="route-panel-heading"><span class="instrument-label">Rota 0{index+1}</span><h3>{route.title}</h3></div>
+        <div class="route-panel-copy"><ol class="route-path" aria-label="Etapas do caminho">{route.path.map(step=><li>{step}</li>)}</ol><p>{route.text}</p><p class="route-note">{route.note}</p></div>
+      </article>)}
     </div>
   </div>
+  <p class="route-footnote">Um mapa de possibilidades. Cada implantação exige avaliar contexto, segurança e condições reais de operação.</p>
 </section>

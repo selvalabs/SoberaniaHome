@@ -1,39 +1,39 @@
 ---
+const nodes = [
+  {name:'DEMANDAS',title:'Tudo começa na vida.',text:'Uma ferramenta ganha sentido quando responde a uma necessidade concreta de quem vai usá-la.'},
+  {name:'CÓDIGO',title:'Código é uma escolha.',text:'As regras de um sistema organizam possibilidades: quem acessa, quem decide e quem pode transformar.'},
+  {name:'DADOS',title:'Dados têm contexto.',text:'Coletar o necessário, explicar o uso e preservar o controle de quem produz a informação.'},
+  {name:'ENERGIA',title:'A nuvem também tem chão.',text:'Software depende de máquinas, energia e recursos. Eficiência também é uma decisão ecológica.'},
+  {name:'ÁGUA',title:'Infraestrutura encontra território.',text:'Os recursos que sustentam a vida também sustentam a tecnologia. Essa relação precisa permanecer visível.'},
+  {name:'TRABALHO',title:'Tecnologia é trabalho coletivo.',text:'Automatizar tarefas pode ampliar capacidades quando as pessoas participam das decisões e dos benefícios.'},
+  {name:'TERRITÓRIO',title:'Cada lugar faz perguntas próprias.',text:'Uma solução precisa considerar infraestrutura, cultura, condições materiais e saberes locais.'},
+  {name:'CULTURA',title:'Imaginar é construir possibilidades.',text:'A cultura transforma o que desejamos. O que desejamos orienta os sistemas que construímos.'},
+  {name:'CONHECIMENTO',title:'Conhecimento cresce em circulação.',text:'Documentação, pesquisa e troca de experiências permitem que mais pessoas compreendam e transformem a tecnologia.'}
+];
 ---
-
 <section id="espiral" class="section spiral-section dark" data-number="9">
-  <div class="prose-section section-intro">
-    <div class="section-label"><span>09</span><span>Conexões</span></div>
-    <h2>Nada existe isolado.</h2>
-  </div>
   <div class="sequence spiral-sequence" data-kind="spiral" data-states="4">
     <div class="scene-frame">
-      <header class="scene-head"><span>09 / Do código à vida</span><span class="scene-count">01 / 04</span></header>
-      <div class="spiral-stage wind-host-scope">
-        <div class="wind-host"></div>
-        <div class="orbit-view" id="orbit-view" aria-hidden="true">
-          <i class="orbit-ring ring-outer"></i>
-          <i class="orbit-ring ring-inner"></i>
-          <strong class="orbit-center">VIDA</strong>
-          <span class="orbit-word">DEMANDAS</span>
-          <span class="orbit-word">CÓDIGO</span>
-          <span class="orbit-word">DADOS</span>
-          <span class="orbit-word">ENERGIA</span>
-          <span class="orbit-word">ÁGUA</span>
-          <span class="orbit-word">TRABALHO</span>
-          <span class="orbit-word">TERRITÓRIO</span>
-          <span class="orbit-word">CULTURA</span>
-          <span class="orbit-word">CONHECIMENTO</span>
+      <div class="prose-section section-intro spiral-intro"><div class="section-label"><span>09</span><span>Conexões</span></div><h2>Nada existe <em>isolado.</em></h2></div>
+      <header class="scene-head"><span>Do código à vida, da vida ao código</span><span class="scene-count">01 / 04</span></header>
+      <div class="spiral-stage">
+        <div class="orbit-view" id="orbit-view" role="group" aria-label="Explore as relações entre tecnologia e sociedade">
+          <i class="orbit-ring ring-outer" aria-hidden="true"></i><i class="orbit-ring ring-inner" aria-hidden="true"></i>
+          <strong class="orbit-center">VIDA<span>no centro</span></strong>
+          {nodes.map((node,index)=><button type="button" class="orbit-word" data-orbit-node={index} data-orbit-title={node.title} data-orbit-text={node.text} aria-pressed={index===0?'true':'false'}>{node.name}</button>)}
         </div>
-        <div class="spiral-captions">
-          <article class="spiral-caption"><span class="small-label">01 / Organizar</span><p>A vida traz a demanda.</p><p>A demanda requer serviço.</p><p>O serviço se organiza em processo.</p><p>O processo pode se digitalizar em software.</p></article>
-          <article class="spiral-caption"><span class="small-label">02 / Sustentar</span><p>O software encontra o servidor.</p><p>O servidor requer energia.</p><p>A energia vem do território.</p></article>
-          <article class="spiral-caption"><span class="small-label">03 / Nutrir</span><p>O território precisa de água.</p><p>A água nutre a agricultura.</p><p>A agricultura alimenta a comunidade.</p></article>
-          <article class="spiral-caption"><span class="small-label">04 / Imaginar</span><p>A comunidade produz cultura.</p><p>A cultura transforma aquilo que imaginamos.</p><p>E aquilo que imaginamos volta para o código.</p></article>
+        <div class="spiral-reading">
+          <div class="spiral-captions">
+            <article class="spiral-caption"><span class="small-label">01 / Organizar</span><p>A demanda vira processo.<br/>O processo encontra o software.</p></article>
+            <article class="spiral-caption"><span class="small-label">02 / Sustentar</span><p>O software usa energia.<br/>A energia vem do território.</p></article>
+            <article class="spiral-caption"><span class="small-label">03 / Nutrir</span><p>O território sustenta a vida.<br/>A vida sustenta a comunidade.</p></article>
+            <article class="spiral-caption"><span class="small-label">04 / Imaginar</span><p>A comunidade cria cultura.<br/>A cultura transforma o código.</p></article>
+          </div>
+          <div class="orbit-note" id="orbit-note" aria-live="polite" aria-atomic="true"><h3 id="orbit-note-title">{nodes[0].title}</h3><p id="orbit-note-text">{nodes[0].text}</p></div>
+          <p class="orbit-instruction">Toque em uma palavra para seguir a conexão.</p>
         </div>
       </div>
-      <footer class="scene-foot"><span class="scene-hint">A folha acompanha o mesmo vento</span><div class="scene-progress" aria-hidden="true"><i></i></div><div class="scene-controls"><button type="button" data-prev aria-label="Anterior">←</button><button type="button" data-next aria-label="Próximo">→</button></div></footer>
+      <footer class="scene-foot"><span class="scene-hint">O sistema nunca é apenas digital.</span><div class="scene-progress" aria-hidden="true"><i></i></div><div class="scene-controls"><button type="button" data-prev aria-label="Conexão anterior">←</button><button type="button" data-next aria-label="Próxima conexão">→</button></div></footer>
     </div>
   </div>
-  <div class="prose-section spiral-outro"><p>O sistema nunca é<br /><em>apenas digital.</em></p></div>
 </section>

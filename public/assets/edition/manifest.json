@@ -1,0 +1,387 @@
+{
+  "cooperative-newsprint-v1.png": {
+    "src": "/assets/edition/cooperative-newsprint-v1.webp",
+    "width": 1440,
+    "height": 1080,
+    "sourceBytes": 3510902,
+    "bytes": 509510
+  },
+  "cooperative-tablet-v1.png": {
+    "src": "/assets/edition/cooperative-tablet-v1.webp",
+    "width": 1440,
+    "height": 1080,
+    "sourceBytes": 1130483,
+    "bytes": 87024
+  },
+  "knowledge-branch-v1.png": {
+    "src": "/assets/edition/knowledge-branch-v1.webp",
+    "width": 1024,
+    "height": 1536,
+    "sourceBytes": 1657648,
+    "bytes": 144590
+  },
+  "knowledge-hands-v1.png": {
+    "src": "/assets/edition/knowledge-hands-v1.webp",
+    "width": 1122,
+    "height": 1402,
+    "sourceBytes": 2726463,
+    "bytes": 365072
+  },
+  "knowledge-notebook-v1.png": {
+    "src": "/assets/edition/knowledge-notebook-v1.webp",
+    "width": 1225,
+    "height": 1284,
+    "sourceBytes": 2619028,
+    "bytes": 278270
+  },
+  "lab-ciclico-community-v1.png": {
+    "src": "/assets/edition/lab-ciclico-community-v1.webp",
+    "width": 1200,
+    "height": 840,
+    "sourceBytes": 719713,
+    "bytes": 75648
+  },
+  "lab-ciclico-overview-v1.png": {
+    "src": "/assets/edition/lab-ciclico-overview-v1.webp",
+    "width": 1200,
+    "height": 840,
+    "sourceBytes": 771495,
+    "bytes": 69508
+  },
+  "lab-foco-edition-v1.png": {
+    "src": "/assets/edition/lab-foco-edition-v1.webp",
+    "width": 1200,
+    "height": 840,
+    "sourceBytes": 69768,
+    "bytes": 53232
+  },
+  "lab-foco-overview-v1.png": {
+    "src": "/assets/edition/lab-foco-overview-v1.webp",
+    "width": 1200,
+    "height": 840,
+    "sourceBytes": 99340,
+    "bytes": 50236
+  },
+  "lab-game-lesson-v1.png": {
+    "src": "/assets/edition/lab-game-lesson-v1.webp",
+    "width": 1200,
+    "height": 840,
+    "sourceBytes": 394161,
+    "bytes": 37292
+  },
+  "lab-game-overview-v1.png": {
+    "src": "/assets/edition/lab-game-overview-v1.webp",
+    "width": 1200,
+    "height": 840,
+    "sourceBytes": 241830,
+    "bytes": 67656
+  },
+  "lab-roots-greenhouse-v1.png": {
+    "src": "/assets/edition/lab-roots-greenhouse-v1.webp",
+    "width": 1200,
+    "height": 840,
+    "sourceBytes": 123153,
+    "bytes": 38928
+  },
+  "lab-roots-overview-v1.png": {
+    "src": "/assets/edition/lab-roots-overview-v1.webp",
+    "width": 1200,
+    "height": 840,
+    "sourceBytes": 306142,
+    "bytes": 52446
+  },
+  "lab-techia-glossary-v1.png": {
+    "src": "/assets/edition/lab-techia-glossary-v1.webp",
+    "width": 1200,
+    "height": 840,
+    "sourceBytes": 134091,
+    "bytes": 91894
+  },
+  "lab-techia-overview-v1.png": {
+    "src": "/assets/edition/lab-techia-overview-v1.webp",
+    "width": 1200,
+    "height": 840,
+    "sourceBytes": 144611,
+    "bytes": 73012
+  },
+  "leaf-a.png": {
+    "src": "/assets/edition/leaf-a.webp",
+    "width": 244,
+    "height": 520,
+    "sourceBytes": 176536,
+    "bytes": 32058
+  },
+  "leaf-b.png": {
+    "src": "/assets/edition/leaf-b.webp",
+    "width": 168,
+    "height": 440,
+    "sourceBytes": 93062,
+    "bytes": 19502
+  },
+  "leaf-c.png": {
+    "src": "/assets/edition/leaf-c.webp",
+    "width": 274,
+    "height": 440,
+    "sourceBytes": 180124,
+    "bytes": 34010
+  },
+  "portfolio-analytics-documentation-v1.png": {
+    "src": "/assets/edition/portfolio-analytics-documentation-v1.webp",
+    "width": 1366,
+    "height": 1333,
+    "sourceBytes": 138419,
+    "bytes": 91268
+  },
+  "portfolio-analytics-funnel-v1.png": {
+    "src": "/assets/edition/portfolio-analytics-funnel-v1.webp",
+    "width": 1440,
+    "height": 1374,
+    "sourceBytes": 271708,
+    "bytes": 70044
+  },
+  "portfolio-analytics-login-v1.png": {
+    "src": "/assets/edition/portfolio-analytics-login-v1.webp",
+    "width": 1440,
+    "height": 900,
+    "sourceBytes": 311448,
+    "bytes": 29606
+  },
+  "portfolio-analytics-map-v1.png": {
+    "src": "/assets/edition/portfolio-analytics-map-v1.webp",
+    "width": 1440,
+    "height": 900,
+    "sourceBytes": 534120,
+    "bytes": 75734
+  },
+  "portfolio-analytics-v1.png": {
+    "src": "/assets/edition/portfolio-analytics-v1.webp",
+    "width": 1370,
+    "height": 1328,
+    "sourceBytes": 151708,
+    "bytes": 60326
+  },
+  "portfolio-circulo-course-v1.png": {
+    "src": "/assets/edition/portfolio-circulo-course-v1.webp",
+    "width": 1440,
+    "height": 941,
+    "sourceBytes": 199604,
+    "bytes": 50198
+  },
+  "portfolio-circulo-lesson-v1.png": {
+    "src": "/assets/edition/portfolio-circulo-lesson-v1.webp",
+    "width": 1440,
+    "height": 1313,
+    "sourceBytes": 128809,
+    "bytes": 60120
+  },
+  "portfolio-circulo-login-v1.png": {
+    "src": "/assets/edition/portfolio-circulo-login-v1.webp",
+    "width": 1440,
+    "height": 900,
+    "sourceBytes": 3073131,
+    "bytes": 65180
+  },
+  "portfolio-circulo-login-v2.png": {
+    "src": "/assets/edition/portfolio-circulo-login-v2.webp",
+    "width": 1440,
+    "height": 900,
+    "sourceBytes": 3067461,
+    "bytes": 87866
+  },
+  "portfolio-circulo-v1.png": {
+    "src": "/assets/edition/portfolio-circulo-v1.webp",
+    "width": 1440,
+    "height": 2293,
+    "sourceBytes": 2525342,
+    "bytes": 215394
+  },
+  "portfolio-editor-document-v1.png": {
+    "src": "/assets/edition/portfolio-editor-document-v1.webp",
+    "width": 709,
+    "height": 497,
+    "sourceBytes": 33159,
+    "bytes": 25628
+  },
+  "portfolio-editor-real-document-v1.png": {
+    "src": "/assets/edition/portfolio-editor-real-document-v1.webp",
+    "width": 1366,
+    "height": 900,
+    "sourceBytes": 87782,
+    "bytes": 43352
+  },
+  "portfolio-editor-real-v1.png": {
+    "src": "/assets/edition/portfolio-editor-real-v1.webp",
+    "width": 1366,
+    "height": 900,
+    "sourceBytes": 112944,
+    "bytes": 48204
+  },
+  "portfolio-editor-real-v2.png": {
+    "src": "/assets/edition/portfolio-editor-real-v2.webp",
+    "width": 1366,
+    "height": 780,
+    "sourceBytes": 119573,
+    "bytes": 57014
+  },
+  "portfolio-editor-v1.png": {
+    "src": "/assets/edition/portfolio-editor-v1.webp",
+    "width": 709,
+    "height": 497,
+    "sourceBytes": 32868,
+    "bytes": 19340
+  },
+  "portfolio-monitor-member-v1.png": {
+    "src": "/assets/edition/portfolio-monitor-member-v1.webp",
+    "width": 594,
+    "height": 309,
+    "sourceBytes": 17375,
+    "bytes": 13032
+  },
+  "portfolio-monitor-public-v1.png": {
+    "src": "/assets/edition/portfolio-monitor-public-v1.webp",
+    "width": 1100,
+    "height": 820,
+    "sourceBytes": 73035,
+    "bytes": 52916
+  },
+  "portfolio-monitor-registration-v1.png": {
+    "src": "/assets/edition/portfolio-monitor-registration-v1.webp",
+    "width": 1068,
+    "height": 1125,
+    "sourceBytes": 90711,
+    "bytes": 41706
+  },
+  "portfolio-monitor-whatsapp-v10.png": {
+    "src": "/assets/edition/portfolio-monitor-whatsapp-v10.webp",
+    "width": 1440,
+    "height": 2637,
+    "sourceBytes": 2026620,
+    "bytes": 171636
+  },
+  "portfolio-monitor-whatsapp-v3.png": {
+    "src": "/assets/edition/portfolio-monitor-whatsapp-v3.webp",
+    "width": 820,
+    "height": 1514,
+    "sourceBytes": 178323,
+    "bytes": 87602
+  },
+  "portfolio-monitor-whatsapp-v4.png": {
+    "src": "/assets/edition/portfolio-monitor-whatsapp-v4.webp",
+    "width": 820,
+    "height": 1580,
+    "sourceBytes": 208675,
+    "bytes": 106698
+  },
+  "portfolio-monitor-whatsapp-v5.png": {
+    "src": "/assets/edition/portfolio-monitor-whatsapp-v5.webp",
+    "width": 820,
+    "height": 1580,
+    "sourceBytes": 216843,
+    "bytes": 110708
+  },
+  "portfolio-monitor-whatsapp-v6.png": {
+    "src": "/assets/edition/portfolio-monitor-whatsapp-v6.webp",
+    "width": 820,
+    "height": 1580,
+    "sourceBytes": 224994,
+    "bytes": 116306
+  },
+  "portfolio-monitor-whatsapp-v7.png": {
+    "src": "/assets/edition/portfolio-monitor-whatsapp-v7.webp",
+    "width": 820,
+    "height": 1800,
+    "sourceBytes": 233712,
+    "bytes": 116846
+  },
+  "portfolio-monitor-whatsapp-v8.png": {
+    "src": "/assets/edition/portfolio-monitor-whatsapp-v8.webp",
+    "width": 920,
+    "height": 1888,
+    "sourceBytes": 289666,
+    "bytes": 123462
+  },
+  "portfolio-monitor-whatsapp-v9.png": {
+    "src": "/assets/edition/portfolio-monitor-whatsapp-v9.webp",
+    "width": 1440,
+    "height": 2115,
+    "sourceBytes": 2050909,
+    "bytes": 167068
+  },
+  "portfolio-rag-overview-v1.png": {
+    "src": "/assets/edition/portfolio-rag-overview-v1.webp",
+    "width": 1440,
+    "height": 960,
+    "sourceBytes": 292025,
+    "bytes": 61300
+  },
+  "portfolio-rag-query-v1.png": {
+    "src": "/assets/edition/portfolio-rag-query-v1.webp",
+    "width": 1440,
+    "height": 960,
+    "sourceBytes": 69443,
+    "bytes": 42560
+  },
+  "portfolio-uve-profile-v1.png": {
+    "src": "/assets/edition/portfolio-uve-profile-v1.webp",
+    "width": 1440,
+    "height": 960,
+    "sourceBytes": 39769,
+    "bytes": 26994
+  },
+  "portfolio-uve-studio-v1.png": {
+    "src": "/assets/edition/portfolio-uve-studio-v1.webp",
+    "width": 1440,
+    "height": 960,
+    "sourceBytes": 59471,
+    "bytes": 42844
+  },
+  "process-piece-01.png": {
+    "src": "/assets/edition/process-piece-01.webp",
+    "width": 662,
+    "height": 568,
+    "sourceBytes": 354447,
+    "bytes": 48946
+  },
+  "process-piece-02.png": {
+    "src": "/assets/edition/process-piece-02.webp",
+    "width": 662,
+    "height": 568,
+    "sourceBytes": 376662,
+    "bytes": 49576
+  },
+  "process-piece-03.png": {
+    "src": "/assets/edition/process-piece-03.webp",
+    "width": 662,
+    "height": 568,
+    "sourceBytes": 344886,
+    "bytes": 45318
+  },
+  "process-piece-04.png": {
+    "src": "/assets/edition/process-piece-04.webp",
+    "width": 662,
+    "height": 568,
+    "sourceBytes": 380127,
+    "bytes": 56774
+  },
+  "process-piece-05.png": {
+    "src": "/assets/edition/process-piece-05.webp",
+    "width": 662,
+    "height": 568,
+    "sourceBytes": 402469,
+    "bytes": 55542
+  },
+  "process-piece-06.png": {
+    "src": "/assets/edition/process-piece-06.webp",
+    "width": 662,
+    "height": 568,
+    "sourceBytes": 424935,
+    "bytes": 72692
+  },
+  "tree.png": {
+    "src": "/assets/edition/tree.webp",
+    "width": 915,
+    "height": 1220,
+    "sourceBytes": 715455,
+    "bytes": 212222
+  }
+}

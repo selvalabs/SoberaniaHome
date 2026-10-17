@@ -1,17 +1,19 @@
 (() => {
   document.querySelectorAll('[data-landing-gallery]').forEach(figure => {
     const projects=window.SLLandingPages, prefix=figure.dataset.imagePrefix || 'screens/';
+    const tileManifest=JSON.parse(document.querySelector('[data-landing-tiles]')?.textContent || '{}');
     if(!projects?.length) return;
     if(figure.closest('#laboratorio')){
       const card=figure.closest('.landing-project');
       card?.querySelector('.card-meta .work-status')?.remove();
       card?.querySelector('.card-tail')?.remove();
       const rail=document.createElement('div');
-      rail.className='landing-phone-rail';
+      rail.className='landing-phone-rail';rail.tabIndex=0;rail.setAttribute('role','region');
       // Native snap competes with each wheel/drag update and pulls the rail back.
       rail.style.scrollSnapType='none';
       rail.style.scrollBehavior='auto';
       rail.setAttribute('aria-label','Oito landing pages em mockups de celular. Role dentro da tela para ler a página. Arraste para os lados ou use Shift mais a roda do mouse para ver outras páginas.');
+      const startScreens=[];
       projects.forEach(project=>{
         const card=document.createElement('article');
         card.className='landing-phone-card';
@@ -28,13 +30,22 @@
         screen.style.touchAction='pan-x pan-y';
         screen.style.overscrollBehaviorX='auto';
         screen.setAttribute('aria-label',`${project.name}. Tela rolável da landing page.`);
-        const image=document.createElement('img');
-        image.src=`${prefix}mobile/${project.key}-mobile-v1.jpg`;
-        image.alt=`Página completa de ${project.name}, em versão para celular.`;
-        image.width=390;image.loading='lazy';image.decoding='async';
-        image.draggable=false;
-        image.addEventListener('error',()=>{screen.setAttribute('aria-label',`Prévia indisponível: ${project.name}.`);},{once:true});
-        screen.append(image);frame.append(screen);
+        const tiles=tileManifest[project.key] || [{src:`mobile/${project.key}-mobile-v1.jpg`,width:390,height:1200}];
+        const images=[];
+        startScreens.push(()=>{
+          if('IntersectionObserver' in window){const observer=new IntersectionObserver(entries=>{for(const entry of entries)if(entry.isIntersecting){const img=entry.target;img.src=img.dataset.src;observer.unobserve(img);}},{root:screen,rootMargin:'600px 0px'});images.forEach(image=>observer.observe(image));}
+          else images.forEach(image=>{image.src=image.dataset.src;});
+        });
+        tiles.forEach((tile,index)=>{
+          const image=document.createElement('img');
+          image.alt=index===0?`Prévia de ${project.name}, em versão para celular.`:'';
+          image.width=tile.width;image.height=tile.height;image.decoding='async';image.draggable=false;
+          image.dataset.src=prefix+tile.src;
+          image.style.aspectRatio=`${tile.width} / ${tile.height}`;
+          images.push(image);
+          screen.append(image);
+        });
+        frame.append(screen);
         const hint=document.createElement('span');hint.className='landing-phone-scroll-hint';hint.textContent='Role na tela ↕ · Arraste ou Shift + roda ↔';
         card.append(heading,frame,hint);rail.append(card);
       });
@@ -55,6 +66,7 @@
         // suddenly starts scrolling the phone or the surrounding chapter.
         event.preventDefault();event.stopPropagation();rail.scrollLeft=Math.max(0,Math.min(max,rail.scrollLeft+delta));
       },{passive:false});
+      rail.addEventListener('keydown',event=>{if(event.target!==rail)return;if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();event.stopPropagation();rail.scrollLeft+=(event.key==='ArrowRight'?1:-1)*280;}});
       let drag=null;
       rail.addEventListener('pointerdown',event=>{
         if(event.pointerType!=='mouse'||event.button!==0||event.target.closest?.('a,button,input,select,textarea'))return;
@@ -72,6 +84,8 @@
       rail.addEventListener('pointerup',endDrag);rail.addEventListener('pointercancel',endDrag);
       rail.addEventListener('lostpointercapture',endDrag);
       figure.replaceChildren(rail);
+      if('IntersectionObserver' in window){const visible=new IntersectionObserver(entries=>{if(entries.some(entry=>entry.isIntersecting)){startScreens.forEach(start=>start());visible.disconnect();}},{rootMargin:'400px'});visible.observe(figure);}
+      else startScreens.forEach(start=>start());
       return;
     }
     const image=figure.querySelector('img'), caption=figure.querySelector('figcaption');

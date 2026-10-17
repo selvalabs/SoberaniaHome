@@ -1,23 +1,81 @@
 ---
+import '../../styles/edition-interactions.css';
 ---
 
-<section id="editor" class="section autonomy-section" data-number="7">
-  <div class="prose-section section-intro">
+<section id="editor" class="section autonomy-section handover-section" data-number="7" aria-labelledby="handover-title">
+  <div class="handover-heading">
     <div class="section-label"><span>07</span><span>O que fica</span></div>
-    <h2>O que construímos precisa continuar nas mãos de quem usa.</h2>
+    <h2 id="handover-title">A entrega também<br />é <em>autonomia.</em></h2>
+    <p>O projeto continua depois da entrega. Acesso, conhecimento e liberdade para mudar precisam continuar com quem usa.</p>
   </div>
-  <div class="autonomy-card-wrap">
-    <article class="autonomy-card">
-      <div class="autonomy-card-lead">
-        <span class="small-label">SOBERANIA / NA PRÁTICA</span>
-        <h3>A entrega também é autonomia.</h3>
-        <p>Um sistema não está completo só porque entrou no ar. Ele precisa deixar acesso, conhecimento e liberdade para mudar.</p>
-      </div>
-      <ol class="autonomy-principles">
-        <li><span>01</span><div><h4>Acesso e controle</h4><p>Credenciais, dados e escolhas nas mãos de quem opera.</p></div></li>
-        <li><span>02</span><div><h4>Conhecimento compartilhado</h4><p>Documentação clara para entender e manter o que foi construído.</p></div></li>
-        <li><span>03</span><div><h4>Liberdade de mudança</h4><p>Interoperabilidade para adaptar, integrar ou seguir outro caminho.</p></div></li>
-      </ol>
-    </article>
+
+  <div class="handover-bench" data-edition-tabs data-active="acesso">
+    <div class="handover-directory">
+      <div class="instrument-label"><i aria-hidden="true"></i> Inspecione a entrega</div>
+      <nav class="handover-tabs" data-edition-tablist aria-label="O que acompanha um sistema">
+        <a href="#entrega-acesso" data-edition-tab="acesso"><span>01</span><b>Acesso</b><small>As chaves ficam com você.</small><i aria-hidden="true">↗</i></a>
+        <a href="#entrega-conhecimento" data-edition-tab="conhecimento"><span>02</span><b>Conhecimento</b><small>O caminho fica registrado.</small><i aria-hidden="true">↗</i></a>
+        <a href="#entrega-liberdade" data-edition-tab="liberdade"><span>03</span><b>Liberdade</b><small>O futuro continua aberto.</small><i aria-hidden="true">↗</i></a>
+      </nav>
+      <p class="handover-margin">Um sistema entregue.<br /><em>Capacidade compartilhada.</em></p>
+    </div>
+
+    <div class="handover-documents">
+      <article id="entrega-acesso" class="handover-document" data-edition-panel="acesso">
+        <header class="document-mast"><span>SOBERANIA / ENTREGA</span><span>01 — ACESSO</span></header>
+        <div class="document-body">
+          <span class="document-type">Inventário de autonomia</span>
+          <h3>Quem opera precisa<br />ter as chaves.</h3>
+          <p>Mapear contas, permissões e responsáveis faz parte do projeto. A operação precisa de acesso adequado, recuperável e documentado.</p>
+          <ul class="handover-inventory">
+            <li><span>Repositório</span><b>Código e histórico</b><i aria-hidden="true">↗</i></li>
+            <li><span>Infraestrutura</span><b>Acesso e responsáveis</b><i aria-hidden="true">↗</i></li>
+            <li><span>Dados</span><b>Cópia e recuperação</b><i aria-hidden="true">↗</i></li>
+            <li><span>Operação</span><b>Permissões claras</b><i aria-hidden="true">↗</i></li>
+          </ul>
+          <p class="document-annotation">Acesso suficiente para cuidar.<br />Permissão delimitada para proteger.</p>
+        </div>
+        <footer class="document-footer"><span>Princípio de projeto</span><span>01 / 03</span></footer>
+      </article>
+      <article id="entrega-conhecimento" class="handover-document" data-edition-panel="conhecimento">
+        <header class="document-mast"><span>SOBERANIA / ENTREGA</span><span>02 — CONHECIMENTO</span></header>
+        <div class="document-body">
+          <span class="document-type">Caderno de operação</span>
+          <h3>Documentar é<br />transferir capacidade.</h3>
+          <p>A próxima pessoa precisa compreender o que foi decidido, como o sistema funciona e por onde começar quando algo muda.</p>
+          <div class="document-tree" aria-label="Exemplo de organização da documentação">
+            <p><span>projeto /</span></p>
+            <p>├── <b>LEIA-ME</b> <em>comece aqui</em></p>
+            <p>├── decisões / <em>o porquê</em></p>
+            <p>├── operação / <em>como cuidar</em></p>
+            <p>└── recuperação / <em>como retomar</em></p>
+          </div>
+          <p class="document-annotation">Para quem chega amanhã.<br />E para quem precisa resolver hoje.</p>
+        </div>
+        <footer class="document-footer"><span>Estrutura ilustrativa</span><span>02 / 03</span></footer>
+      </article>
+      <article id="entrega-liberdade" class="handover-document" data-edition-panel="liberdade">
+        <header class="document-mast"><span>SOBERANIA / ENTREGA</span><span>03 — LIBERDADE</span></header>
+        <div class="document-body">
+          <span class="document-type">Contrato de saída</span>
+          <h3>Um caminho de saída<br />é parte da entrada.</h3>
+          <p>Formatos documentados e interfaces compreensíveis permitem integrar, adaptar e planejar uma migração quando ela fizer sentido.</p>
+          <pre class="portable-example" aria-label="Exemplo ilustrativo de dados portáveis"><code><span>{'{'}</span>
+  "formato": "aberto",
+  "dados": "exportáveis",
+  "decisões": "documentadas",
+  "próximo_caminho": <b>"você escolhe"</b>
+<span>{'}'}</span></code></pre>
+          <p class="document-annotation">Mudar de ferramenta pode dar trabalho.<br />Não precisa significar começar do zero.</p>
+        </div>
+        <footer class="document-footer"><span>Exemplo conceitual</span><span>03 / 03</span></footer>
+      </article>
+    </div>
   </div>
+  <div class="handover-colophon"><span>O produto é uma parte da entrega.</span><span>A capacidade de continuar é a outra.</span></div>
 </section>
+
+<script>
+  import { initEditionInteractions } from '../../scripts/edition-interactions';
+  initEditionInteractions();
+</script>

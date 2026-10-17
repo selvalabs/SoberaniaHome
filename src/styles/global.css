@@ -419,12 +419,12 @@ html[data-leaf-occluded="1"] #espiral{z-index:48}
 .motion .process-board .process-node:active,
 .motion .process-board .process-node.is-dragging{cursor:grabbing!important;z-index:8!important}
 .motion .process-node::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;width:100%!important;height:100%!important;background:center/contain no-repeat!important;-webkit-mask:none!important;mask:none!important;filter:drop-shadow(0 15px 14px rgba(0,0,0,.42)) brightness(1.48) contrast(1.12)!important;pointer-events:none!important}
-.motion .process-node:nth-child(1)::before{background-image:url('/assets/process-piece-01.png?v=4')!important}
-.motion .process-node:nth-child(2)::before{background-image:url('/assets/process-piece-02.png?v=4')!important}
-.motion .process-node:nth-child(3)::before{background-image:url('/assets/process-piece-03.png?v=4')!important}
-.motion .process-node:nth-child(4)::before{background-image:url('/assets/process-piece-04.png?v=4')!important}
-.motion .process-node:nth-child(5)::before{background-image:url('/assets/process-piece-05.png?v=4')!important}
-.motion .process-node:nth-child(6)::before{background-image:url('/assets/process-piece-06.png?v=4')!important}
+.motion .process-node:nth-child(1)::before{background-image:url('/assets/edition/process-piece-01.webp')!important}
+.motion .process-node:nth-child(2)::before{background-image:url('/assets/edition/process-piece-02.webp')!important}
+.motion .process-node:nth-child(3)::before{background-image:url('/assets/edition/process-piece-03.webp')!important}
+.motion .process-node:nth-child(4)::before{background-image:url('/assets/edition/process-piece-04.webp')!important}
+.motion .process-node:nth-child(5)::before{background-image:url('/assets/edition/process-piece-05.webp')!important}
+.motion .process-node:nth-child(6)::before{background-image:url('/assets/edition/process-piece-06.webp')!important}
 .motion .process-node.is-active{z-index:6!important}
 .motion .process-node.is-active::before{filter:drop-shadow(0 20px 22px rgba(0,0,0,.55)) brightness(1.68) contrast(1.18)!important}
 .motion .process-node span,

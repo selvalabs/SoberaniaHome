@@ -2,12 +2,12 @@
 (() => {
   const previews = [
     {card:'.work-uve',pages:[
-      {label:'Studio',asset:'portfolio-uve-studio-v1.png',caption:'Editor e controles de voz. Interface real, perfil demonstrativo.'},
-      {label:'Perfil de voz',asset:'portfolio-uve-profile-v1.png',caption:'Preparação de um perfil local. Interface real do UVE.'}
+      {label:'Studio',asset:'edition/portfolio-uve-studio-v1.webp',caption:'Editor e controles de voz. Interface real, perfil demonstrativo.'},
+      {label:'Perfil de voz',asset:'edition/portfolio-uve-profile-v1.webp',caption:'Preparação de um perfil local. Interface real do UVE.'}
     ]},
     {card:'.work-rag',pages:[
-      {label:'Entrada',asset:'portfolio-rag-overview-v1.png',caption:'Documentos e consulta local. Interface real, base demonstrativa.'},
-      {label:'Consulta',asset:'portfolio-rag-query-v1.png',caption:'Resposta com fontes. Conteúdo demonstrativo, sem inferência real.'}
+      {label:'Entrada',asset:'edition/portfolio-rag-overview-v1.webp',caption:'Documentos e consulta local. Interface real, base demonstrativa.'},
+      {label:'Consulta',asset:'edition/portfolio-rag-query-v1.webp',caption:'Resposta com fontes. Conteúdo demonstrativo, sem inferência real.'}
     ]}
   ];
   previews.forEach(({card,pages}) => {

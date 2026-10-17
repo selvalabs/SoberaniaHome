@@ -1,77 +1,81 @@
 ---
+const notes = [
+  {
+    id:'ia-sem-magia', category:'IA / operação', title:'IA sem magia.', deck:'Um agente útil precisa de contexto, limites e uma forma de conferir o que fez.',
+    paragraphs:[
+      'Quando um agente participa de uma operação, há mais do que uma resposta na tela. Existem instruções, ferramentas, permissões e dados. Tornar essas relações visíveis ajuda a entender onde a automação pode contribuir e onde a decisão precisa continuar com uma pessoa.',
+      'No nosso modo de projetar, começamos por uma tarefa delimitada: qual é a entrada, o que pode ser alterado e como verificar a saída. Uma proposta, uma execução e uma aprovação são momentos diferentes. Registrar essa diferença permite investigar falhas e melhorar o processo.',
+      'O critério não é parecer inteligente. É produzir algo útil, verificável e compatível com as condições de quem trabalha.'
+    ],
+    closing:'Pergunta de projeto: como saberemos se a tarefa foi bem feita?'
+  },
+  {
+    id:'internet-tem-chao', category:'Infraestrutura / ecologia', title:'A internet tem chão.', deck:'O que chamamos de nuvem também depende de lugares, recursos e trabalho.',
+    paragraphs:[
+      'Uma interface leve pode esconder uma operação complexa. Aplicações dependem de computadores, redes, armazenamento, energia e de pessoas que cuidam dessa infraestrutura. Quando o projeto ignora essas dependências, também deixa de enxergar parte do seu custo e da sua continuidade.',
+      'Isso muda nossas perguntas: precisamos processar tudo de novo? É necessário manter esta tarefa em execução? O equipamento disponível atende ao uso? Uma ferramenta menor, bem documentada e adequada ao contexto pode ser uma escolha melhor do que uma arquitetura que exige mais capacidade de manutenção.',
+      'Ecologia entra no projeto quando recursos, duração e cuidado passam a fazer parte da decisão técnica.'
+    ],
+    closing:'Pergunta de projeto: o que sustenta esta tela quando ninguém está olhando?'
+  },
+  {
+    id:'ferramenta-que-deixa-sair', category:'Ferramentas / autonomia', title:'Uma ferramenta que deixa sair.', deck:'A liberdade de mudar começa muito antes de uma migração.',
+    paragraphs:[
+      'Um sistema organiza trabalho, mas também estabelece dependências. Com o tempo, ele guarda memória: documentos, relações, configurações e decisões. Saber como levar essa memória para outro lugar é parte da autonomia de quem o utiliza.',
+      'Uma exportação isolada não resolve tudo. É preciso entender o significado dos campos, preservar relações importantes e verificar o que foi transferido. Por isso, formatos compreensíveis, documentação e testes de recuperação merecem espaço no planejamento.',
+      'A possibilidade de saída também melhora a permanência: continuar usando uma ferramenta pode ser uma escolha consciente, sustentada por utilidade e confiança.'
+    ],
+    closing:'Pergunta de projeto: o que acontece se a ferramenta precisar mudar?'
+  },
+  {
+    id:'documentar-e-compartilhar', category:'Conhecimento / manutenção', title:'Documentar é compartilhar poder.', deck:'A próxima pessoa precisa de um caminho, não de um enigma.',
+    paragraphs:[
+      'Código explica uma parte do funcionamento. Nem sempre explica por que uma decisão foi tomada, qual restrição existia ou como recuperar a operação quando algo falha. Esse contexto também precisa ser transmitido.',
+      'Uma documentação útil começa pelas perguntas de quem vai usar: como entrar, onde ficam os dados, como fazer uma alteração e como voltar a um estado conhecido. Exemplos pequenos e verificáveis ajudam mais do que uma descrição grandiosa que envelhece sem manutenção.',
+      'Documentar distribui capacidade. Permite que o conhecimento atravesse uma troca de equipe, uma mudança de fornecedor ou um período em que a pessoa que construiu o sistema não está disponível.'
+    ],
+    closing:'Pergunta de projeto: alguém consegue continuar o trabalho sem depender de uma única pessoa?'
+  },
+  {
+    id:'cultivar-ferramentas', category:'Território / método', title:'Cultivar ferramentas.', deck:'Escutar o contexto ajuda a decidir o que vale a pena construir.',
+    paragraphs:[
+      'Cultivar é uma imagem que nos ajuda a pensar no desenvolvimento: observar condições, preparar o terreno, acompanhar o uso e ajustar o cuidado. Aqui, a comparação é um método de atenção, não uma receita que torna todos os problemas iguais.',
+      'Quem vive uma rotina conhece exceções, acordos e improvisos que uma especificação inicial pode não registrar. Conversar com essas pessoas ajuda a separar uma dificuldade real de uma solução escolhida cedo demais.',
+      'O protótipo retorna ao contexto. Pode revelar que uma interface precisa mudar, que um processo deve ser mais simples ou que uma tecnologia não é necessária. Continuar atento faz parte da construção.'
+    ],
+    closing:'Pergunta de projeto: quem conhece os detalhes que ainda não conseguimos ver?'
+  },
+  {
+    id:'quem-controla-o-botao', category:'Automação / responsabilidade', title:'Quem controla o botão?', deck:'Delegar uma tarefa também exige desenhar seus limites.',
+    paragraphs:[
+      'Uma automação pode sugerir, preparar ou executar uma ação. Essas capacidades não precisam ter a mesma permissão. Identificar consequências, responsáveis e pontos de revisão ajuda a decidir o nível de autonomia adequado a cada tarefa.',
+      'Em fluxos com agentes, procuramos distinguir leitura, proposta e mudança. Ações que afetam pessoas, dados ou serviços precisam de critérios claros de autorização e verificação. A possibilidade de interromper e investigar a execução faz parte do desenho.',
+      'Controle humano não é apenas um botão de confirmação. É ter informação suficiente para avaliar, condições para recusar e um caminho para corrigir.'
+    ],
+    closing:'Pergunta de projeto: quem pode entender, interromper e revisar esta ação?'
+  }
+];
 ---
 
-<section id="caderno" class="section journal-section" data-number="14">
-  <div class="prose-section section-intro">
-    <div class="section-label"><span>14</span><span>Caderno / jornal interno</span></div>
-    <h2>Caderno do Laboratório</h2>
-    <div class="two-columns">
-      <p class="lead">Pesquisa, código, território e ideias em andamento.</p>
-      <p>Um lugar para publicar aquilo que seria grande demais para uma legenda e inacabado demais para virar livro.</p>
+<section id="caderno" class="section journal-section field-journal" data-number="14" aria-labelledby="field-journal-title">
+  <div class="journal-edition-line"><span>14 / Caderno aberto</span><span>Pesquisa · código · território</span><span>Edição experimental / 001</span></div>
+  <header class="field-journal-heading">
+    <div>
+      <h2 id="field-journal-title">Notas de<br /><em>um laboratório vivo.</em></h2>
+      <p>Seis notas sobre o que fazemos, o que perguntamos e o que queremos deixar nas mãos de quem usa.</p>
     </div>
+    <div class="journal-stamp" aria-hidden="true"><span>CADERNO</span><b>06</b><span>NOTAS ABERTAS</span></div>
+  </header>
+  <div class="field-notes">
+    {notes.map((note,index)=><article id={`nota-${note.id}`} class:list={['field-note',{'field-note-lead':index===0}]} aria-labelledby={`titulo-${note.id}`}>
+      <div class="field-note-meta"><span>{String(index+1).padStart(2,'0')} / {note.category}</span><span>Nota do laboratório</span></div>
+      <h3 id={`titulo-${note.id}`}>{note.title}</h3>
+      <p class="field-note-deck">{note.deck}</p>
+      <details class="field-note-reading" open={index===0}>
+        <summary><span class="note-open-label">Ler a nota</span><span class="note-close-label">Recolher a nota</span><i aria-hidden="true">↗</i></summary>
+        <div class="field-note-body">{note.paragraphs.map(paragraph=><p>{paragraph}</p>)}<p class="field-note-question">{note.closing}</p></div>
+      </details>
+    </article>)}
   </div>
-  <div class="sequence journal-sequence" data-kind="journal" data-states="4">
-    <div class="scene-frame">
-      <header class="scene-head"><span>14 / Leitura em andamento</span><span class="scene-count">01 / 06</span></header>
-      <div class="journal-stage wind-host-scope">
-        <div class="wind-host"></div>
-        <div class="newspaper-frame">
-          <div class="newspaper-mast">
-            <span>SOBERANIA</span>
-            <strong>Jornal do laboratório</strong>
-            <small>Edição de estudo / 001</small>
-          </div>
-          <div class="newspaper-window">
-            <div class="newspaper-strip">
-              <article class="news-item news-lead">
-                <div class="news-meta"><span>01 / IA / operação</span><span>Ensaio</span></div>
-                <h3><button type="button" data-article="ia-sem-magia">IA SEM MAGIA</button></h3>
-                <p>O que realmente acontece quando agentes passam a fazer parte de uma operação.</p>
-                <button type="button" class="read-link" data-article="ia-sem-magia" aria-label="Ler: IA SEM MAGIA">Ler <span>↗</span></button>
-              </article>
-              <article class="news-item">
-                <div class="news-meta"><span>02 / infraestrutura / ecologia</span><span>Ensaio</span></div>
-                <h3><button type="button" data-article="internet-peso">A INTERNET TEM PESO</button></h3>
-                <p>Servidores, água, energia e a infraestrutura material escondida atrás da nuvem.</p>
-                <button type="button" class="read-link" data-article="internet-peso" aria-label="Ler: A INTERNET TEM PESO">Ler <span>↗</span></button>
-              </article>
-              <article class="news-item">
-                <div class="news-meta"><span>03 / ferramentas / autonomia</span><span>Ensaio</span></div>
-                <h3><button type="button" data-article="ferramentas-conviviais">FERRAMENTAS CONVIVIAIS</button></h3>
-                <p>O que muda quando avaliamos software pela autonomia que ele produz.</p>
-                <button type="button" class="read-link" data-article="ferramentas-conviviais" aria-label="Ler: FERRAMENTAS CONVIVIAIS">Ler <span>↗</span></button>
-              </article>
-              <article class="news-item">
-                <div class="news-meta"><span>04 / identidade / território</span><span>Ensaio</span></div>
-                <h3><button type="button" data-article="bugio">POR QUE UM BUGIO?</button></h3>
-                <p>Tecnologia, território, humor e a construção de uma identidade para o laboratório.</p>
-                <button type="button" class="read-link" data-article="bugio" aria-label="Ler: POR QUE UM BUGIO?">Ler <span>↗</span></button>
-              </article>
-              <article class="news-item">
-                <div class="news-meta"><span>05 / agricultura / conhecimento</span><span>Ensaio</span></div>
-                <h3><button type="button" data-article="culturas">CULTURAS ESSENCIAIS</button></h3>
-                <p>O que mandioca, milho, feijão e abóbora podem ensinar a um laboratório de tecnologia.</p>
-                <button type="button" class="read-link" data-article="culturas" aria-label="Ler: CULTURAS ESSENCIAIS">Ler <span>↗</span></button>
-              </article>
-              <article class="news-item">
-                <div class="news-meta"><span>06 / automação / poder</span><span>Ensaio</span></div>
-                <h3><button type="button" data-article="botao">QUEM CONTROLA O BOTÃO?</button></h3>
-                <p>Uma investigação sobre automação, autoridade e supervisão humana.</p>
-                <button type="button" class="read-link" data-article="botao" aria-label="Ler: QUEM CONTROLA O BOTÃO?">Ler <span>↗</span></button>
-              </article>
-              <div class="newspaper-colophon">Pesquisa, código, território e ideias em andamento.<br />Textos completos em preparação.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <footer class="scene-foot">
-        <span class="scene-hint">Role para percorrer o jornal</span>
-        <div class="scene-progress" aria-hidden="true"><i></i></div>
-        <span aria-hidden="true">↓</span>
-      </footer>
-    </div>
-  </div>
-  <div class="prose-section journal-end">
-    <button type="button" class="text-link" id="open-notebook">ABRIR TODO O CADERNO ↗</button>
-  </div>
+  <footer class="field-journal-colophon"><p>Notas editoriais originais para esta edição.<br />Princípios de trabalho, abertos a conversa e revisão.</p><a href="#contato" data-jump>Vamos conversar sobre isso <span aria-hidden="true">↗</span></a></footer>
 </section>

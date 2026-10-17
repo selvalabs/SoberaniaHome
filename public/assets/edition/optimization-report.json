@@ -1,0 +1,25 @@
+{
+  "quality": 84,
+  "maxRasterWidth": 1440,
+  "tileHeight": 1200,
+  "rasters": {
+    "files": 55,
+    "sourceBytes": 34957178,
+    "outputBytes": 4901910
+  },
+  "landingPhones": {
+    "projects": 8,
+    "tiles": 98,
+    "sourceBytes": 6251044,
+    "outputBytes": 3777350
+  },
+  "socialCard": {
+    "src": "/assets/social/edition-og.png",
+    "width": 1200,
+    "height": 630,
+    "bytes": 209771
+  },
+  "sourceBytes": 41208222,
+  "outputBytes": 8679260,
+  "reductionPercent": 78.94
+}
