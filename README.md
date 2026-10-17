@@ -25,7 +25,7 @@ O endereço no Wi-Fi usa o IPv4 atual do computador e a porta escolhida. O servi
 
 ## O que explorar
 
-- A abertura conecta a árvore a um desenho de circuitos e território.
+- A abertura preserva a mensagem completa e a colagem editorial da main: árvore integrada ao título, tarja de tecnologia, destaques sobre trabalho, conhecimento e autonomia, com a assinatura Sistemas brasileiros.
 - Trabalho e laboratório aceitam rolagem, arrasto, toque e teclado. Cada celular mantém sua própria rolagem; a galeria de celulares também aceita movimento horizontal.
 - O processo monta seis peças com as explicações ao lado no desktop. No celular, o quadro acompanha a leitura vertical das seis etapas, com texto de 16 px. A cena de conexões reúne headline, órbitas e nove nós selecionáveis.
 - Autonomia apresenta acesso, documentação e portabilidade. Soberania permite explorar três caminhos de infraestrutura.

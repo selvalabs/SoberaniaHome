@@ -83,6 +83,16 @@ Regressões verificam continuidade e deslocamento da folha após a abertura, pro
 
 A prévia atual desta composição usa `.edition-builds/mobile-composition-20261017-02`, servida na porta 4190 com logs locais em arquivo, preservando a avaliação anterior na porta 4187. A pasta servida contém somente arquivos públicos. Base desta passada: `b9082fde0b8da9dcb3896e3e481091eec31b002d`; o resultado imutável é o head do PR #35. Main, release/tag, produção e VPS continuam sem alteração.
 
+### Restauração da hero a partir da main
+
+A comparação com `origin/main` (`45ebfbbba3dd99fa64d62e6b5047901535568ef7`) confirmou que a edição experimental havia resumido indevidamente a abertura. Foram recuperados integralmente os três blocos: apresentação da Soberania Labs e sociedade mais justa; ferramentas/conhecimento, exploração, decisão sobre o futuro e prosperidade por gerações; software, processos inteligentes, infraestrutura e construção com quem conhece os desafios.
+
+Também voltaram a tarja escura de Tecnologia, o papel e sublinhado de “da humanidade”, os destaques de Soberania Labs e sociedade mais justa, a composição da árvore junto ao título e a assinatura de rede aberta para o mundo. A identidade Sistemas brasileiros continua como solicitado; os dois acessos levam aos trabalhos e ao manifesto da versão completa.
+
+O texto dos três parágrafos foi comparado com a main renderizada e coincide após normalização de espaços. Capturas em 320, 390, 768 e 1440 px foram revisadas; tipos, build, 32 testes Node, auditoria npm, navegação, leitura sem JavaScript, movimento da folha e gestos dos mockups passaram. O teste de conteúdo protege os argumentos centrais contra nova supressão.
+
+Prévia da restauração: `.edition-builds/hero-restored-20261017-01`, porta 4192. Base desta passada: `1406439d02af003efcb92ad260f8b38fe83160db`. A comparação da main foi somente de leitura; nenhuma atualização ou publicação da main foi realizada. A prévia anterior permanece na porta 4190 para comparação e retorno. Release/tag, produção, VPS e mirror não se aplicam a esta avaliação local.
+
 ## Limites e próxima publicação
 
 O Worker está implementado, testado com bindings simulados e desligado por padrão. Inferência real, custo, conta, domínio, namespace de quota e deploy ainda precisam de configuração e validação no destino aprovado. O limite de requisições da Cloudflare é por localidade e não é um teto global de faturamento.

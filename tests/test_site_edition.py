@@ -16,6 +16,13 @@ with sync_playwright() as pw:
     page.goto(args.url,wait_until='load')
     page.wait_for_function('window.__SL_DEBUG?.ready')
     assert page.locator('h1').count()==1
+    # Preserve the complete opening argument recovered from the main branch.
+    assert 'melhorar as condições de trabalho' in page.locator('#hero .hero-lead').inner_text()
+    assert 'sociedade mais justa' in page.locator('#hero .hero-lead').inner_text()
+    argument=page.locator('#hero .hero-argument').inner_text()
+    assert all(phrase in argument for phrase in ['ferramentas e conhecimento','vulnerável à exploração','decidir seu futuro','prosperidade por gerações'])
+    assert 'construímos com quem conhece os desafios de perto' in page.locator('#hero .hero-method').inner_text()
+    assert 'Sistemas brasileiros' in page.locator('#hero .hero-identity').inner_text()
     assert page.locator('section[data-number]').count()==15
     assert page.locator('meta[name="robots"]').get_attribute('content')=='noindex,follow'
     assert page.locator('link[rel="canonical"]').count()==0
