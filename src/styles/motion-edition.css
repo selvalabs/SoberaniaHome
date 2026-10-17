@@ -156,4 +156,6 @@ html.motion-edition:not(.motion) .scene-controls {display:none!important;}
 @media(max-width:759px) and (max-height:700px){
  html.motion-edition.motion #trabalho .portfolio-track,
  html.motion-edition.motion #laboratorio .portfolio-track{padding-block:8px}
+ html.motion-edition.motion #trabalho .work-project,
+ html.motion-edition.motion #laboratorio .work-project{padding:10px;gap:4px}
 }

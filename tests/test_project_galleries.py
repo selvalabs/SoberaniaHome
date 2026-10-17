@@ -14,7 +14,9 @@ def centered(page,sid,index):
       const scene=__SL_DEBUG.scenes.find(s=>s.id===id);
       const card=document.querySelectorAll(`#${id} .portfolio-card`)[index];
       const r=card.getBoundingClientRect();
-      return scene.lastIndex===index && Math.abs(scene.raw-index)<.01 && Math.abs(r.x+r.width/2-innerWidth/2)<2;
+      const frame=card.closest('.scene-frame').getBoundingClientRect();
+      const destination=scene.start+(scene.end-scene.start)*index/(document.querySelectorAll(`#${id} .portfolio-card`).length-1);
+      return Math.abs(scrollY-destination)<2 && frame.top>=-1 && frame.bottom<=innerHeight+1 && scene.lastIndex===index && Math.abs(scene.raw-index)<.01 && Math.abs(r.x+r.width/2-innerWidth/2)<2;
         }''',arg=[sid,index],timeout=8000)
     except Exception:
         print('FAILED CARD',sid,index,json.dumps(page.evaluate('''(id)=>({scroll:scrollY,scene:__SL_DEBUG.scenes.find(s=>s.id===id),viewportScroll:document.querySelector(`#${id} .track-viewport`).scrollLeft,cards:[...document.querySelectorAll(`#${id} .portfolio-card`)].map(e=>e.getBoundingClientRect().toJSON()),focus:document.activeElement.outerHTML.slice(0,200)})''',sid)),flush=True)

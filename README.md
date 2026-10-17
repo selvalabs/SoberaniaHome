@@ -76,4 +76,4 @@ Produção segue issue → branch → PR → revisão/homologação → merge no
 
 [Relatório da revisão](docs/EXPERIMENT-34.md) · [Documentação da edição pública anterior](docs/LEGACY-PUBLIC-EDITION.md)
 
-A revisão do movimento mantém scrub nas galerias mobile a partir de 620 px de altura útil, com faixa de cor acompanhando a folha deitada. `python tests/test_leaf_flow.py --url http://127.0.0.1:4203/` verifica gesto vertical, direção, saída das cenas e tinta; detalhes e retorno estão no relatório da edição.
+A revisão do movimento mantém scrub nas galerias mobile a partir de 620 px de altura útil, com faixa de cor acompanhando a folha deitada. `python tests/test_leaf_flow.py --url http://127.0.0.1:4204/` verifica gesto vertical, direção, saída das cenas e tinta; detalhes e retorno estão no relatório da edição.
