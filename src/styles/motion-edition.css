@@ -20,7 +20,7 @@ html.motion-edition.leaf-motion .wind-global,html.motion-edition.leaf-motion #le
 html.motion-edition.leaf-motion .rest-leaf,html.motion-edition.leaf-motion .rest-footer-leaf {visibility:hidden;}
 html.motion-edition #leaf-flight::before {content:none!important;pointer-events:none!important;}
 html.motion-edition #wind-leaf {pointer-events:none!important;touch-action:pan-y;}
-@media(hover:hover) and (pointer:fine) {html.motion-edition.leaf-motion #wind-leaf {pointer-events:auto!important;}}
+@media(hover:hover) and (pointer:fine) {html.motion-edition.leaf-motion[data-leaf-interactive="true"] #wind-leaf {pointer-events:auto!important;}}
 html.motion-edition.motion #processo .process-sequence>.scene-frame,
 html.motion-edition.motion #espiral .spiral-sequence>.scene-frame {grid-template-rows:auto auto minmax(0,1fr) auto!important;}
 html.motion-edition #processo .process-intro,

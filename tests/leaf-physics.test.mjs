@@ -1,6 +1,21 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createLeafFlight} from '../src/scripts/leaf-physics.ts';
+import {createLeafFlight,leafGust} from '../src/scripts/leaf-physics.ts';
+
+test('wind impulse drifts, turns with inertia and settles without rewinding',()=>{
+  assert.deepEqual(leafGust(-1),{drift:0,turn:0,spin:0});
+  let previous=leafGust(0),peak=0;
+  for(let t=.01;t<12;t+=.01){
+    const state=leafGust(t),reverse=leafGust(t,-1);
+    assert.ok(state.turn>=previous.turn&&state.turn<=360);
+    assert.ok(Math.abs(state.turn-previous.turn)<6,'angular impulse jumps');
+    for(const key of ['drift','turn','spin'])assert.equal(state[key],-reverse[key]);
+    peak=Math.max(peak,state.drift);previous=state;
+  }
+  assert.ok(peak>.99&&peak<=1.001);
+  assert.ok(previous.drift<.00001&&previous.spin<.00001&&previous.turn>359.99);
+  assert.ok(leafGust(.02).spin<leafGust(.5).spin,'rotation must accelerate from rest');
+});
 
 test('flutter is reversible and independent of scroll sampling order',()=>{
   const sequential=createLeafFlight(),jumped=createLeafFlight();

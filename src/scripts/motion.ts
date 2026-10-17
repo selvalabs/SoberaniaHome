@@ -1,5 +1,5 @@
 import '../styles/motion-edition.css';
-import { createLeafFlight } from './leaf-physics';
+import { createLeafFlight, leafGust } from './leaf-physics';
 
 /** One source of movement: the document's native scroll position.
  * Scenes use CSS sticky, never JS pin spacers. All rendering sleeps at rest. */
@@ -297,21 +297,44 @@ export function initMotion() {
     const travel=smooth(launch);
     // Scroll is the clock, not the force. Replaying the same position restores
     // the same inertial state, even after a jump, reversal or toolbar resize.
-    const physics=leafFlight(y/Math.max(layoutHeight,1)*2.4);
+    const clockScale=2.4/Math.max(layoutHeight,1),time=y*clockScale;
+    const physics=leafFlight(time);
+    const horizontal=enabled?scenes.filter(s=>s.kind==='horizontal'):[];
+    const bursts=horizontal.flatMap(s=>{
+      const starts=[s.start+s.run*.08];
+      if(s.run*clockScale>5)starts.push(s.start+s.run*.58);
+      return starts.map(start=>({time:start*clockScale,direction:s.reverse?1:-1}));
+    });
+    // Occasional turns continue in editorial folds. Keep them away from the
+    // gallery gusts so entering a scene does not pile up two strong impulses.
+    for(let at=7;at<=time;at+=9){
+      if(!horizontal.some(s=>at> s.start*clockScale-4&&at<(s.start+s.run)*clockScale+3))
+        bursts.push({time:at,direction:Math.floor(at/9)%2?1:-1});
+    }
+    let drift=0,turn=0,spin=0;
+    // Finish each turn before approaching the resting place in the footer.
+    const lastGust=(dock.y-height-180)*clockScale-4;
+    for(const burst of bursts){
+      if(burst.time>lastGust)continue;
+      const gust=leafGust(time-burst.time,burst.direction);drift+=gust.drift;turn+=gust.turn;spin+=gust.spin;
+    }
     const degrees=180/Math.PI;
     const lateral=Math.tanh((physics.x-.95)*1.35);
-    let x=mix(origin.x,width*(.5+lateral*.37),travel);
+    let x=mix(origin.x,width*(.5+lateral*.37+drift*.1),travel);
     // A following camera removes the mean descent. Kinetic energy exchanged
     // for height gives the shallow rising cusps at the ends of each glide.
     const dip=physics.vx**2/(2*1.45);
     let ly=mix(origin.y-y,height*(.465+dip*.28+(physics.fallSpeed-.92)*.045),travel);
-    let rz=mix(118,90+physics.bank*degrees*.72+physics.wind*9,travel);
+    let rz=mix(118,90+physics.bank*degrees*.72+physics.wind*9+spin*28,travel);
     let rx=mix(7,18+physics.twist*degrees*1.6,travel);
     let ry=mix(0,physics.vx*22+physics.angularSpeed*10,travel);
     let scale=mix(width<760?.62:.82,(width<760?.46:.68)*(1+physics.twist*.08),travel);
     // Scene entry never restarts the wind or substitutes a second sine path.
     const scene=enabled?scenes.find(s=>s.kind==='horizontal'&&y>=s.start-height*.25&&y<=s.start+s.run+height*.25):undefined;
     const dockY=dock.y-y,land=smooth((height+180-dockY)/(height*.7+180));
+    // Settle on the nearest complete turn at the dock, never rewind a long
+    // page's accumulated rotations. Local Y rolls around the blade's length.
+    const roll=mix(turn*travel,Math.round(turn/360)*360,land);
     x=mix(x,dock.x,land);ly=mix(ly,dockY,land);rz=mix(rz,96,land);rx=mix(rx,7,land);ry=mix(ry,0,land);scale=mix(scale,.74,land);
     if(y>=maxScroll-1){x=dock.x;ly=dockY;rz=96;rx=7;ry=0;}
     if(leafDrag){x=leafDrag.x;ly=leafDrag.y;}
@@ -321,8 +344,8 @@ export function initMotion() {
     depth.style.transformOrigin=`50% ${pivot}%`;
     leaf.style.transformOrigin=`50% ${pivot}%`;
     depth.style.transform=`translate(-50%,-${pivot}%) scale(${scale})`;
-    leaf.style.filter=`brightness(${.96+.08*Math.cos(rx*Math.PI/180)}) drop-shadow(0 2px 2px #1c211a20)`;
-    leaf.style.transform=`perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;
+    leaf.style.filter=`brightness(${.96+.08*Math.cos(rx*Math.PI/180)*Math.cos(roll*Math.PI/180)}) drop-shadow(0 2px 2px #1c211a20)`;
+    leaf.style.transform=`perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg) rotateY(${roll}deg)`;
     // Rotation extends beyond the stem's anchor. Keep the painted rectangle
     // inside the screen rather than clamping only that one invisible point.
     const bounds=leaf.getBoundingClientRect(),edge=10;
@@ -331,19 +354,19 @@ export function initMotion() {
     if(dx||dy){x+=dx;ly+=dy;flight.style.transform=`translate3d(${x}px,${ly}px,0)`;}
     const lightX=bounds.left+dx+bounds.width/2,lightY=bounds.top+dy+bounds.height/2;
     const current=sections.find(s=>s.element.id===activeId)?.element;
-    // Treat product screens and controls as foreground surfaces. The path
-    // continues behind them instead of covering their labels or screenshots.
+    // Keep the leaf present in every fold. Only soften it over interfaces;
+    // pointer pass-through protects controls instead of hiding the animation.
     let covered=false;
     if(current&&!leafDrag)for(const surface of all<HTMLElement>('.work-evidence,.process-periphery,.process-panels,.orbit-view,button,input,select,textarea',current)){
       const r=surface.getBoundingClientRect();
       if(r.width&&r.height&&bounds.right+dx>r.left-8&&bounds.left+dx<r.right+8&&bounds.bottom+dy>r.top-8&&bounds.top+dy<r.bottom+8){covered=true;break;}
     }
-    const occluded=(covered||activeId==='referencias')&&!leafDrag;
-    flight.style.opacity=occluded?'0':String(mix(1,.62,travel));
-    root.dataset.leafOccluded=occluded?'1':'0';root.dataset.leafDepth='front';
-    debug.leaf={x,y:ly,rotation:rz,pitch:rx,yaw:ry,wind:physics.wind,lateralSpeed:physics.vx,fallSpeed:physics.fallSpeed,mode:land>.99?'rest':'flight',occlusionState:occluded?'occluded':'visible'};
-    // Light follows the same scroll position as the leaf, including the text
-    // alongside a foreground mockup. Occluding the sprite must not extinguish it.
+    const softened=(covered||activeId==='referencias')&&!leafDrag;
+    flight.style.opacity=String(softened ? .42 : mix(1,.72,travel));
+    root.dataset.leafInteractive=String(!softened&&!scene);
+    root.dataset.leafOccluded='0';root.dataset.leafDepth='front';
+    debug.leaf={x,y:ly,rotation:rz,pitch:rx,yaw:ry,roll,drift,spin,wind:physics.wind,lateralSpeed:physics.vx,fallSpeed:physics.fallSpeed,mode:land>.99?'rest':'flight',occlusionState:softened?'softened':'visible'};
+    // Light follows the painted blade, including text alongside a mockup.
     const nextLit=new Set<HTMLElement>();
     for(const [index,mark] of glowTargets.entries()){
       if(mark.closest('[inert],[aria-hidden="true"]'))continue;

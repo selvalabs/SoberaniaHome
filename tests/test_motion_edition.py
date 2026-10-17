@@ -41,7 +41,8 @@ def visible_leaf(page,w,h,allow_covered=False):
     state=leaf_state(page);rect=state['bounds']
     assert not state['hidden'] and state['display']!='none' and state['visibility']=='visible',state
     if not allow_covered: assert state['opacity']>0,state
-    assert rect['width']>15 and rect['height']>15 and 'leaf-a.webp' in state['asset'],state
+    # A rolling blade becomes thin in profile; its long axis must stay visible.
+    assert max(rect['width'],rect['height'])>35 and rect['width']*rect['height']>120 and 'leaf-a.webp' in state['asset'],state
     assert rect['left']>=8 and rect['right']<=w-8 and rect['top']>=8 and rect['bottom']<=h-8,state
     return state
 
@@ -162,13 +163,31 @@ with sync_playwright() as pw:
     assert max(p['pitch'] for p in attitudes)-min(p['pitch'] for p in attitudes)>25,'torsion remains rigid'
     assert max(p['y'] for p in attitudes)-min(p['y'] for p in attitudes)>35,'glide has no rising turns'
     assert all(.38*844<p['y']<.62*844 for p in attitudes),'leaf leaves the middle of the reading viewport'
-    page.evaluate('SLMotion.jumpScene("trabalho",0)');page.wait_for_timeout(500)
-    rect=page.locator('.work-analytics .work-evidence').bounding_box()
-    leaf_rect=page.locator('#wind-leaf').bounding_box()
-    overlap=leaf_rect['x']<rect['x']+rect['width'] and leaf_rect['x']+leaf_rect['width']>rect['x'] and leaf_rect['y']<rect['y']+rect['height'] and leaf_rect['y']+leaf_rect['height']>rect['y']
-    if overlap:
-        page.wait_for_timeout(200)
-        assert leaf_state(page)['opacity']<.05,'leaf covers a product interface'
-    print('PASS mobile composition: editorial gutter, continuous travelling leaf and foreground interface protection',flush=True)
+    # Both horizontal directions retain visible wind-driven rolls. Interfaces
+    # remain reachable under the leaf, rather than making the leaf disappear.
+    for sid in ['trabalho','laboratorio']:
+        data=page.evaluate('(id)=>__SL_DEBUG.scenes.find(s=>s.id===id)',sid)
+        samples=[]
+        for fraction in [0,.08,.16,.25,.36,.48,.6,.72,.86,1]:
+            page.evaluate('(y)=>scrollTo({top:y,behavior:"instant"})',data['start']+(data['end']-data['start'])*fraction)
+            page.wait_for_timeout(45)
+            state=leaf_state(page);samples.append(page.evaluate('({...__SL_DEBUG.leaf})'))
+            assert state['opacity']>=.4 and not state['hidden'],(sid,fraction,state)
+            assert state['pointer']=='none' and not state['hit'],(sid,fraction,state)
+        assert max(p['roll'] for p in samples)-min(p['roll'] for p in samples)>250,(sid,samples)
+        assert max(p['drift'] for p in samples)-min(p['drift'] for p in samples)>.7,(sid,samples)
+        assert max(p['x'] for p in samples)-min(p['x'] for p in samples)>100,(sid,samples)
+        for fraction in [.72,.36,.08]:
+            page.evaluate('(y)=>scrollTo({top:y,behavior:"instant"})',data['start']+(data['end']-data['start'])*fraction)
+            page.wait_for_timeout(60)
+            replay=page.evaluate('({...__SL_DEBUG.leaf})')
+            prior=samples[[0,.08,.16,.25,.36,.48,.6,.72,.86,1].index(fraction)]
+            for key in ['x','y','roll','drift']:
+                assert abs(replay[key]-prior[key])<.01,('wind changes on scroll reversal',sid,key,replay,prior)
+
+    for sid in ['processo','espiral','referencias']:
+        page.evaluate('(id)=>SLMotion.jumpSection(id)',sid);page.wait_for_timeout(450)
+        assert leaf_state(page)['opacity']>=.4,('leaf disappeared in fold',sid)
+    print('PASS mobile composition: pendular glide, inertial rolls, both galleries and visibility across interactive folds',flush=True)
     context.close()
     browser.close()

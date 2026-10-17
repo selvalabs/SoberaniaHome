@@ -7,6 +7,23 @@
  */
 export type LeafState = { x:number; vx:number; fallSpeed:number; bank:number; angularSpeed:number; twist:number; wind:number };
 
+/** A separate gust response preserves the accepted flutter orbit. The impulse
+ * is filtered through damped inertial stages: displacement rises then relaxes;
+ * angular momentum makes one turn and settles without winding back. This is
+ * an art-directed reduced response, not a calibrated aerodynamic prediction.
+ * Coupled 3D rotation reference: Varshney, Chang & Wang (2013),
+ * doi:10.1103/PhysRevE.87.053021 (their experiments use still air).
+ */
+export function leafGust(elapsed:number, direction=1) {
+  if(elapsed<=0)return {drift:0,turn:0,spin:0};
+  const q=elapsed/.48, decay=Math.exp(-q);
+  return {
+    drift:direction*q*q*Math.exp(2-q)/4,
+    turn:direction*360*(1-decay*(1+q+q*q/2)),
+    spin:direction*q*q*decay/2
+  };
+}
+
 export function createLeafFlight(step=1/120) {
   if(!Number.isFinite(step)||step<=0||step>1/60)throw new RangeError('Leaf integration step must be between 0 and 1/60.');
   const gust=(t:number)=>.12*Math.sin(t*.43)+.06*Math.sin(t*1.17+.8)+.025*Math.sin(t*2.31+1.6);
