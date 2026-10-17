@@ -27,7 +27,7 @@ O endereço no Wi-Fi usa o IPv4 atual do computador e a porta escolhida. O servi
 
 - A abertura conecta a árvore a um desenho de circuitos e território.
 - Trabalho e laboratório aceitam rolagem, arrasto, toque e teclado. Cada celular mantém sua própria rolagem; a galeria de celulares também aceita movimento horizontal.
-- O processo monta seis peças enquanto as seis explicações continuam lado a lado. A cena de conexões reúne headline, órbitas e nove nós selecionáveis.
+- O processo monta seis peças com as explicações ao lado no desktop. No celular, o quadro acompanha a leitura vertical das seis etapas, com texto de 16 px. A cena de conexões reúne headline, órbitas e nove nós selecionáveis.
 - Autonomia apresenta acesso, documentação e portabilidade. Soberania permite explorar três caminhos de infraestrutura.
 - A mesa de possibilidades produz cenários locais exportáveis; há um endpoint opcional de IA separado, desabilitado por padrão.
 - O caça-palavras usa 110 referências, uma lista acessível e uma nova rodada após cinco segundos de tinta. Referência não significa endosso.

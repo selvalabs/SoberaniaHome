@@ -115,3 +115,29 @@ html.motion-edition:not(.motion) .scene-controls {display:none!important;}
 }
 
 @media print {html.motion-edition #espiral .spiral-caption[hidden] {display:block!important;}html.motion-edition #espiral .spiral-stage {display:block!important;}html.motion-edition #espiral .spiral-captions {display:block!important;}}
+
+/* On phones the field notes have their own reading space. The larger board
+   follows them, rather than shrinking six paragraphs into one fixed frame. */
+@media(max-width:759px){
+ html.motion-edition #processo [data-process-flow="true"]{height:auto!important;position:relative!important}
+ html.motion-edition #processo [data-process-flow="true"]>.scene-frame{position:relative!important;top:auto!important;height:auto!important;max-height:none!important;display:block!important;overflow:visible!important}
+ html.motion-edition #processo .process-stage{display:block!important;padding:0 var(--pad) 24px!important;overflow:visible!important}
+ html.motion-edition.leaf-motion #processo .process-periphery{display:block!important;position:sticky!important;top:var(--motion-mast-height)!important;height:clamp(220px,68vw,290px)!important;width:100%;overflow:clip!important;background:#102419;z-index:5!important;border-bottom:1px solid #60745555}
+ html.motion-edition #processo .process-board{position:absolute!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important;pointer-events:none}
+ html.motion-edition #processo .process-node{position:absolute!important;aspect-ratio:662/568!important;padding:0!important;border:0!important;background:transparent!important;pointer-events:auto}
+ html.motion-edition #processo .process-node::before{content:""!important;position:absolute!important;inset:0!important;background-position:center!important;background-size:contain!important;background-repeat:no-repeat!important}
+ html.motion-edition #processo .process-node:nth-child(1)::before{background-image:url('/assets/edition/process-piece-01.webp')!important}
+ html.motion-edition #processo .process-node:nth-child(2)::before{background-image:url('/assets/edition/process-piece-02.webp')!important}
+ html.motion-edition #processo .process-node:nth-child(3)::before{background-image:url('/assets/edition/process-piece-03.webp')!important}
+ html.motion-edition #processo .process-node:nth-child(4)::before{background-image:url('/assets/edition/process-piece-04.webp')!important}
+ html.motion-edition #processo .process-node:nth-child(5)::before{background-image:url('/assets/edition/process-piece-05.webp')!important}
+ html.motion-edition #processo .process-node:nth-child(6)::before{background-image:url('/assets/edition/process-piece-06.webp')!important}
+ html.motion-edition #processo .process-node span,html.motion-edition #processo .process-node b{display:none!important}
+ html.motion-edition #processo .process-panels{display:block!important;padding-top:10px}
+ html.motion-edition #processo .process-panel{padding:16px 0 18px 16px!important;scroll-margin-top:calc(var(--motion-mast-height) + clamp(220px,68vw,290px) + 24px)}
+ html.motion-edition #processo .process-panel.is-active{padding-left:14px!important}
+ html.motion-edition #processo .process-panel h3{font-size:21px!important;margin-bottom:4px!important}
+ html.motion-edition #processo .process-panel h3 button{min-height:44px;gap:12px;padding:5px 0}
+ html.motion-edition #processo .process-panel .process-body{font-size:16px!important;line-height:1.55!important;max-width:none}
+ html.motion-edition:not(.leaf-motion) #processo .process-periphery{display:none!important}
+}

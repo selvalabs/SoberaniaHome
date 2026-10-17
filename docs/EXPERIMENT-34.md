@@ -73,6 +73,16 @@ Prévia local completa disponível no Wi-Fi em porta própria. A primeira entreg
 
 Não houve alteração de firewall, VPS, banco, segredos, DNS, serviço do Agentic MailBox ou publicação existente. Foram lidos apenas nomes de variáveis no projeto de correio para identificar possibilidade de integração; não há credencial confirmada de Workers nem segredo incorporado à branch.
 
+### Composição mobile e continuidade do movimento
+
+A segunda passada visual identificou um salto horizontal real na saída da abertura, a folha estacionada na margem, falta de gutter na segunda dobra, árvore apagada atrás do título e seis etapas comprimidas. A correção substitui o ramo abrupto da trajetória por uma curva contínua, com balanço e rotação ligados à distância percorrida. Telas de produtos e controles são superfícies de primeiro plano: a folha desaparece suavemente atrás delas, mantendo seu percurso e sem bloquear o toque.
+
+A abertura mobile passa a ter título, ilustração e introdução em uma sequência explícita. A segunda dobra recupera margens laterais e respiro vertical. No processo mobile, a montagem acompanha a leitura vertical de seis explicações de 16 px; o desktop mantém a cena com as seis notas simultâneas. A ilustração segue o scroll sem comprimir os parágrafos nem cortar as peças.
+
+Regressões verificam continuidade e deslocamento da folha após a abertura, proteção das interfaces, gutter editorial, quadro e etapa ativa visíveis no celular, resize, modo leitura e movimento reduzido. Foram revisadas capturas de 320, 360, 390 e 1440 px; tipos, build, 32 testes Node, auditoria npm, suites de navegação/toque e contrato de IA simulado passaram. Uma falha local esporádica de inicialização foi investigada sem erro de execução reproduzível; a execução final completa passou, e o resultado Linux fica registrado nos checks do PR.
+
+A prévia atual desta composição usa `.edition-builds/mobile-composition-20261017-02`, servida na porta 4190 com logs locais em arquivo, preservando a avaliação anterior na porta 4187. A pasta servida contém somente arquivos públicos. Base desta passada: `b9082fde0b8da9dcb3896e3e481091eec31b002d`; o resultado imutável é o head do PR #35. Main, release/tag, produção e VPS continuam sem alteração.
+
 ## Limites e próxima publicação
 
 O Worker está implementado, testado com bindings simulados e desligado por padrão. Inferência real, custo, conta, domínio, namespace de quota e deploy ainda precisam de configuração e validação no destino aprovado. O limite de requisições da Cloudflare é por localidade e não é um teto global de faturamento.

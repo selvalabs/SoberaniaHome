@@ -7,7 +7,7 @@ type Scene = {
   id: string; kind: SceneKind; section: HTMLElement; sequence: HTMLElement;
   frame: HTMLElement; panels: HTMLElement[]; track: HTMLElement | null;
   reverse: boolean; start: number; run: number; progress: number; index: number;
-  offsets: number[]; active: boolean; stage?: HTMLElement; stageWidth: number; stageHeight: number;
+  offsets: number[]; active: boolean; stage?: HTMLElement; stageWidth: number; stageHeight: number; flow: boolean;
 };
 type MotionApi = {
   pause: () => void; resume: () => void; jumpSection: (id: string) => void;
@@ -58,7 +58,7 @@ export function initMotion() {
     const frame = sequence?.querySelector<HTMLElement>('.scene-frame');
     if (!section || !sequence || !frame) continue;
     const panels = all<HTMLElement>(kind === 'horizontal' ? '.portfolio-card' : kind === 'process' ? '.process-panel' : '.spiral-caption', section);
-    const scene: Scene = {id,kind,section,sequence,frame,panels,track:section.querySelector('.portfolio-track'),reverse:id==='laboratorio',start:0,run:1,progress:0,index:0,offsets:[],active:false,stageWidth:0,stageHeight:0};
+    const scene: Scene = {id,kind,section,sequence,frame,panels,track:section.querySelector('.portfolio-track'),reverse:id==='laboratorio',start:0,run:1,progress:0,index:0,offsets:[],active:false,stageWidth:0,stageHeight:0,flow:false};
     scene.stage = section.querySelector<HTMLElement>(kind === 'process' ? '.process-periphery' : '.orbit-view') || undefined;
     sequence.dataset.motionScene = kind;
     if(kind==='horizontal') { frame.tabIndex=0; frame.setAttribute('aria-label',id==='trabalho'?'Projetos. Use as setas para explorar.':'Laboratório. Use as setas para explorar.'); }
@@ -91,7 +91,7 @@ export function initMotion() {
 
   function configure(preserve = true) {
     const anchor = preserve ? sections.find(item=>item.element.id===activeId)?.element : null;
-    const oldOffset = anchor ? (scenes.some(scene=>scene.id===activeId&&scene.active)?mastHeight:anchor.getBoundingClientRect().top) : 0;
+    const oldOffset = anchor ? (scenes.some(scene=>scene.id===activeId&&scene.active&&!scene.flow)?mastHeight:anchor.getBoundingClientRect().top) : 0;
     leafEnabled=!requestedReading&&!reduced.matches;
     const nextEnabled=leafEnabled&&!compactViewport();
     if(paused&&nextEnabled!==enabled)modeChangedWhilePaused=true;
@@ -122,9 +122,11 @@ export function initMotion() {
     root.style.setProperty('--motion-mast-height',`${mastHeight}px`);
     for(const scene of scenes) {
       const steps=Math.max(1,scene.panels.length-1);
-      scene.run=enabled ? Math.round(scene.kind==='horizontal'?steps*clamp(width*.66,430,900):scene.kind==='process'?clamp(height*1.8,1100,1650):clamp(height*1.25,760,1150)) : 0;
+      scene.flow=scene.kind==='process'&&width<760;
+      scene.sequence.dataset.processFlow=String(scene.flow);
+      scene.run=enabled&&!scene.flow ? Math.round(scene.kind==='horizontal'?steps*clamp(width*.66,430,900):scene.kind==='process'?clamp(height*1.8,1100,1650):clamp(height*1.25,760,1150)) : 0;
       scene.sequence.style.setProperty('--motion-run',`${scene.run}px`);
-      scene.sequence.style.height=enabled?`${height-mastHeight+scene.run}px`:'';
+      scene.sequence.style.height=enabled&&!scene.flow?`${height-mastHeight+scene.run}px`:'';
       if(scene.track) {
         // row-reverse already defines the laboratory's spatial direction.
         const viewport=scene.track.parentElement?.clientWidth||width;
@@ -133,7 +135,13 @@ export function initMotion() {
       scene.stageWidth=scene.stage?.clientWidth||0;scene.stageHeight=scene.stage?.clientHeight||0;
     }
     const y=scrollY;
-    scenes.forEach(scene=>{scene.start=scene.sequence.getBoundingClientRect().top+y-mastHeight;});
+    scenes.forEach(scene=>{
+      scene.start=scene.sequence.getBoundingClientRect().top+y-mastHeight;
+      if(scene.flow&&leafEnabled){
+        const first=scene.panels[0]?.getBoundingClientRect(),last=scene.panels.at(-1)?.getBoundingClientRect();
+        if(first&&last){scene.start=first.top+y-mastHeight-scene.stageHeight-24;scene.run=Math.max(1,last.top-first.top);}
+      }
+    });
     sections=all<HTMLElement>('main > .section').map(element=>{const r=element.getBoundingClientRect();return{element,top:r.top+y,bottom:r.bottom+y};});
     maxScroll=Math.max(1,document.documentElement.scrollHeight-height);
     const o=(document.getElementById('leaf-origin')||document.getElementById('cover-origin'))?.getBoundingClientRect();
@@ -168,11 +176,15 @@ export function initMotion() {
     else if(directionTravel>36&&!document.querySelector('dialog[open]'))root.dataset.mastHidden='true';
     previousY=y;
     for(const scene of scenes) {
-      scene.progress=enabled?clamp((y-scene.start)/Math.max(1,scene.run)):1;
-      scene.active=enabled&&y>=scene.start-2&&y<=scene.start+scene.run+2;
+      scene.progress=enabled||scene.flow&&leafEnabled?clamp((y-scene.start)/Math.max(1,scene.run)):1;
+      scene.active=(enabled||scene.flow&&leafEnabled)&&y>=scene.start-2&&y<=scene.start+scene.run+2;
       scene.index=Math.round(scene.progress*Math.max(1,scene.panels.length-1));
+      if(scene.flow&&leafEnabled){
+        const focus=mastHeight+scene.stageHeight+32;
+        scene.index=scene.panels.reduce((index,panel,i)=>panel.getBoundingClientRect().top<=focus?i:index,0);
+      }
       sceneProgress[scene.id]=scene.progress;
-      if(enabled) {
+      if(enabled||scene.flow&&leafEnabled) {
         if(scene.kind==='horizontal')renderTrack(scene);
         if(scene.kind==='process')renderProcess(scene);
         if(scene.kind==='spiral')renderSpiral(scene);
@@ -187,7 +199,7 @@ export function initMotion() {
       if(next)next.disabled=scene.index===scene.panels.length-1;
     }
     if(leafEnabled)renderLeaf(y);
-    debug.scenes=scenes.map(s=>({id:s.id,start:s.start,end:s.start+s.run,raw:s.progress*(s.panels.length-1),visual:s.progress*(s.panels.length-1),lastIndex:s.index,static:!enabled}));
+    debug.scenes=scenes.map(s=>({id:s.id,start:s.start,end:s.start+s.run,raw:s.progress*(s.panels.length-1),visual:s.progress*(s.panels.length-1),lastIndex:s.index,static:!enabled,flow:s.flow}));
     metrics.idle=true;
   }
 
@@ -206,22 +218,22 @@ export function initMotion() {
   function renderProcess(scene:Scene) {
     const board=scene.section.querySelector<HTMLElement>('.process-board');
     const w=scene.stageWidth,h=scene.stageHeight;
-    const scale=Math.min(w*.78/1536,h*.79/1024);
+    const scale=Math.min(w*(scene.flow ? .83 : .78)/1536,h*(scene.flow ? .9 : .79)/1024);
     if(board){board.style.width=`${1536*scale}px`;board.style.height=`${1024*scale}px`;}
     processNodes.forEach((node,index)=>{
       const built=assembled.has(index)?1:smooth((scene.progress-index*.14)/.3);
       const [ox,oy]=processOrigins[index];
-      const dx=(index%3-1)*w*.11*(1-built),dy=(index<3?-1:1)*h*.18*(1-built);
+      const dx=(index%3-1)*w*(scene.flow ? .015 : .11)*(1-built),dy=(index<3?-1:1)*h*(scene.flow ? .04 : .18)*(1-built);
       node.style.left=`${(ox-82)*scale}px`;node.style.top=`${(oy-72)*scale}px`;
       node.style.width=`${662*scale}px`;node.style.height=`${568*scale}px`;
       const drag=puzzleDrag?.id===index?puzzleDrag:null;
-      node.style.transform=`translate3d(${dx+(drag?.dx||0)}px,${dy+(drag?.dy||0)}px,0) rotate(${(index%2?1:-1)*10*(1-built)}deg)`;
+      node.style.transform=`translate3d(${dx+(drag?.dx||0)}px,${dy+(drag?.dy||0)}px,0) rotate(${(index%2?1:-1)*(scene.flow?6:10)*(1-built)}deg)`;
       node.classList.toggle('is-active',index===scene.index);node.classList.toggle('is-assembled',built>.98);
       node.setAttribute('aria-pressed',String(index===scene.index));
     });
     scene.panels.forEach((panel,index)=>{
       panel.classList.toggle('is-active',index===scene.index);panel.classList.toggle('is-past',index<scene.index);
-      panel.style.setProperty('--step-light',index<=scene.index?'1':'.45');
+      panel.style.setProperty('--step-light',index<=scene.index?'1':scene.flow?'.8':'.45');
       const button=panel.querySelector('button');if(index===scene.index)button?.setAttribute('aria-current','step');else button?.removeAttribute('aria-current');
     });
   }
@@ -250,29 +262,28 @@ export function initMotion() {
 
   function renderLeaf(y:number) {
     if(!flight||!leaf||!depth)return;
-    const p=clamp(y/maxScroll),hero=sections[0];
+    const hero=sections[0],phase=y/Math.max(height,1);
     const launch=clamp(y/Math.max(1,(hero?.bottom||height)-height*.32));
-    let x=mix(origin.x,width*.53,smooth(launch))+Math.sin(p*Math.PI*12)*width*.15*Math.sin(launch*Math.PI/2);
-    if(launch>=1)x=width*(.075+Math.sin(p*Math.PI*10)*.022);
-    let ly=mix(origin.y-y,height*.49,smooth(launch));
-    let rz=118-Math.sin(p*Math.PI*12)*42+smooth(launch)*70,rx=Math.sin(p*Math.PI*9)*25,ry=Math.sin(p*Math.PI*13)*48;
-    let scale=width<760?.66:.82;
+    // One continuous path from the tree to the footer. Its phase follows
+    // distance travelled, without a branch that teleports it to a margin.
+    const breeze=phase*1.15,travel=smooth(launch);
+    let x=mix(origin.x,width*(.5+Math.sin(breeze)*.34),travel);
+    let ly=mix(origin.y-y,height*(.5+Math.sin(breeze*.83)*.055),travel);
+    let rz=118+travel*58+Math.sin(breeze*1.3)*32,rx=Math.sin(breeze*.9)*23,ry=Math.sin(breeze*1.4)*38;
+    let scale=mix(width<760?.62:.82,width<760?.43:.65,travel);
     const scene=enabled?scenes.find(s=>s.kind==='horizontal'&&y>=s.start-height*.25&&y<=s.start+s.run+height*.25):undefined;
     if(scene) {
       const q=scene.progress,sign=scene.reverse?-1:1;
       const weight=smooth((y-scene.start+height*.25)/(height*.25))*(1-smooth((y-scene.start-scene.run)/(height*.25)));
       x=mix(x,width*(.5+Math.sin(q*Math.PI*2)*.22*sign),weight);
       ly=mix(ly,height*(.49+Math.sin(q*Math.PI*3)*.035),weight);
-      rz+=sign*q*180*weight;ry+=Math.sin(q*Math.PI*2)*50*weight;
+      rz+=sign*Math.sin(q*Math.PI*2)*38*weight;ry+=Math.sin(q*Math.PI*2)*28*weight;
     }
     const dockY=dock.y-y,land=smooth((height+180-dockY)/(height*.7+180));
     x=mix(x,dock.x,land);ly=mix(ly,dockY,land);rz=mix(rz,96,land);rx=mix(rx,7,land);ry=mix(ry,0,land);scale=mix(scale,.74,land);
     if(y>=maxScroll-1){x=dock.x;ly=dockY;rz=96;rx=7;ry=0;}
     if(leafDrag){x=leafDrag.x;ly=leafDrag.y;}
-    // The leaf passes behind the dark fields, retaining a faint ecological trace.
-    const dark=sections.find(s=>['processo','espiral'].includes(s.element.id)&&y+ly>s.top&&y+ly<s.bottom);
-    const occluded=(!!dark||activeId==='referencias')&&!leafDrag;
-    flight.style.opacity=occluded?'0':scene||launch<1||leafDrag?'1':'.68';flight.style.visibility=occluded?'hidden':'visible';
+    flight.style.visibility='visible';
     flight.style.transform=`translate3d(${x}px,${ly}px,0)`;
     depth.style.transform=`translate(-50%,-91%) scale(${scale})`;
     leaf.style.transform=`perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;
@@ -283,13 +294,23 @@ export function initMotion() {
     const dy=bounds.top<edge?edge-bounds.top:bounds.bottom>height-edge?height-edge-bounds.bottom:0;
     if(dx||dy){x+=dx;ly+=dy;flight.style.transform=`translate3d(${x}px,${ly}px,0)`;}
     const lightX=bounds.left+dx+bounds.width/2,lightY=bounds.top+dy+bounds.height/2;
+    const current=sections.find(s=>s.element.id===activeId)?.element;
+    // Treat product screens and controls as foreground surfaces. The path
+    // continues behind them instead of covering their labels or screenshots.
+    let covered=false;
+    if(current&&!leafDrag)for(const surface of all<HTMLElement>('.work-evidence,.process-periphery,.process-panels,.orbit-view,button,input,select,textarea',current)){
+      const r=surface.getBoundingClientRect();
+      if(r.width&&r.height&&bounds.right+dx>r.left-8&&bounds.left+dx<r.right+8&&bounds.bottom+dy>r.top-8&&bounds.top+dy<r.bottom+8){covered=true;break;}
+    }
+    const occluded=(covered||activeId==='referencias')&&!leafDrag;
+    flight.style.opacity=occluded?'0':String(mix(1,.62,travel));
     root.dataset.leafOccluded=occluded?'1':'0';root.dataset.leafDepth='front';
     debug.leaf={x,y:ly,rotation:rz,mode:land>.99?'rest':'flight',occlusionState:occluded?'occluded':'visible'};
     // Limit geometry reads to the current chapter, only after input changes.
     clearLeafGlow();
     if(!occluded){
-      const current=sections.find(s=>s.element.id===activeId)?.element;
       if(current)for(const mark of all<HTMLElement>('strong,em',current).slice(0,28)){
+        if(mark.closest('button,.work-evidence,.process-panels,.orbit-view'))continue;
         const r=mark.getBoundingClientRect();if(!r.width||r.bottom<0||r.top>height)continue;
         const distance=Math.hypot(Math.max(r.left-lightX,0,lightX-r.right)*.3,(r.top+r.bottom)/2-lightY);
         const glow=1-clamp(distance/100);if(glow>.03){mark.dataset.leafLit='true';mark.style.setProperty('--leaf-glow',String(glow));}
@@ -310,11 +331,12 @@ export function initMotion() {
   function jumpScene(id:string,index:number) {
     const scene=scenes.find(item=>item.id===id);if(!scene){jumpSection(id);return;}
     const i=clamp(index,0,scene.panels.length-1);
-    if(enabled)scrollToY(scene.start+scene.run*i/Math.max(1,scene.panels.length-1));
+    if(scene.flow&&leafEnabled)scrollToY(scrollY+scene.panels[i].getBoundingClientRect().top-mastHeight-scene.stageHeight-24);
+    else if(enabled)scrollToY(scene.start+scene.run*i/Math.max(1,scene.panels.length-1));
     else scene.panels[i]?.scrollIntoView({block:'center',behavior:'instant'});
   }
   window.SLMotion={
-    pause(){const anchor=sections.find(s=>s.element.id===activeId)?.element;pausedAnchor=anchor?{id:activeId,offset:scenes.some(scene=>scene.id===activeId&&scene.active)?mastHeight:anchor.getBoundingClientRect().top}:null;paused=true;root.dataset.mastHidden='false';if(raf)cancelAnimationFrame(raf);raf=0;metrics.idle=true;},
+    pause(){const anchor=sections.find(s=>s.element.id===activeId)?.element;pausedAnchor=anchor?{id:activeId,offset:scenes.some(scene=>scene.id===activeId&&scene.active&&!scene.flow)?mastHeight:anchor.getBoundingClientRect().top}:null;paused=true;root.dataset.mastHidden='false';if(raf)cancelAnimationFrame(raf);raf=0;metrics.idle=true;},
     resume(){paused=false;measure();if(modeChangedWhilePaused&&pausedAnchor){const anchor=document.getElementById(pausedAnchor.id);if(anchor)scrollTo({top:scrollY+anchor.getBoundingClientRect().top-pausedAnchor.offset,behavior:'instant'});}modeChangedWhilePaused=false;pausedAnchor=null;previousY=scrollY;request();},
     jumpSection,jumpScene,
     setReading(value){requestedReading=!!value;try{localStorage.setItem('sl-reading',String(requestedReading));}catch{}configure();},
@@ -391,7 +413,7 @@ export function initMotion() {
     if(innerWidth!==layoutWidth||landscape!==layoutLandscape||(innerWidth>=760&&innerHeight!==layoutHeight)){
       layoutWidth=innerWidth;layoutLandscape=landscape;layoutHeight=smallViewportHeight();configure();
     }else{
-      const active=scenes.find(scene=>scene.active),progress=active?.progress;
+      const active=scenes.find(scene=>scene.active&&!scene.flow),progress=active?.progress;
       measure();
       if(active&&progress!==undefined&&!paused)scrollTo({top:active.start+active.run*progress,behavior:'instant'});
     }

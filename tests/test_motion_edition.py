@@ -33,12 +33,23 @@ def leaf_state(page):
         pseudo:getComputedStyle(flight,'::before').pointerEvents};
     }''')
 
-def visible_leaf(page,w,h):
+def visible_leaf(page,w,h,allow_covered=False):
     state=leaf_state(page);rect=state['bounds']
-    assert not state['hidden'] and state['display']!='none' and state['visibility']=='visible' and state['opacity']>0,state
+    assert not state['hidden'] and state['display']!='none' and state['visibility']=='visible',state
+    if not allow_covered: assert state['opacity']>0,state
     assert rect['width']>15 and rect['height']>15 and 'leaf-a.webp' in state['asset'],state
     assert rect['left']>=8 and rect['right']<=w-8 and rect['top']>=8 and rect['bottom']<=h-8,state
     return state
+
+def readable_process(page,w,h):
+    if w>=760:
+        rows=page.locator('#processo .process-panel').evaluate_all('(els)=>els.map(e=>({bottom:e.getBoundingClientRect().bottom,height:e.scrollHeight,client:e.clientHeight}))')
+        assert len(rows)==6 and all(r['bottom']<=h-35 and r['height']<=r['client']+2 for r in rows),rows
+    else:
+        state=page.evaluate('''()=>{const board=document.querySelector('.process-periphery').getBoundingClientRect(),panel=document.querySelector('.process-panel.is-active'),r=panel.getBoundingClientRect();return {board:board.toJSON(),panel:r.toJSON(),font:parseFloat(getComputedStyle(panel.querySelector('.process-body')).fontSize),overflow:panel.scrollHeight>panel.clientHeight+2}}''')
+        assert state['font']>=16 and not state['overflow'],state
+        assert state['board']['height']>=220 and state['board']['top']>=0,state
+        assert state['panel']['top']>=state['board']['bottom'] and state['panel']['bottom']<=h,state
 
 with sync_playwright() as pw:
     browser=pw.chromium.launch()
@@ -51,10 +62,10 @@ with sync_playwright() as pw:
         for sid in ['processo','espiral']:
             scene(page,sid,2)
             bounds=page.locator(f'#{sid} .scene-frame').bounding_box()
-            assert bounds['y']>=0 and bounds['y']+bounds['height']<=h+1,(sid,bounds)
+            if sid!='processo' or w>=760:
+                assert bounds['y']>=0 and bounds['y']+bounds['height']<=h+1,(sid,bounds)
             if sid=='processo':
-                rows=page.locator('#processo .process-panel').evaluate_all('(els)=>els.map(e=>({top:e.getBoundingClientRect().top,bottom:e.getBoundingClientRect().bottom,height:e.scrollHeight,client:e.clientHeight}))')
-                assert len(rows)==6 and all(r['bottom']<=h-35 and r['height']<=r['client']+2 for r in rows),rows
+                readable_process(page,w,h)
         page.locator('[data-orbit-node="4"]').click()
         assert page.locator('#orbit-note-title').inner_text()=='Infraestrutura encontra território.'
         page.wait_for_timeout(200);frames=page.evaluate('__SL_DEBUG.metrics.frames');page.wait_for_timeout(400)
@@ -106,12 +117,11 @@ with sync_playwright() as pw:
             page.set_viewport_size({'width':w,'height':new_height});page.wait_for_timeout(450)
             assert page.evaluate('__SL_DEBUG.enabled')==enabled,'toolbar changed the scene layout mode'
             assert page.evaluate('__SL_DEBUG.leafEnabled'),'toolbar disabled the leaf'
-            visible_leaf(page,w,new_height)
+            visible_leaf(page,w,new_height,allow_covered=True)
             if enabled:
                 assert page.evaluate('__SL_DEBUG.scenes.find(s=>s.id==="trabalho").lastIndex')==1,'toolbar lost gallery position'
                 scene(page,'processo',2)
-                rows=page.locator('#processo .process-panel').evaluate_all('(els)=>els.map(e=>({bottom:e.getBoundingClientRect().bottom,scroll:e.scrollHeight,client:e.clientHeight}))')
-                assert all(r['bottom']<=new_height-35 and r['scroll']<=r['client']+2 for r in rows),('toolbar clipped process notes',w,new_height,rows)
+                readable_process(page,w,new_height)
                 scene(page,'trabalho',1)
             assert page.locator('#trabalho .scene-frame').evaluate('el=>getComputedStyle(el).position')==frame_position,'toolbar changed the gallery layout'
         page.evaluate('''()=>{const r=document.querySelector('.choices-closing strong').getBoundingClientRect();
@@ -130,4 +140,26 @@ with sync_playwright() as pw:
         assert not page.evaluate('__SL_DEBUG.leafEnabled'),'resize overrode reduced-motion'
         print(f'PASS leaf {w}x{h}: rendered bounds, touch pass-through, toolbar resize, glow, reading and reduced motion',flush=True)
         context.close()
+
+    context=browser.new_context(viewport={'width':390,'height':844},is_mobile=True,has_touch=True)
+    page=context.new_page();ready(page)
+    page.locator('#folha').evaluate('el=>{if(parseFloat(getComputedStyle(el).paddingLeft)<20)throw new Error("Missing editorial gutter")}')
+    hero_bottom=page.locator('#hero').evaluate('el=>el.getBoundingClientRect().bottom+scrollY')
+    previous=None;positions=[]
+    for y in range(0,int(hero_bottom+844*2.5),20):
+        page.evaluate('(y)=>scrollTo({top:y,behavior:"instant"})',y);page.wait_for_timeout(20)
+        point=page.evaluate('({...__SL_DEBUG.leaf})')
+        if previous: assert abs(point['x']-previous['x'])<30,('leaf path jumps',y,previous,point)
+        if y>hero_bottom: positions.append(point['x'])
+        previous=point
+    assert max(positions)-min(positions)>150,'leaf remains parked beside the page'
+    page.evaluate('SLMotion.jumpScene("trabalho",0)');page.wait_for_timeout(500)
+    rect=page.locator('.work-analytics .work-evidence').bounding_box()
+    leaf_rect=page.locator('#wind-leaf').bounding_box()
+    overlap=leaf_rect['x']<rect['x']+rect['width'] and leaf_rect['x']+leaf_rect['width']>rect['x'] and leaf_rect['y']<rect['y']+rect['height'] and leaf_rect['y']+leaf_rect['height']>rect['y']
+    if overlap:
+        page.wait_for_timeout(200)
+        assert leaf_state(page)['opacity']<.05,'leaf covers a product interface'
+    print('PASS mobile composition: editorial gutter, continuous travelling leaf and foreground interface protection',flush=True)
+    context.close()
     browser.close()

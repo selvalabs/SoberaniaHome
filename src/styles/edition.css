@@ -153,3 +153,23 @@ html.motion-edition:not(.motion) #laboratorio .landing-project [data-landing-gal
  #deslocamento-2 .note-research{top:calc(100% + 8px);bottom:auto;max-width:54%;transform:rotate(2deg)}
  .landing-phone-scroll-hint{font-size:10px;line-height:1.4}
 }
+
+/* Mobile composition: an actual illustration between title and introduction,
+   followed by the same reading gutter as the rest of the page. */
+#folha.choices{padding:clamp(46px,6vw,78px) var(--pad)!important}
+@media(max-width:759px){
+ #hero .cover-stage{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:repeat(6,auto);padding-top:24px}
+ #hero .cover-copy{display:contents}
+ #hero .cover-overline{grid-row:1;margin-bottom:28px}
+ #hero .cover-title-block{grid-row:2}
+ #hero .cover-landscape{position:relative;grid-row:3;inset:auto;width:100%;height:clamp(180px,50vw,220px);margin:12px 0 8px;opacity:1}
+ #hero .cover-circuit{opacity:.36}
+ #hero .tree-wrap{inset:0 auto auto 50%;width:78%;height:100%;transform:translateX(-50%);opacity:1}
+ #hero .tree{opacity:1;filter:sepia(.1)}
+ #hero .leaf-origin,#hero .rest-leaf{left:61.5%;top:18.6%}
+ #hero .cover-message{grid-row:4;margin-top:12px;gap:14px}
+ #hero .text-actions{grid-row:5;margin-top:18px}
+ #hero .cover-bottom{grid-row:6;margin-top:22px}
+ #folha h2{font-size:clamp(33px,9.1vw,49px);line-height:1.1}
+ #folha .choices-reference{margin-inline:0;padding-left:18px}
+}
