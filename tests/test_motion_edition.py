@@ -98,7 +98,9 @@ with sync_playwright() as pw:
         assert not page.evaluate('__SL_DEBUG.enabled'),'closing modal re-enabled reduced motion'
         if w>=760:
             page.emulate_media(reduced_motion='no-preference');page.wait_for_function('__SL_DEBUG.enabled')
-            page.set_viewport_size({'width':w,'height':500});page.wait_for_function('!__SL_DEBUG.enabled')
+            page.set_viewport_size({'width':w,'height':500});page.wait_for_timeout(350)
+            assert page.evaluate('__SL_DEBUG.enabled'),'short desktop disabled horizontal scenes'
+            assert page.evaluate('__SL_DEBUG.scenes.filter(s=>["trabalho","laboratorio"].includes(s.id)).every(s=>!s.static&&s.end>s.start)')
             assert page.evaluate('__SL_DEBUG.leafEnabled'),'short desktop hid the leaf'
             page.set_viewport_size({'width':w,'height':h});page.wait_for_function('__SL_DEBUG.enabled')
         assert not errors,errors

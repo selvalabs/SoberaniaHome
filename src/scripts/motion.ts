@@ -8,7 +8,7 @@ type Scene = {
   id: string; kind: SceneKind; section: HTMLElement; sequence: HTMLElement;
   frame: HTMLElement; panels: HTMLElement[]; track: HTMLElement | null;
   reverse: boolean; start: number; run: number; progress: number; index: number;
-  offsets: number[]; active: boolean; stage?: HTMLElement; stageWidth: number; stageHeight: number; flow: boolean;
+  offsets: number[]; active: boolean; stage?: HTMLElement; stageWidth: number; stageHeight: number; flow: boolean; static: boolean;
 };
 type MotionApi = {
   pause: () => void; resume: () => void; jumpSection: (id: string) => void;
@@ -47,6 +47,7 @@ export function initMotion() {
   const metrics = {frames: 0, measurements: 0, idle: true};
   const scenes: Scene[] = [];
   let pendingSceneJump: {scene: Scene; index: number} | null = null;
+  let navigationRevision=0;
   // Cache editorial targets once. Product interfaces and controls keep their own colors.
   const glowTargets = all<HTMLElement>('h1,h2,h3,p,figcaption,.technology-note,.knowledge-note', document.querySelector('main') || document)
     .filter(el => !el.closest('button,a,.work-evidence,.process-panels,.orbit-view,#referencias,dialog'))
@@ -79,7 +80,7 @@ export function initMotion() {
     const frame = sequence?.querySelector<HTMLElement>('.scene-frame');
     if (!section || !sequence || !frame) continue;
     const panels = all<HTMLElement>(kind === 'horizontal' ? '.portfolio-card' : kind === 'process' ? '.process-panel' : '.spiral-caption', section);
-    const scene: Scene = {id,kind,section,sequence,frame,panels,track:section.querySelector('.portfolio-track'),reverse:id==='laboratorio',start:0,run:1,progress:0,index:0,offsets:[],active:false,stageWidth:0,stageHeight:0,flow:false};
+    const scene: Scene = {id,kind,section,sequence,frame,panels,track:section.querySelector('.portfolio-track'),reverse:id==='laboratorio',start:0,run:1,progress:0,index:0,offsets:[],active:false,stageWidth:0,stageHeight:0,flow:false,static:false};
     scene.stage = section.querySelector<HTMLElement>(kind === 'process' ? '.process-periphery' : '.orbit-view') || undefined;
     sequence.dataset.motionScene = kind;
     if(kind==='horizontal') { frame.tabIndex=0; frame.setAttribute('aria-label',id==='trabalho'?'Projetos. Use as setas para explorar.':'Laboratório. Use as setas para explorar.'); }
@@ -114,7 +115,7 @@ export function initMotion() {
     const anchor = preserve ? sections.find(item=>item.element.id===activeId)?.element : null;
     const oldOffset = anchor ? (scenes.some(scene=>scene.id===activeId&&scene.active&&!scene.flow)?mastHeight:anchor.getBoundingClientRect().top) : 0;
     leafEnabled=!requestedReading&&!reduced.matches;
-    const nextEnabled=leafEnabled&&!compactViewport();
+    const nextEnabled=leafEnabled;
     if(paused&&nextEnabled!==enabled)modeChangedWhilePaused=true;
     enabled=nextEnabled;
     root.classList.toggle('motion',enabled);
@@ -145,15 +146,21 @@ export function initMotion() {
       const steps=Math.max(1,scene.panels.length-1);
       // On phones the gallery owns the viewport. Its header reserves space for
       // the returning mast; the hidden mast no longer leaves a vacant strip.
-      const fullMobile=scene.kind==='horizontal'&&width<760;
-      scene.sequence.style.setProperty('--motion-stage-height',`${fullMobile?height:height-mastHeight}px`);
-      scene.sequence.style.setProperty('--motion-mast-height',`${fullMobile?0:mastHeight}px`);
+      const fullViewport=scene.kind==='horizontal'&&(width<760||height<620);
+      scene.sequence.style.setProperty('--motion-stage-height',`${fullViewport?height:Math.max(1,height-mastHeight)}px`);
+      scene.sequence.style.setProperty('--motion-mast-height',`${fullViewport?0:mastHeight}px`);
+      scene.sequence.style.setProperty('--motion-header-clearance',`${fullViewport?mastHeight:0}px`);
+      scene.static=scene.kind!=='horizontal'&&compactViewport();
+      scene.sequence.dataset.motionStatic=String(scene.static);
       scene.flow=scene.kind==='process'&&width<760;
       scene.sequence.dataset.processFlow=String(scene.flow);
-      scene.run=enabled&&!scene.flow ? Math.round(scene.kind==='horizontal'?steps*clamp(width*.66,430,900):scene.kind==='process'?clamp(height*1.8,1100,1650):clamp(height*1.25,760,1150)) : 0;
+      scene.run=enabled&&!scene.flow&&!scene.static ? Math.round(scene.kind==='horizontal'?steps*clamp(width*.66,430,900):scene.kind==='process'?clamp(height*1.8,1100,1650):clamp(height*1.25,760,1150)) : 0;
       scene.sequence.style.setProperty('--motion-run',`${scene.run}px`);
-      scene.sequence.style.height=enabled&&!scene.flow?`${(fullMobile?height:height-mastHeight)+scene.run}px`:'';
+      scene.sequence.style.height=enabled&&!scene.flow&&!scene.static?`${(fullViewport?height:height-mastHeight)+scene.run}px`:'';
       if(scene.track) {
+        scene.panels.forEach(card=>{card.tabIndex=0;});
+        const hint=scene.section.querySelector('.scene-hint');
+        if(hint)hint.textContent=height<620?'Role o card para ler · Arraste para explorar':scene.reverse?'Continue rolando para voltar pela estrada':'Role para conhecer';
         // row-reverse already defines the laboratory's spatial direction.
         const viewport=scene.track.parentElement?.clientWidth||width;
         scene.offsets=scene.panels.map(card=>card.offsetLeft+card.offsetWidth/2-viewport/2);
@@ -162,7 +169,7 @@ export function initMotion() {
     }
     const y=scrollY;
     scenes.forEach(scene=>{
-      scene.start=scene.sequence.getBoundingClientRect().top+y-(scene.kind==='horizontal'&&width<760?0:mastHeight);
+      scene.start=scene.sequence.getBoundingClientRect().top+y-(scene.kind==='horizontal'&&(width<760||height<620)?0:mastHeight);
       if(scene.flow&&leafEnabled){
         const first=scene.panels[0]?.getBoundingClientRect(),last=scene.panels.at(-1)?.getBoundingClientRect();
         if(first&&last){scene.start=first.top+y-mastHeight-scene.stageHeight-24;scene.run=Math.max(1,last.top-first.top);}
@@ -202,15 +209,16 @@ export function initMotion() {
     else if(directionTravel>36&&!document.querySelector('dialog[open]'))root.dataset.mastHidden='true';
     previousY=y;
     for(const scene of scenes) {
-      scene.progress=enabled||scene.flow&&leafEnabled?clamp((y-scene.start)/Math.max(1,scene.run)):1;
-      scene.active=(enabled||scene.flow&&leafEnabled)&&y>=scene.start-2&&y<=scene.start+scene.run+2;
+      const animated=enabled&&!scene.static;
+      scene.progress=animated||scene.flow&&leafEnabled?clamp((y-scene.start)/Math.max(1,scene.run)):1;
+      scene.active=(animated||scene.flow&&leafEnabled)&&y>=scene.start-2&&y<=scene.start+scene.run+2;
       scene.index=Math.round(scene.progress*Math.max(1,scene.panels.length-1));
       if(scene.flow&&leafEnabled){
         const focus=mastHeight+scene.stageHeight+32;
         scene.index=scene.panels.reduce((index,panel,i)=>panel.getBoundingClientRect().top<=focus?i:index,0);
       }
       sceneProgress[scene.id]=scene.progress;
-      if(enabled||scene.flow&&leafEnabled) {
+      if(animated||scene.flow&&leafEnabled) {
         if(scene.kind==='horizontal')renderTrack(scene);
         if(scene.kind==='process')renderProcess(scene);
         if(scene.kind==='spiral')renderSpiral(scene);
@@ -229,7 +237,7 @@ export function initMotion() {
       if(Math.abs(y-(scene.start+scene.run*index/Math.max(1,scene.panels.length-1)))<2)pendingSceneJump=null;
     }
     if(leafEnabled)renderLeaf(y);
-    debug.scenes=scenes.map(s=>({id:s.id,start:s.start,end:s.start+s.run,raw:s.progress*(s.panels.length-1),visual:s.progress*(s.panels.length-1),lastIndex:s.index,static:!enabled,flow:s.flow}));
+    debug.scenes=scenes.map(s=>({id:s.id,start:s.start,end:s.start+s.run,raw:s.progress*(s.panels.length-1),visual:s.progress*(s.panels.length-1),lastIndex:s.index,static:!enabled||s.static,flow:s.flow}));
     metrics.idle=true;
   }
 
@@ -398,14 +406,16 @@ export function initMotion() {
   function scrollToY(top:number) { scrollTo({top:clamp(top,0,maxScroll),behavior:reduced.matches||!enabled||Math.abs(top-scrollY)>height*1.5?'instant':'smooth'});request(); }
   function jumpSection(id:string) {
     const section=document.getElementById(id);if(!section)return;
+    navigationRevision++;
     const top=section.getBoundingClientRect().top+scrollY-mastHeight;
     pendingSceneJump=null;root.dataset.mastHidden='false';scrollToY(top);request();
   }
   function jumpScene(id:string,index:number) {
     const scene=scenes.find(item=>item.id===id);if(!scene){jumpSection(id);return;}
+    navigationRevision++;
     const i=clamp(index,0,scene.panels.length-1);
     if(scene.flow&&leafEnabled)scrollToY(scrollY+scene.panels[i].getBoundingClientRect().top-mastHeight-scene.stageHeight-24);
-    else if(enabled){pendingSceneJump={scene,index:i};scrollToY(scene.start+scene.run*i/Math.max(1,scene.panels.length-1));}
+    else if(enabled&&!scene.static){pendingSceneJump={scene,index:i};scrollToY(scene.start+scene.run*i/Math.max(1,scene.panels.length-1));}
     else scene.panels[i]?.scrollIntoView({block:'center',behavior:'instant'});
   }
   window.SLMotion={
@@ -486,9 +496,10 @@ export function initMotion() {
   all<HTMLButtonElement>('[data-edition-reading]').forEach(button=>button.addEventListener('click',()=>window.SLMotion.setReading(leafEnabled)));
   addEventListener('scroll',request,{passive:true});
   // Direct input takes over from a requested card transition.
-  for(const type of ['wheel','touchstart','pointerdown','keydown'])addEventListener(type,()=>{pendingSceneJump=null;},{passive:true,capture:true});
+  for(const type of ['wheel','touchstart','pointerdown','keydown'])addEventListener(type,()=>{pendingSceneJump=null;navigationRevision++;},{passive:true,capture:true});
   addEventListener('resize',()=>{
-    const active=scenes.find(scene=>scene.active&&!scene.flow);
+    const revision=navigationRevision;
+    const active=pendingSceneJump?.scene||scenes.find(scene=>scene.active&&!scene.flow&&!scene.static);
     const jump=pendingSceneJump?.scene===active?pendingSceneJump:null;
     // Capture the logical position before content/ResizeObserver measurements
     // change scene coordinates, rather than sampling a half-finished frame.
@@ -497,16 +508,20 @@ export function initMotion() {
     // Mobile browsers also emit resize without a geometry change. Re-applying
     // an intermediate scroll position here aborts an in-flight smooth jump.
     if(document.documentElement.clientWidth===resizedWidth&&innerHeight===resizedHeight)return;
+    // A navigation request may arrive while this resize is being debounced.
+    // Prefer that destination (or the newly entered scene) over the old anchor.
+    const currentJump=pendingSceneJump||(revision===navigationRevision?jump:null);
+    const currentScene=currentJump?.scene||(revision===navigationRevision?active:null)||scenes.find(scene=>scene.active&&!scene.flow&&!scene.static);
+    const currentProgress=currentJump?currentJump.index/Math.max(1,currentJump.scene.panels.length-1):currentScene===active?progress:currentScene?.progress;
     resizedWidth=document.documentElement.clientWidth;resizedHeight=innerHeight;
     const landscape=matchMedia('(orientation: landscape)').matches;
     if(innerWidth!==layoutWidth||landscape!==layoutLandscape||(innerWidth>=760&&innerHeight!==layoutHeight)){
       layoutWidth=innerWidth;layoutLandscape=landscape;layoutHeight=smallViewportHeight();configure();
-    }else{
-      measure();
-      if(active&&progress!==undefined&&!paused){
-        if(jump){pendingSceneJump=jump;scrollToY(active.start+active.run*progress);}
-        else scrollTo({top:active.start+active.run*progress,behavior:'instant'});
-      }
+    }else measure();
+    // Orientation and window-width changes must retain the same card too.
+    if(currentScene&&currentProgress!==undefined&&!paused&&enabled&&!currentScene.static){
+      if(currentJump){pendingSceneJump=currentJump;scrollToY(currentScene.start+currentScene.run*currentProgress);}
+      else scrollTo({top:currentScene.start+currentScene.run*currentProgress,behavior:'instant'});
     }
   },140);},{passive:true});
   addEventListener('load',measure,{once:true});
