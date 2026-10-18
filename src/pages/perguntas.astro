@@ -67,10 +67,10 @@ const questions = [
   },
   {
     id: 'experimento-generativo',
-    title: 'O experimento visual envia meus dados para uma IA?',
+    title: 'A Mesa de possibilidades usa IA?',
     paragraphs: [
-      'No modo local, a experiência compõe uma resposta visual a partir das suas escolhas no próprio navegador. Essa demonstração não executa um modelo de IA nem envia os dados a um serviço externo.',
-      'Uma integração opcional pode processar uma solicitação pela infraestrutura de borda. Quando estiver configurada, o envio depende de uma ação explícita de gerar: a interface deve informar o processamento externo antes do acionamento. A demonstração local continua disponível sem essa integração.',
+      'O modo local apresenta um dos quatro roteiros preparados, conforme o campo escolhido. A sua anotação acompanha o esboço e a exportação; ela não é interpretada nem modifica o roteiro. Nenhum texto é enviado a uma IA por essa ação.',
+      'A interface informa se a IA está conectada. Quando disponível, o botão “Explorar com IA” envia o texto e o campo escolhido para processamento por Cloudflare Workers AI. A resposta precisa de revisão. O download guarda o último esboço montado, com sua origem e contexto; edições posteriores só entram após uma nova ação.',
     ],
     link: '/#possibilidades', label: 'Explorar possibilidades',
   },

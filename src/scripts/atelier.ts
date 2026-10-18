@@ -1,23 +1,155 @@
-type Proposal = {title:string;summary:string;steps:{title:string;detail:string}[];data:string[];human:string[];next:string};
-type Sector = 'cooperativa'|'comunidade'|'educacao'|'cultura';
-const scenarios:Record<Sector,Proposal>={
-  cooperativa:{title:'Da feira ao pedido. Sem perder quem produz.',summary:'Um caderno digital compartilhado para organizar a oferta, reunir os pedidos e acompanhar a entrega. Começar pequeno permite descobrir o que realmente precisa ser automatizado.',steps:[{title:'Escutar a operação',detail:'Mapear como produtores e compradores já combinam oferta, preço e retirada.'},{title:'Conectar o essencial',detail:'Um catálogo simples e um registro exportável de pedidos, sem exigir um aplicativo de cada pessoa.'},{title:'Devolver o controle',detail:'A cooperativa decide disponibilidade, confirma os pedidos e mantém uma cópia dos registros.'}],data:['Produtos e disponibilidade','Pedidos e situação da entrega'],human:['Preço, partilha e condições de trabalho','Autorizar uma comunicação ou cobrança'],next:'Primeiro experimento: acompanhar uma feira com um registro simples antes de escolher a tecnologia.'},
-  comunidade:{title:'Informação pública. Perto de quem vive o território.',summary:'Um observatório de avisos úteis que acompanha fontes oficiais e aproxima a informação de quem precisa. Um sistema de apoio deve mostrar de onde veio cada aviso e quando ele foi atualizado.',steps:[{title:'Encontrar as fontes',detail:'Identificar os canais oficiais, os formatos dos avisos e as dificuldades de acesso dos moradores.'},{title:'Relacionar ao contexto',detail:'Organizar por território, assunto e data. Testar a relevância de cada correspondência antes de enviar.'},{title:'Manter a comunidade no circuito',detail:'Permitir corrigir informações, escolher assuntos e interromper os avisos a qualquer momento.'}],data:['Fonte, data e endereço público do aviso','Preferências mínimas de quem deseja receber'],human:['Confirmar avisos ambíguos ou sensíveis','Escolher o canal e consentir com os alertas'],next:'Primeiro experimento: revisar uma semana de avisos com moradores e medir quais realmente ajudariam.'},
-  educacao:{title:'Uma casa para aprender. E continuar perguntando.',summary:'Um espaço de aprendizagem que reúne percursos, materiais e troca entre pessoas. A busca pode ajudar a encontrar uma fonte, enquanto o acompanhamento permanece ligado ao contexto de cada turma.',steps:[{title:'Conhecer quem aprende',detail:'Conversar sobre acesso à internet, tempo disponível e necessidades de acessibilidade.'},{title:'Organizar caminhos',detail:'Publicar materiais leves, jornadas abertas e uma busca que preserve referências ao conteúdo original.'},{title:'Acompanhar sem vigiar',detail:'Usar apenas os registros necessários. Professores e estudantes podem interpretar juntos os próximos passos.'}],data:['Materiais com autoria e licença','Acessos e progresso estritamente necessários'],human:['Escolher critérios e avaliar a aprendizagem','Revisar respostas e acolher dúvidas'],next:'Primeiro experimento: publicar um percurso curto, observar seu uso e ouvir uma turma antes de ampliar.'},
-  cultura:{title:'Um arquivo vivo. Com autoria, memória e circulação.',summary:'Um acervo que aproxima obras, pessoas e contextos. A tecnologia pode facilitar a descoberta sem apagar o trabalho de quem produz, descreve e cuida da memória.',steps:[{title:'Cuidar do acervo',detail:'Identificar autoria, direitos de uso, formatos originais e os responsáveis por cada coleção.'},{title:'Abrir caminhos de descoberta',detail:'Criar relações entre temas, lugares e épocas com metadados revisáveis e fontes visíveis.'},{title:'Permitir novos usos',detail:'Oferecer busca, versões acessíveis e exportação, respeitando as condições escolhidas pelos autores.'}],data:['Obras, créditos e licenças','Descrições e relações com fontes verificáveis'],human:['Autorizar publicação e reutilização','Revisar descrições, contexto e atribuição'],next:'Primeiro experimento: organizar uma pequena coleção e convidar seus autores para revisar a experiência.'}
-};
-const root=document.querySelector<HTMLElement>('[data-atelier]');
-if(root){
- (root.querySelector('[data-atelier-controls]') as HTMLFieldSetElement).disabled=false;
- const form=root.querySelector<HTMLFormElement>('[data-atelier-form]')!,sector=root.querySelector<HTMLSelectElement>('#atelier-sector')!,context=root.querySelector<HTMLTextAreaElement>('#atelier-context')!,output=root.querySelector<HTMLElement>('[data-atelier-output]')!,status=root.querySelector<HTMLElement>('[data-atelier-status]')!,ai=root.querySelector<HTMLButtonElement>('[data-atelier-ai]')!,download=root.querySelector<HTMLButtonElement>('[data-atelier-export]')!;
- let current=scenarios.cooperativa,mode='Demonstração local',busy=false,resultContext='';
- function text(selector:string,value:string){root!.querySelector(selector)!.textContent=value;}
- function list(selector:string,values:string[]){const ul=root!.querySelector(selector)!;ul.replaceChildren(...values.map(value=>{const li=document.createElement('li');li.textContent=value;return li;}));}
- function show(proposal:Proposal,source:string,submittedContext=context.value.trim()){current=proposal;mode=source;resultContext=submittedContext;text('[data-atelier-mode]',source.startsWith('Proposta de IA')?'IA na borda · contexto enviado para processamento':'Modo local · esta ação não envia dados');text('[data-atelier-title]',proposal.title);text('[data-atelier-summary]',proposal.summary);text('[data-atelier-output-mode]',source);text('[data-atelier-next]',proposal.next);list('[data-atelier-data]',proposal.data);list('[data-atelier-human]',proposal.human);root!.querySelector('[data-atelier-steps]')!.replaceChildren(...proposal.steps.map((step,index)=>{const li=document.createElement('li');li.dataset.step=String(index+1).padStart(2,'0');const strong=document.createElement('strong');strong.textContent=step.title;const p=document.createElement('p');p.textContent=step.detail;li.append(strong,p);return li;}));output.dataset.arriving='true';setTimeout(()=>delete output.dataset.arriving,900);document.dispatchEvent(new Event('sl:layout-change'));}
- form.addEventListener('submit',event=>{event.preventDefault();if(busy)return;show(scenarios[sector.value as Sector],'Demonstração local / cenário preparado');status.textContent=context.value.trim()?'Seu contexto será incluído no arquivo exportado. Este mapa é um cenário preparado para o campo escolhido.':'Cenário local atualizado. Você pode levar este esboço e continuar a investigação.';});
- sector.addEventListener('change',()=>{if(!busy)form.requestSubmit();});
- download.hidden=false;download.addEventListener('click',()=>{const content=['SOBERANIA LABS / MESA DE POSSIBILIDADES',mode,'','CONTEXTO',resultContext||'Não informado','',current.title,current.summary,'',...current.steps.flatMap((s,i)=>[`${i+1}. ${s.title}`,s.detail,'']),'DADOS',...current.data.map(s=>`- ${s}`),'','DECISÕES HUMANAS',...current.human.map(s=>`- ${s}`),'',current.next,'','Esboço para discussão. Não constitui orçamento nem projeto técnico validado.'].join('\n');const url=URL.createObjectURL(new Blob([content],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='soberania-esboco-de-projeto.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);status.textContent='Arquivo exportado localmente. Você pode continuar a investigação com este esboço.';});
- const valid=(p:any):p is Proposal=>p&&typeof p.title==='string'&&typeof p.summary==='string'&&typeof p.next==='string'&&Array.isArray(p.steps)&&p.steps.length>0&&p.steps.length<=5&&p.steps.every((s:any)=>typeof s.title==='string'&&typeof s.detail==='string')&&['data','human'].every(k=>Array.isArray(p[k])&&p[k].length<=8&&p[k].every((v:any)=>typeof v==='string'));
- if(root.dataset.edgeEnabled==='true')fetch('/api/atelier',{signal:AbortSignal.timeout(5000)}).then(r=>r.ok?r.json():null).then(config=>{if(config?.enabled===true){ai.hidden=false;text('[data-atelier-privacy]','“Traçar possibilidades” continua local. Ao clicar “Explorar com IA”, seu texto e o campo escolhido serão enviados ao Worker da Soberania e processados por Cloudflare Workers AI. Não inclua dados pessoais ou confidenciais. A resposta exige revisão humana.');}}).catch(()=>{});
- ai.addEventListener('click',async()=>{if(busy)return;if(context.value.trim().length<20){status.textContent='Descreva a situação em pelo menos 20 caracteres para explorar com IA.';context.focus();return;}const submittedContext=context.value.trim(),submittedSector=sector.value;busy=true;text('[data-atelier-mode]','IA na borda · envio para processamento externo');(root.querySelector('[data-atelier-controls]') as HTMLFieldSetElement).disabled=true;download.disabled=true;output.setAttribute('aria-busy','true');status.textContent='Investigando possibilidades com IA na borda…';try{const response=await fetch('/api/atelier',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sector:submittedSector,context:submittedContext}),signal:AbortSignal.timeout(30000)});const result=await response.json();if(!response.ok)throw new Error(result.error?.message||'Não foi possível gerar agora.');if(!valid(result.proposal))throw new Error('A resposta veio incompleta. O cenário local continua disponível.');show(result.proposal,'Proposta de IA / revisar antes de usar',submittedContext);status.textContent='Esboço gerado. Verifique fontes, viabilidade e decisões antes de transformá-lo em um projeto.';}catch(error){status.textContent=error instanceof Error?error.message:'IA indisponível. Você pode continuar na demonstração local.';}finally{busy=false;(root.querySelector('[data-atelier-controls]') as HTMLFieldSetElement).disabled=false;download.disabled=false;output.removeAttribute('aria-busy');}});
+import { scenarios, sectorLabels, examples, type Proposal, type Sector } from '../data/atelier';
+
+const root = document.querySelector<HTMLElement>('[data-atelier]');
+if (root) {
+  const find = <T extends HTMLElement>(selector:string) => root.querySelector<T>(selector)!;
+  const controls = find<HTMLFieldSetElement>('[data-atelier-controls]');
+  const form = find<HTMLFormElement>('[data-atelier-form]');
+  const sector = find<HTMLSelectElement>('#atelier-sector');
+  const context = find<HTMLTextAreaElement>('#atelier-context');
+  const output = find('[data-atelier-output]');
+  const status = find('[data-atelier-status]');
+  const ai = find<HTMLButtonElement>('[data-atelier-ai]');
+  const download = find<HTMLButtonElement>('[data-atelier-export]');
+  const retry = find<HTMLButtonElement>('[data-atelier-retry]');
+  const example = find<HTMLButtonElement>('[data-atelier-example]');
+  const error = find('[data-atelier-error]');
+  let current = scenarios.cooperativa;
+  let mode = 'Demonstração local / cenário preparado';
+  let resultContext = '', resultSector:Sector = 'cooperativa', busy = false;
+  let arrivalTimer:ReturnType<typeof setTimeout>;
+  controls.disabled = false;
+  download.hidden = false;
+  find('[data-atelier-view]').addEventListener('click',event=>{
+    event.preventDefault();find('[data-atelier-title]').focus();
+  });
+
+  const text = (selector:string,value:string) => { find(selector).textContent=value; };
+  const list = (selector:string,values:string[]) => {
+    find(selector).replaceChildren(...values.map(value => {
+      const li=document.createElement('li');li.textContent=value;return li;
+    }));
+  };
+  function updateDraft() {
+    const changed=context.value.trim()!==resultContext || sector.value!==resultSector;
+    find('[data-atelier-draft]').hidden=!changed;
+    text('[data-atelier-count]',`${context.value.length} / 1800`);
+    example.textContent=context.value ? 'Substituir anotação por um exemplo' : 'Usar um exemplo de situação';
+  }
+  function clearError() { error.hidden=true;error.textContent='';context.removeAttribute('aria-invalid'); }
+  context.addEventListener('input',()=>{clearError();updateDraft();});
+  example.addEventListener('click',()=>{
+    context.value=examples[sector.value as Sector];clearError();updateDraft();context.focus();
+    status.textContent='Situação de exemplo inserida. Você pode editá-la antes de montar o esboço.';
+  });
+  function show(proposal:Proposal,source:string,submittedContext:string,submittedSector:Sector,focusResult:boolean) {
+    current=proposal;mode=source;resultContext=submittedContext;resultSector=submittedSector;
+    const generated=source.startsWith('Proposta de IA');
+    text('[data-atelier-mode]',generated?'IA na borda · contexto enviado para processamento':'Modo local · esta ação não envia dados');
+    text('[data-atelier-title]',proposal.title);text('[data-atelier-summary]',proposal.summary);
+    text('[data-atelier-output-mode]',source);text('[data-atelier-next]',proposal.next);
+    text('[data-atelier-result-context]',submittedContext||`Nenhuma anotação incluída. Exemplo: ${sectorLabels[submittedSector].toLowerCase()}.`);
+    text('[data-atelier-context-origin]',generated?'Contexto utilizado nesta proposta de IA. Revise a interpretação.':'Anotação de contexto; o roteiro local é preparado.');
+    list('[data-atelier-data]',proposal.data);list('[data-atelier-human]',proposal.human);
+    find('[data-atelier-steps]').replaceChildren(...proposal.steps.map((step,index)=>{
+      const li=document.createElement('li');li.dataset.step=String(index+1).padStart(2,'0');
+      const strong=document.createElement('strong');strong.textContent=step.title;
+      const p=document.createElement('p');p.textContent=step.detail;li.append(strong,p);return li;
+    }));
+    updateDraft();clearTimeout(arrivalTimer);output.dataset.arriving='true';
+    arrivalTimer=setTimeout(()=>delete output.dataset.arriving,900);
+    document.dispatchEvent(new Event('sl:layout-change'));
+    if(focusResult) find('[data-atelier-title]').focus();
+  }
+  function local(focusResult:boolean) {
+    if(busy)return;
+    clearError();
+    show(scenarios[sector.value as Sector],'Demonstração local / cenário preparado',context.value.trim(),sector.value as Sector,focusResult);
+    status.textContent=context.value.trim()
+      ?'Anotação incluída. O roteiro é o exemplo preparado para o campo escolhido; nenhuma IA interpretou o texto.'
+      :'Exemplo local atualizado. Anote sua situação ou leve o roteiro para conversar com sua equipe.';
+  }
+  form.addEventListener('submit',event=>{event.preventDefault();local(true);});
+  sector.addEventListener('change',()=>local(false));
+  download.addEventListener('click',()=>{
+    const generated=mode.startsWith('Proposta de IA');
+    const content=['SOBERANIA LABS / MESA DE POSSIBILIDADES',mode,`CAMPO: ${sectorLabels[resultSector]}`,'',
+      generated?'Contexto utilizado pela IA; proposta sujeita a revisão.':'Roteiro preparado. A anotação abaixo não foi interpretada por IA.',
+      '', 'CONTEXTO',resultContext||'Não informado','',current.title,current.summary,'',
+      ...current.steps.flatMap((s,i)=>[`${i+1}. ${s.title}`,s.detail,'']),
+      'DADOS',...current.data.map(s=>`- ${s}`),'','DECISÕES HUMANAS',...current.human.map(s=>`- ${s}`),'',current.next,'',
+      'Esboço para discussão. Não constitui orçamento nem projeto técnico validado.'].join('\n');
+    const url=URL.createObjectURL(new Blob([content],{type:'text/plain;charset=utf-8'}));
+    const a=document.createElement('a');a.href=url;a.download='soberania-esboco-de-projeto.txt';a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+    status.textContent='Último esboço exportado. Anotações ainda não incorporadas ficam fora deste arquivo.';
+  });
+
+  // Match the public Worker contract before changing the visible result.
+  const safe=(value:unknown,max:number):value is string => typeof value==='string'&&!!value.trim()&&value.length<=max&&!/[<>\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f\u202a-\u202e\u2066-\u2069]/.test(value);
+  const keys=(p:any,names:string[])=>p&&typeof p==='object'&&!Array.isArray(p)&&Object.keys(p).length===names.length&&names.every(k=>Object.hasOwn(p,k));
+  const valid=(p:any):p is Proposal=>keys(p,['title','summary','steps','data','human','next'])&&safe(p.title,100)&&safe(p.summary,500)&&safe(p.next,300)
+    &&Array.isArray(p.steps)&&p.steps.length>=3&&p.steps.length<=4&&p.steps.every((s:any)=>keys(s,['title','detail'])&&safe(s.title,80)&&safe(s.detail,300))
+    &&['data','human'].every(k=>Array.isArray(p[k])&&p[k].length>=1&&p[k].length<=4&&p[k].every((v:unknown)=>safe(v,200)));
+  async function connect() {
+    retry.hidden=true;retry.disabled=true;
+    text('[data-atelier-connection]','Verificando disponibilidade da IA. O exemplo local continua disponível.');
+    try {
+      const response=await fetch('/api/atelier',{signal:AbortSignal.timeout(5000)});
+      if(!response.ok)throw new Error('unavailable');
+      const config=await response.json();
+      ai.hidden=config?.enabled!==true;
+      if(!ai.hidden){
+        text('[data-atelier-connection]','Conectada. “Explorar com IA” usa sua situação para propor um novo caminho. O envio só ocorre ao clicar.');
+        text('[data-atelier-privacy]','O esboço local usa um roteiro preparado e não envia dados. Ao clicar “Explorar com IA”, seu texto e o campo escolhido serão enviados ao Worker da Soberania e processados por Cloudflare Workers AI. Evite dados pessoais ou confidenciais. Revise a resposta.');
+      } else {
+        text('[data-atelier-connection]','Não ativada neste ambiente. Explore os exemplos locais enquanto a integração não estiver disponível.');
+        retry.hidden=false;
+      }
+    } catch {
+      ai.hidden=true;retry.hidden=false;
+      text('[data-atelier-connection]','Não foi possível verificar a conexão. Os exemplos locais e o download continuam disponíveis.');
+    } finally {retry.disabled=false;}
+  }
+  retry.addEventListener('click',()=>void connect());
+  if(root.dataset.edgeEnabled==='true')void connect();
+  ai.addEventListener('click',async()=>{
+    if(busy)return;
+    clearError();
+    if(context.value.trim().length<20){
+      error.hidden=false;error.textContent='Para usar IA, descreva a situação em pelo menos 20 caracteres.';
+      context.setAttribute('aria-invalid','true');status.textContent='Complete a descrição para explorar com IA.';context.focus();return;
+    }
+    const submittedContext=context.value.trim(),submittedSector=sector.value as Sector;
+    busy=true;controls.disabled=true;download.disabled=true;retry.disabled=true;output.setAttribute('aria-busy','true');
+    text('[data-atelier-mode]','IA na borda · envio para processamento externo');
+    status.textContent='Preparando uma hipótese com IA. Isso pode levar alguns segundos…';
+    try {
+      const response=await fetch('/api/atelier',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sector:submittedSector,context:submittedContext}),signal:AbortSignal.timeout(30000)});
+      if(!response.ok){
+        const message=response.status===429?'O limite de uso foi atingido. Aguarde um minuto ou monte um esboço local.'
+          :response.status===504?'A IA demorou demais para responder. Tente novamente ou use o exemplo local.'
+          :response.status===400?'Não foi possível aceitar a descrição. Revise o texto e tente novamente.'
+          :'A IA está indisponível agora. Tente novamente ou use o exemplo local.';
+        throw new Error(message);
+      }
+      let result;
+      try {result=await response.json();}catch{throw new Error('A IA devolveu uma resposta ilegível. Tente novamente ou use o exemplo local.');}
+      if(!valid(result?.proposal))throw new Error('A resposta da IA veio incompleta. Tente novamente ou use o exemplo local.');
+      // Return focus only if the visitor is still working in the form.
+      const focusResult=root.contains(document.activeElement)&&!output.contains(document.activeElement);
+      show(result.proposal,'Proposta de IA / revisar antes de usar',submittedContext,submittedSector,focusResult);
+      status.textContent='Proposta pronta. Confira as hipóteses, os dados necessários e quem deve participar do primeiro teste.';
+    } catch(caught) {
+      let message='Não foi possível concluir. Tente novamente ou monte um esboço local.';
+      if(caught instanceof Error){
+        if(caught.name==='TimeoutError'||caught.name==='AbortError')message='A resposta demorou demais. Tente novamente ou use o exemplo local.';
+        else if(caught instanceof TypeError)message='A conexão falhou durante o envio. Verifique sua rede ou use o exemplo local.';
+        else message=caught.message;
+      }
+      status.textContent=`${message} O último esboço foi mantido.`;
+    } finally {
+      busy=false;controls.disabled=false;download.disabled=false;retry.disabled=false;output.removeAttribute('aria-busy');updateDraft();
+    }
+  });
 }

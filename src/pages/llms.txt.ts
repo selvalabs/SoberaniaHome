@@ -14,7 +14,7 @@ ${publication.indexable ? 'Este arquivo resume o conteúdo desta edição do sit
 - [Trabalhos](${publicUrl('/#trabalho')}): SoberanIA Analytics, Círculo, Editor HTML e Monitor Comunitário.
 - [Laboratório](${publicUrl('/#laboratorio')}): landing pages, publicação, voz e busca em documentos locais.
 - [Processo](${publicUrl('/#processo')}): entender, investigar, prototipar, construir, testar e transferir capacidade.
-- [Possibilidades](${publicUrl('/#possibilidades')}): composição visual local e integração externa opcional, explicitamente acionada.
+- [Possibilidades](${publicUrl('/#possibilidades')}): quatro roteiros locais preparados, anotação de contexto e exportação; IA externa opcional, explicitamente acionada.
 - [Manifesto](${publicUrl('/#manifesto')}): princípios que orientam o trabalho.
 - [Perguntas frequentes](${publicUrl('/perguntas/')}): escopo, autonomia, agentes e estágio dos projetos.
 
@@ -29,7 +29,7 @@ ${publication.indexable ? 'Este arquivo resume o conteúdo desta edição do sit
 
 As telas identificadas como demonstrativas usam dados de demonstração. Capturas de UVE e RAG Local mostram interfaces reais sem comprovar uma execução de inferência. Os estudos de landing pages não implicam resultados comerciais medidos. O Caderno reúne seis notas editoriais originais sobre princípios de trabalho; não apresenta resultados de pesquisa científica. As referências de leitura não representam endosso dessas pessoas ao laboratório.
 
-O experimento visual usa composição determinística no modo local, não inferência por IA. Uma integração opcional com processamento na borda depende de configuração e de uma ação explícita de gerar; a demonstração local não envia dados a esse serviço.
+A Mesa de possibilidades apresenta um de quatro roteiros preparados no modo local. O texto anotado acompanha o esboço, mas não altera o roteiro e não é interpretado por IA. Uma integração opcional com Cloudflare Workers AI depende de configuração; a interface informa a disponibilidade e só envia texto e campo escolhido ao clicar em “Explorar com IA”. A exportação preserva a origem e o contexto do último resultado, sem incluir edições ainda não incorporadas.
 
 ## Leitura e acessibilidade
 
