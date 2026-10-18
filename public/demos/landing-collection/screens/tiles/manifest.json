@@ -1,0 +1,508 @@
+{
+  "soberania-lp": [
+    {
+      "src": "tiles/soberania-lp-001.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/soberania-lp-002.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/soberania-lp-003.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/soberania-lp-004.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/soberania-lp-005.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/soberania-lp-006.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/soberania-lp-007.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/soberania-lp-008.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/soberania-lp-009.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/soberania-lp-010.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/soberania-lp-011.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/soberania-lp-012.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/soberania-lp-013.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/soberania-lp-014.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/soberania-lp-015.webp",
+      "width": 390,
+      "height": 27
+    }
+  ],
+  "desafio-selvagem": [
+    {
+      "src": "tiles/desafio-selvagem-001.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/desafio-selvagem-002.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/desafio-selvagem-003.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/desafio-selvagem-004.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/desafio-selvagem-005.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/desafio-selvagem-006.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/desafio-selvagem-007.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/desafio-selvagem-008.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/desafio-selvagem-009.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/desafio-selvagem-010.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/desafio-selvagem-011.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/desafio-selvagem-012.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/desafio-selvagem-013.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/desafio-selvagem-014.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/desafio-selvagem-015.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/desafio-selvagem-016.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/desafio-selvagem-017.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/desafio-selvagem-018.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/desafio-selvagem-019.webp",
+      "width": 390,
+      "height": 111
+    }
+  ],
+  "entretrama": [
+    {
+      "src": "tiles/entretrama-001.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/entretrama-002.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/entretrama-003.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/entretrama-004.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/entretrama-005.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/entretrama-006.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/entretrama-007.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/entretrama-008.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/entretrama-009.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/entretrama-010.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/entretrama-011.webp",
+      "width": 390,
+      "height": 1195
+    }
+  ],
+  "ciclico": [
+    {
+      "src": "tiles/ciclico-001.webp",
+      "width": 392,
+      "height": 1200
+    },
+    {
+      "src": "tiles/ciclico-002.webp",
+      "width": 392,
+      "height": 1200
+    },
+    {
+      "src": "tiles/ciclico-003.webp",
+      "width": 392,
+      "height": 1200
+    },
+    {
+      "src": "tiles/ciclico-004.webp",
+      "width": 392,
+      "height": 1200
+    },
+    {
+      "src": "tiles/ciclico-005.webp",
+      "width": 392,
+      "height": 1200
+    },
+    {
+      "src": "tiles/ciclico-006.webp",
+      "width": 392,
+      "height": 1200
+    },
+    {
+      "src": "tiles/ciclico-007.webp",
+      "width": 392,
+      "height": 1200
+    },
+    {
+      "src": "tiles/ciclico-008.webp",
+      "width": 392,
+      "height": 1200
+    },
+    {
+      "src": "tiles/ciclico-009.webp",
+      "width": 392,
+      "height": 1200
+    },
+    {
+      "src": "tiles/ciclico-010.webp",
+      "width": 392,
+      "height": 1200
+    },
+    {
+      "src": "tiles/ciclico-011.webp",
+      "width": 392,
+      "height": 1138
+    }
+  ],
+  "shala": [
+    {
+      "src": "tiles/shala-001.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/shala-002.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/shala-003.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/shala-004.webp",
+      "width": 390,
+      "height": 931
+    }
+  ],
+  "alma": [
+    {
+      "src": "tiles/alma-001.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/alma-002.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/alma-003.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/alma-004.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/alma-005.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/alma-006.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/alma-007.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/alma-008.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/alma-009.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/alma-010.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/alma-011.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/alma-012.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/alma-013.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/alma-014.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/alma-015.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/alma-016.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/alma-017.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/alma-018.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/alma-019.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/alma-020.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/alma-021.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/alma-022.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/alma-023.webp",
+      "width": 390,
+      "height": 724
+    }
+  ],
+  "mariana": [
+    {
+      "src": "tiles/mariana-001.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/mariana-002.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/mariana-003.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/mariana-004.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/mariana-005.webp",
+      "width": 390,
+      "height": 353
+    }
+  ],
+  "mariaanna": [
+    {
+      "src": "tiles/mariaanna-001.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/mariaanna-002.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/mariaanna-003.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/mariaanna-004.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/mariaanna-005.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/mariaanna-006.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/mariaanna-007.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/mariaanna-008.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/mariaanna-009.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/mariaanna-010.webp",
+      "width": 390,
+      "height": 862
+    }
+  ]
+}

@@ -1,0 +1,158 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const questions = [
+  {
+    id: 'laboratorio',
+    title: 'O que a Soberania Labs faz?',
+    paragraphs: [
+      'Somos um laboratório independente de tecnologia em Florianópolis, Brasil. Desenvolvemos software, processos inteligentes, infraestrutura, pesquisa e experiências digitais.',
+      'O trabalho começa nas pessoas e no contexto em que uma ferramenta será usada. Conhecimento técnico e experiência cotidiana entram na mesma conversa.',
+    ],
+    link: '/#sobre', label: 'Conhecer o laboratório',
+  },
+  {
+    id: 'autonomia',
+    title: 'O que significa autonomia digital?',
+    paragraphs: [
+      'É poder compreender e transformar a tecnologia de que se depende. Isso envolve acesso aos dados, escolhas de infraestrutura, documentação e capacidade de continuar o trabalho depois da entrega.',
+      'No nosso processo, autonomia orienta decisões de projeto: o que pode ser exportado, quem controla os acessos, como o sistema pode ser mantido e quais partes podem ser substituídas.',
+    ],
+    link: '/#editor', label: 'Ver como pensamos a entrega',
+  },
+  {
+    id: 'agentes',
+    title: 'Como agentes de IA e MCP entram no trabalho?',
+    paragraphs: [
+      'Agentes podem ajudar a executar tarefas e conectar ferramentas. MCP é um protocolo para oferecer contexto e ferramentas a aplicações de IA. A sigla, por si só, não garante segurança ou autonomia.',
+      'Nos projetos que apresentam esse tipo de fluxo, permissões, limites e supervisão precisam ser definidos conforme a operação. No Analytics e no Círculo, a integração por MCP faz parte da proposta apresentada; cada produto tem seu próprio estágio de desenvolvimento.',
+    ],
+    link: '/#trabalho', label: 'Explorar os projetos',
+  },
+  {
+    id: 'local',
+    title: 'O que é executado localmente?',
+    paragraphs: [
+      'Universal Voice Engine e RAG Local exploram fluxos que podem operar no ambiente de quem usa. O UVE reúne perfis de voz, texto, prévias e exportação de áudio. O RAG Local organiza documentos e combina busca semântica e lexical, preservando referências às fontes; o uso de Ollama é opcional.',
+      'As necessidades de máquina, instalação e modelos dependem do projeto. As capturas desta edição mostram interfaces reais com dados demonstrativos; elas não representam uma execução de geração de voz ou de resposta por IA.',
+    ],
+    link: '/#laboratorio', label: 'Ver as interfaces',
+  },
+  {
+    id: 'projetos',
+    title: 'Todos os projetos já estão disponíveis?',
+    paragraphs: [
+      'Não. O site reúne ferramentas, prévias de produtos, estudos de interface e projetos em desenvolvimento. As legendas de cada trabalho indicam o que está sendo mostrado.',
+      'Uma captura de tela não comprova disponibilidade comercial, resultado de desempenho ou implantação em produção. O Caderno reúne seis notas editoriais originais sobre os princípios de trabalho do laboratório.',
+    ],
+    link: '/#trabalho', label: 'Consultar o estágio de cada trabalho',
+  },
+  {
+    id: 'parceiros',
+    title: 'Como funciona a proposta de parceiros do Círculo?',
+    paragraphs: [
+      'O Círculo é uma plataforma personalizável de cursos e comunidade. A proposta permite adaptar conteúdos, jornadas, acessos e operação ao contexto de cada projeto.',
+      'O uso gratuito é destinado a projetos que se candidatarem e forem aceitos no programa de parceiros. Isso não significa gratuidade automática para qualquer projeto; condições e disponibilidade precisam ser confirmadas com o laboratório.',
+    ],
+    link: '/#trabalho', label: 'Conhecer o Círculo',
+  },
+  {
+    id: 'monitor',
+    title: 'O Monitor Comunitário é um canal oficial?',
+    paragraphs: [
+      'É uma iniciativa independente para aproximar avisos públicos de quem mora no endereço. Nem todo morador é titular da conta ou consegue acompanhar os cadastros e portais das fornecedoras.',
+      'A versão apresentada acompanha desligamentos programados da Celesc e envia alertas por WhatsApp conforme o endereço cadastrado. Ela não substitui o aviso original, o atendimento da concessionária ou os canais de emergência.',
+    ],
+    link: '/#trabalho', label: 'Ver o Monitor Comunitário',
+  },
+  {
+    id: 'experimento-generativo',
+    title: 'O experimento visual envia meus dados para uma IA?',
+    paragraphs: [
+      'No modo local, a experiência compõe uma resposta visual a partir das suas escolhas no próprio navegador. Essa demonstração não executa um modelo de IA nem envia os dados a um serviço externo.',
+      'Uma integração opcional pode processar uma solicitação pela infraestrutura de borda. Quando estiver configurada, o envio depende de uma ação explícita de gerar: a interface deve informar o processamento externo antes do acionamento. A demonstração local continua disponível sem essa integração.',
+    ],
+    link: '/#possibilidades', label: 'Explorar possibilidades',
+  },
+  {
+    id: 'movimento',
+    title: 'Posso percorrer o site sem as animações?',
+    paragraphs: [
+      'Sim. O modo de leitura apresenta o conteúdo sem a coreografia de rolagem. A preferência por movimento reduzido do dispositivo também é respeitada.',
+      'As interações complementam a leitura. Você não precisa montar o quebra-cabeça, encontrar nomes ou arrastar um elemento para conhecer o trabalho do laboratório.',
+    ],
+    link: '/#hero', label: 'Voltar à experiência',
+  },
+];
+---
+
+<BaseLayout
+  title="Perguntas sobre software, IA e autonomia — Soberania Labs"
+  description="O que a Soberania Labs faz, como trabalha com agentes e autonomia digital e qual o estágio dos projetos apresentados. Respostas diretas, em português."
+  interactive={false}
+>
+  <div class="faq-page">
+    <header class="faq-mast">
+      <a class="faq-wordmark" href="/">SOBERANIA <b>LABS</b></a>
+      <a class="faq-return" href="/">← Voltar ao laboratório</a>
+    </header>
+    <main id="conteudo" class="faq-main">
+      <div class="faq-opening">
+        <p class="faq-kicker">Caderno aberto / perguntas frequentes</p>
+        <h1>Para entender<br /><em>o que construímos.</em></h1>
+        <p class="faq-intro">Algumas respostas sobre nossas ferramentas, nossas escolhas e o trabalho que ainda está em andamento.</p>
+      </div>
+      <div class="faq-layout">
+        <nav class="faq-index" aria-label="Perguntas desta página">
+          <p>Vá direto à pergunta</p>
+          <ol>
+            {questions.map(question => <li><a href={`#${question.id}`}>{question.title}</a></li>)}
+          </ol>
+          <a class="faq-manifesto" href="/#manifesto">Ler o manifesto ↗</a>
+        </nav>
+        <div class="faq-answers">
+          {questions.map((question, index) => (
+            <section id={question.id} aria-labelledby={`question-${question.id}`} class="faq-answer">
+              <span class="faq-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+              <div>
+                <h2 id={`question-${question.id}`}>{question.title}</h2>
+                {question.paragraphs.map(paragraph => <p>{paragraph}</p>)}
+                <a href={question.link} class="faq-more">{question.label} <span aria-hidden="true">↗</span></a>
+              </div>
+            </section>
+          ))}
+        </div>
+      </div>
+    </main>
+    <footer class="faq-footer">
+      <p>Soberania Labs · Florianópolis · Brasil</p>
+      <a href="/#trabalho">Conheça o que estamos construindo ↗</a>
+    </footer>
+  </div>
+</BaseLayout>
+
+<style>
+  .faq-page{min-height:100vh;background:var(--paper);color:var(--ink)}
+  .faq-mast,.faq-footer{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:24px var(--pad);border-bottom:1px solid var(--rule);font:12px/1.6 var(--mono)}
+  .faq-wordmark{letter-spacing:.08em}.faq-wordmark b{color:var(--rust)}
+  .faq-return{padding:8px 0}.faq-main{max-width:1600px;margin-inline:auto;padding:clamp(48px,8vw,120px) var(--pad) 90px}
+  .faq-opening{max-width:1000px;margin-bottom:clamp(52px,8vw,100px)}
+  .faq-kicker{font:11px/1.5 var(--mono);letter-spacing:.08em;color:var(--rust);margin-bottom:30px}
+  h1{font-size:clamp(48px,7.5vw,104px);font-weight:400;line-height:.99;letter-spacing:-.055em}
+  h1 em{font-weight:400}.faq-intro{font-size:clamp(18px,2vw,24px);line-height:1.5;max-width:650px;margin-top:32px;color:var(--muted)}
+  .faq-layout{display:grid;grid-template-columns:minmax(200px,.7fr) minmax(0,1.8fr);gap:clamp(36px,6vw,110px);align-items:start}
+  .faq-index{position:sticky;top:32px;padding-top:20px;border-top:1px solid var(--ink)}
+  .faq-index>p{font:11px/1.5 var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+  .faq-index ol{padding-left:20px;margin:22px 0 30px;font-size:14px;line-height:1.6}
+  .faq-index li{padding:0 0 14px 3px}.faq-index li::marker{color:var(--rust);font-family:var(--mono)}
+  .faq-index a{display:inline-block;padding:4px 0;text-underline-offset:4px}.faq-manifesto{font:12px/1.6 var(--mono);border-bottom:1px solid var(--rule)}
+  .faq-answer{display:grid;grid-template-columns:28px minmax(0,1fr);gap:20px;border-top:1px solid var(--rule);padding:30px 0 42px;scroll-margin-top:24px}
+  .faq-answer:first-child{border-top-color:var(--ink)}.faq-number{font:11px/1.5 var(--mono);color:var(--rust);padding-top:7px}
+  .faq-answer h2{font-size:clamp(27px,3vw,42px);line-height:1.12;letter-spacing:-.035em;margin:0 0 24px;max-width:760px;text-wrap:balance}
+  .faq-answer p{font-size:17px;line-height:1.75;max-width:720px;color:var(--muted)}
+  .faq-more{display:inline-flex;gap:14px;align-items:center;font:12px/1.6 var(--mono);border-bottom:1px solid var(--rule);padding:12px 0;margin-top:14px}
+  .faq-footer{border-top:1px solid var(--rule);border-bottom:0;min-height:100px}
+  @media(max-width:760px){.faq-layout{grid-template-columns:1fr;gap:36px}.faq-index{position:static}.faq-index ol{columns:2;column-gap:24px}.faq-index li{break-inside:avoid}.faq-opening{margin-bottom:45px}.faq-answer{gap:12px;grid-template-columns:22px minmax(0,1fr)}.faq-mast,.faq-footer{align-items:flex-start;flex-direction:column;gap:8px}.faq-answer p{font-size:16px}}
+  @media(max-width:420px){.faq-index ol{columns:1}}
+  @media print{.faq-index,.faq-return,.faq-more{display:none}.faq-layout{display:block}.faq-answer{break-inside:avoid}.faq-page{background:white;color:black}}
+</style>

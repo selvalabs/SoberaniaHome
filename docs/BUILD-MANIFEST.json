@@ -1,0 +1,98 @@
+{
+  ".nojekyll": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "README.md": {
+    "bytes": 3734,
+    "sha256": "d7ca9ae1797dde336d2d68a9b1502687684ff1a884c98acb46e5a0bf49bc69e0"
+  },
+  "app.js": {
+    "bytes": 9136,
+    "sha256": "ee9987b78e5bcd464fe93bd3a855a69c0827a4b609f7e8aee314a13156680a7a"
+  },
+  "assets/leaf-a.png": {
+    "bytes": 176536,
+    "sha256": "a0211d9619cc06713557d74c45da4e26474515efdf6cce96410a25571ca88954"
+  },
+  "assets/leaf-b.png": {
+    "bytes": 93062,
+    "sha256": "6a904b8f07716305ccfe88310a4dfc782798254f45ba173f6173c2a2254111b1"
+  },
+  "assets/leaf-c.png": {
+    "bytes": 180124,
+    "sha256": "5dbec611ea4465684f082b0ab84bc1b4e9d019d95aba29665abc3601e31f495a"
+  },
+  "assets/tree.png": {
+    "bytes": 715455,
+    "sha256": "da40751398e3a255cd697620a6bf28711fa179e7f6561e10a95d013cc791a763"
+  },
+  "config.js": {
+    "bytes": 142,
+    "sha256": "52d28f2ab6658d949287f000d1f717774918ac5f2e681171206c30530312710a"
+  },
+  "content.js": {
+    "bytes": 2848,
+    "sha256": "19b7e8fb6ee711be24bf4362054e049ba2688e5d400b0047e5232b7c83e83f54"
+  },
+  "docs/ARQUITETURA-MOTION.md": {
+    "bytes": 4743,
+    "sha256": "37491f5ec833c592290a86df128b749e8f0e1b66e5abd7991b9d8420353dfb22"
+  },
+  "docs/EDITORIAL.md": {
+    "bytes": 9916,
+    "sha256": "a85c5ac4f215296494d22ecc70ffb14c30a539248c9ebba649511ff5a96567a1"
+  },
+  "docs/RELATORIO-V8.2.md": {
+    "bytes": 5441,
+    "sha256": "848a6f5ce7c7e4aa294d7fd2dbdee463aef1a03eef3a0a1f8de849ee72eddd32"
+  },
+  "docs/SOURCE.json": {
+    "bytes": 249,
+    "sha256": "e0953162129b04496fd02f7093662aa792ec799a2602f09fb7700c8e0ae00355"
+  },
+  "docs/additional-results.json": {
+    "bytes": 2830,
+    "sha256": "a2277fde7e7876296b3c282bd8027df8e6bc89a17497b3a0c8c9916aea798242"
+  },
+  "docs/functional-results.json": {
+    "bytes": 3776,
+    "sha256": "e72454f7915a9087825fc04faffe5d3f964ff323cb2676d9ecbd138d1b397dc7"
+  },
+  "docs/layout-results.json": {
+    "bytes": 1387,
+    "sha256": "167d26c001ee3988a0fde8df51407684b66e138a73e782445eb91b05c7464072"
+  },
+  "editor.js": {
+    "bytes": 7570,
+    "sha256": "2d09c0640f3cde9855497be2306dd7b020fc1e90e372e756209ef2865967a169"
+  },
+  "index.html": {
+    "bytes": 40697,
+    "sha256": "42064ad1e96652f647d1278c631d723622e9534e3cc8bf2e1ebdb42c074be99e"
+  },
+  "motion.js": {
+    "bytes": 21335,
+    "sha256": "fba6ae4d0bde14eedb6a40ac91482784d548a72db04a6f851a44399ec85a32e7"
+  },
+  "styles.css": {
+    "bytes": 35428,
+    "sha256": "61961badc91a644cf49e70e046e1ea16e22e9f3d2a326d42459a49b48a5d4baf"
+  },
+  "tests/common.py": {
+    "bytes": 1097,
+    "sha256": "2985c1b71104bebda9c70ec45eee6208a985463e7ab10d3f6cd70c299c9104ae"
+  },
+  "tests/test_functional.py": {
+    "bytes": 9266,
+    "sha256": "b9fca5546150ea10160a061d6562281c06b7a1c126426f8557dde9661a4e3c98"
+  },
+  "tests/test_layout.py": {
+    "bytes": 3712,
+    "sha256": "27aa1e819dfdfb7fbd4273a7383e4351ccf0a0d27c00b452c39a8212514cc987"
+  },
+  "tests/test_navigation_touch.py": {
+    "bytes": 3894,
+    "sha256": "723f8edb151e44debb4debd9b18ecf04eaf53bf2ae9e0a6339f58e0fbd775423"
+  }
+}

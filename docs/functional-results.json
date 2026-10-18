@@ -1,0 +1,221 @@
+[
+  {
+    "test": "nav index 15 sections",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "index modal opens",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "back closes index",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "index jump matches destination",
+    "pass": true,
+    "detail": "#laboratorio"
+  },
+  {
+    "test": "trabalho opposite direction & all cards",
+    "pass": true,
+    "detail": [
+      -358,
+      -358,
+      -358,
+      -358
+    ]
+  },
+  {
+    "test": "laboratorio opposite direction & all cards",
+    "pass": true,
+    "detail": [
+      358,
+      358,
+      358,
+      358
+    ]
+  },
+  {
+    "test": "vertical scroll drives horizontal on mobile",
+    "pass": true,
+    "detail": {
+      "before": 1.0007952403393026,
+      "after": 1.201770977751091
+    }
+  },
+  {
+    "test": "strong scroll no delayed scene replay",
+    "pass": true,
+    "detail": {
+      "lag": 0,
+      "syncs": 1
+    }
+  },
+  {
+    "test": "editor explicitly activates",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "editor edits and formats real content",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "editor bounded drag handle",
+    "pass": true,
+    "detail": {
+      "old": 20,
+      "new": 58
+    }
+  },
+  {
+    "test": "editor rotation control",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "editor portable HTML export",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "editor exits live mode",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "article modal & URL",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "article pending label honest",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "modal focus stays inside",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "article back restores scroll",
+    "pass": true,
+    "detail": {
+      "before": 29359,
+      "after": 29359
+    }
+  },
+  {
+    "test": "article restores opener focus",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "reference map filters",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "Escape closes reference modal",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "manual reading mode removes motion",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "reading mode all project panels accessible",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "reading mode scene not artificially long",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "landscape low-height reading fallback",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "portrait motion restored",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "OS reduced-motion structural fallback",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "RAF stops in reduced mode",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "time-based 60/90/120/144 Hz integration",
+    "pass": true,
+    "detail": [
+      {
+        "hz": 60,
+        "v": 0.9820126951090499
+      },
+      {
+        "hz": 90,
+        "v": 0.9820231689062103
+      },
+      {
+        "hz": 120,
+        "v": 0.9820126951090498
+      },
+      {
+        "hz": 144,
+        "v": 0.9814625963268813
+      }
+    ]
+  },
+  {
+    "test": "End reaches leaf rest",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "Home reverses leaf to branch",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "no console errors",
+    "pass": true,
+    "detail": []
+  },
+  {
+    "test": "no external requests",
+    "pass": true,
+    "detail": 0
+  },
+  {
+    "test": "no-JS all sections present",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "no-JS navigation available",
+    "pass": true,
+    "detail": ""
+  },
+  {
+    "test": "no-JS no page width overflow",
+    "pass": true,
+    "detail": ""
+  }
+]
