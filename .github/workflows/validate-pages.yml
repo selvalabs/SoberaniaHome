@@ -42,6 +42,7 @@ jobs:
       - name: Navegação, animações, privacidade e rolagem interna
         run: |
           python -m http.server 4361 --bind 127.0.0.1 --directory .edition-builds/ci > /tmp/soberania-preview.log 2>&1 &
+          python tests/test_dialog_history.py --url http://127.0.0.1:4361/
           python tests/test_motion_edition.py --url http://127.0.0.1:4361/
           python tests/test_leaf_flow.py --url http://127.0.0.1:4361/
           python tests/test_horizontal_viewports.py --url http://127.0.0.1:4361/
