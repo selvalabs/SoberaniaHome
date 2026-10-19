@@ -231,7 +231,7 @@ export function initMotion() {
     if(y<80||directionTravel<-8||mast?.contains(document.activeElement))root.dataset.mastHidden='false';
     else if(directionTravel>36&&!document.querySelector('dialog[open]'))root.dataset.mastHidden='true';
     previousY=y;
-    renderBrandSignature(brandSignature, hero, mast, y, height, width);
+    renderBrandSignature(brandSignature, mast, y, height, width);
     for(const scene of scenes) {
       const animated=enabled&&!scene.static;
       scene.progress=animated||scene.flow&&leafEnabled?clamp((y-scene.start)/Math.max(1,scene.run)):1;
@@ -667,12 +667,9 @@ function initBrandSignature(hero: HTMLElement | null) {
   return host;
 }
 
-function renderBrandSignature(host: HTMLElement | null, hero: HTMLElement | null, mast: HTMLElement | null, y: number, height: number, width: number) {
-  if (!host || !hero) return;
-  const heroBottom = hero.getBoundingClientRect().bottom + y;
-  const active = y > heroBottom - Math.min(90, height * .12);
-  host.dataset.active = String(active);
-  if (!active) return;
+function renderBrandSignature(host: HTMLElement | null, mast: HTMLElement | null, y: number, height: number, width: number) {
+  if (!host) return;
+  host.dataset.active = 'true';
 
   const row = host.firstElementChild as HTMLElement | null;
   if (!row) return;
