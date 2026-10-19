@@ -14,6 +14,8 @@ with sync_playwright() as pw:
         for kind in ['time','handover','routes']:
             story=page.locator(f'[data-visual-story="{kind}"]')
             assert story.get_attribute('data-enhanced')=='true'
+            assert story.locator('svg image').count()>0
+            page.evaluate('''async el=>{const paths=[...new Set([...el.querySelectorAll('svg image')].map(i=>i.href.baseVal))];await Promise.all(paths.map(src=>new Promise((resolve,reject)=>{const image=new Image();image.onload=resolve;image.onerror=()=>reject(new Error(src));image.src=src;})));}''',story.element_handle())
             story.scroll_into_view_if_needed()
             if kind=='handover':
                 page.wait_for_function('(()=>{const image=document.querySelector(".story-bench-art");return image.complete&&image.naturalWidth>0})()')
@@ -34,6 +36,7 @@ with sync_playwright() as pw:
             page.mouse.move(width-5,height/2);page.mouse.wheel(0,100);page.wait_for_timeout(180)
             assert story.evaluate('e=>Number(e.style.getPropertyValue("--story-progress"))')!=.08
         assert page.locator('.project-explainer').count()==9
+        assert page.locator('.project-overview').count()==9
         page.locator('.national-references > summary').click()
         for text in ['Lua','RNP','SciELO','Álvaro Vieira Pinto','Paulo Freire','Gilberto Gil']:
             assert text in page.locator('.national-references').inner_text()
@@ -41,7 +44,8 @@ with sync_playwright() as pw:
         assert not page.locator('#caderno details[open]').count()
         assert page.locator('.hero-argument-detail').get_attribute('open') is None
         page.locator('.hero-argument-detail > summary').click()
-        assert 'vulnerável à exploração' in page.locator('.hero-argument-detail').inner_text()
+        assert 'vulnerável à exploração' in page.locator('.hero-context').inner_text()
+        assert page.locator('.hero-context').is_visible()
         page.locator('.hero-argument-detail > summary').click()
         assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
         page.emulate_media(reduced_motion='reduce');page.wait_for_timeout(180)

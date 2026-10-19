@@ -26,7 +26,7 @@ export function initVisualStories(){
         s.el.querySelectorAll<HTMLButtonElement>('[data-story-go]').forEach((button,i)=>button.setAttribute('aria-pressed',String(i===step)));
         const set=(selector:string,value:(i:number)=>string)=>s.el.querySelectorAll<SVGElement>(selector).forEach((el,i)=>el.setAttribute('transform',value(i)));
         if(s.kind==='time'){
-          set('[data-story-gear]',()=>`translate(470 235) rotate(${p*400})`);
+          set('[data-story-gear]',()=>`translate(470 235) rotate(${Math.sin(p*Math.PI*4)*2.5})`);
           set('[data-story-ticket]',i=>{
             const a=ease(p*2.6-i*.035),b=ease((p-.43)*2.3-i*.016);
             const startX=75+i%3*64,startY=90+Math.floor(i/3)*74;
@@ -38,8 +38,9 @@ export function initVisualStories(){
           const split=ease((p-.1)*1.7),deliver=ease((p-.55)*2.3);
           const mobile=innerWidth<760;
           s.el.querySelector('svg.story-drawing')?.setAttribute('viewBox',mobile?'215 0 530 470':'0 0 960 460');
+          s.el.querySelector<SVGElement>('[data-story-shell]')!.style.opacity=String(1-split);
           set('[data-story-shell]',()=>`translate(480 ${220-split*60}) scale(${1-split*.35})`);
-          set('[data-story-layer]',i=>`translate(${480+((mobile?365+i%2*230:165+i*210)-480)*split} ${220+((mobile?Math.floor(i/2)*140-110:Math.sin(i*1.5)*28))*split+deliver*20}) rotate(${(i-1.5)*split*5*(1-deliver)}) scale(${.2+split*.8})`);
+          set('[data-story-layer]',i=>`translate(${480+((mobile?365+i%2*230:165+i*210)-480)*split} ${220+((mobile?Math.floor(i/2)*170-130:Math.sin(i*1.5)*28))*split+deliver*20}) rotate(${(i-1.5)*split*5*(1-deliver)}) scale(${.2+split*.8})`);
           s.el.querySelectorAll<SVGElement>('[data-story-layer]').forEach(el=>el.style.opacity=String(.15+split*.85));
           const art=s.el.querySelector<HTMLElement>('.story-bench-art');if(art){art.style.opacity=String(deliver*.85);art.style.transform=`translateY(${(1-deliver)*45}px) scale(${.93+deliver*.07})`;}
         }else{

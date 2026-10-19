@@ -9,10 +9,10 @@ const content={
 }[kind];
 ---
 <figure class:list={['visual-story',`story-${kind}`]} data-visual-story={kind} data-story-step="2" aria-label={content.title}>
-  <header class="story-mast"><span>Oficina do comum / {kind==='time'?'01':kind==='handover'?'02':'03'}</span><span>Diagrama vivo · conceitual</span></header>
+  <header class="story-mast"><span>Oficina do comum / {kind==='time'?'01':kind==='handover'?'02':'03'}</span><span>Colagem em movimento</span></header>
   <div class="story-theatre">
     {kind==='handover' && <img class="story-bench-art" src="/assets/edition/cooperative-bench-43.webp" alt="Ilustração gerada: mãos sustentam juntas uma bancada com computador, caderno, chaves e uma planta enraizada." width="1536" height="1024" loading="lazy" decoding="async" />}
-    <svg viewBox="0 0 960 460" role="img" aria-label={content.title} class="story-drawing">
+    <svg viewBox="0 0 960 460" role="img" aria-label={`${content.title} Colagem conceitual com ilustrações geradas.`} class="story-drawing">
       <defs>
         <pattern id={`story-grid-${kind}`} width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".9" fill="currentColor" opacity=".16"/></pattern>
         <pattern id={`story-hatch-${kind}`} width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><path d="M0 0V7" stroke="currentColor" stroke-width="1" opacity=".25"/></pattern>
@@ -20,26 +20,34 @@ const content={
       <rect width="960" height="460" fill={`url(#story-grid-${kind})`}/>
       <path class="story-ground" d="M20 415Q150 387 290 415T560 412T940 415"/>
       {kind==='time' && <>
-        <path class="story-wire" d="M85 240H420M530 240C650 240 625 96 780 96M530 240H780M530 240C650 240 625 370 780 370"/>
-        <g class="story-output"><path d="M780 80q-27-20-27 5t27 30q27-17 27-30t-27-5"/><text x="818" y="105">CUIDAR</text><path d="m765 245 16-27 16 27-16 14Z"/><text x="818" y="247">CRIAR</text><path d="M780 388V352m0 19q-25-28-27-8 3 17 27 8m0-7q28-30 26-8-5 17-26 8"/><text x="818" y="378">VIVER</text></g>
-        {Array.from({length:12},(_,i)=><g data-story-ticket={i} transform={`translate(${75+i%3*64} ${90+Math.floor(i/3)*74})`}><rect class="story-paper" width="49" height="59" rx="2"/><path class="story-fine" d="M10 16h29M10 25h20M10 34h25"/></g>)}
-        <g class="story-press"><path class="story-panel" d="M380 115H560V340H380Z"/><path class="story-fine" d="M400 142H540M400 310H540"/><text class="story-label" x="470" y="170" text-anchor="middle">FERRAMENTA</text><g data-story-gear transform="translate(470 235)"><circle r="43" class="story-gear"/>{Array.from({length:12},(_,i)=><path d="M0-40V-54" transform={`rotate(${i*30})`} class="story-tooth"/>)}<circle r="16" class="story-paper"/><path class="story-fine" d="M-12 0h24M0-12v24"/></g></g>
+        <path class="story-wire" d="M85 240H420M530 240C650 240 625 140 790 140M530 240C650 240 625 340 790 340"/>
+        {Array.from({length:12},(_,i)=><g data-story-ticket={i} transform={`translate(${75+i%3*64} ${90+Math.floor(i/3)*74})`}><image href="/assets/edition/knowledge-notebook-v1.webp" x="-4" y="-5" width="64" height="70"/></g>)}
+        <g data-story-gear transform="translate(470 235)"><image href="/assets/edition/story-workshop-43-v2.webp" x="-175" y="-175" width="350" height="350"/></g>
+        <g data-story-reveal class="story-commons"><image href="/assets/edition/story-commons-43-v2.webp" x="650" y="85" width="300" height="300"/></g>
         <text x="85" y="65" class="story-label">O TRABALHO SE REPETE</text>
-        <g data-story-reveal><path class="story-root" d="M470 340V384m0-12-40 30m40-18 40 22m-40-25-18 29"/><text x="470" y="444" text-anchor="middle" class="story-label">O DESTINO DO GANHO É UMA ESCOLHA COLETIVA.</text></g>
+        <text x="470" y="435" class="story-label" text-anchor="middle">A FERRAMENTA</text>
+        <text x="800" y="420" class="story-label" text-anchor="middle">CUIDAR · CRIAR · VIVER</text>
       </>}
       {kind==='handover' && <>
         <path class="story-wire" d="M140 185Q480 40 820 185M140 185Q480 395 820 185"/>
-        <g data-story-shell transform="translate(480 220)"><rect class="story-panel" x="-160" y="-100" width="320" height="180" rx="10"/><path class="story-fine" d="M-142-73H142M-142 55H142"/><path class="story-root" d="M0 45V-35m0 20q-48-56-48-21t48 21m0-18q52-56 52-19t-52 19"/><path class="story-panel" d="M-180 80H180L155 100H-155Z"/></g>
-        {['CÓDIGO','DADOS','CHAVES','MEMÓRIA'].map((label,i)=><g data-story-layer={i} transform={`translate(${165+i*210} 200)`}><rect class="story-paper" x="-76" y="-57" width="152" height="112" rx="3"/><text class="story-label" y="37" text-anchor="middle">{label}</text>{i===0?<path class="story-root" d="m-18-28-18 16 18 16m36-32 18 16-18 16M6-35-6 12"/>:i===1?<><ellipse class="story-root" cy="-28" rx="30" ry="9"/><path class="story-root" d="M-30-28V4q30 18 60 0V-28M-30-13q30 18 60 0"/></>:i===2?<><circle class="story-root" cx="-18" cy="-17" r="14"/><path class="story-root" d="M-4-17H35v14m-12-14v10"/></>:<><path class="story-root" d="M-26-35H20L30-25V10H-26ZM20-35V-25H30"/><path class="story-fine" d="M-14-15H17M-14-5H9"/></>}</g>)}
-        <g data-story-reveal class="story-receivers"><path class="story-root" d="M90 350q110-55 190-6l80 16q20 15-10 24l-140-8M870 350q-110-55-190-6l-80 16q-20 15 10 24l140-8"/><text x="480" y="368" text-anchor="middle">QUEM USA TAMBÉM PODE CUIDAR.</text></g>
+        <g data-story-shell transform="translate(480 220)"><image href="/assets/edition/story-computer-43-v2.webp" x="-170" y="-150" width="340" height="280"/></g>
+        {[
+          ['CÓDIGO','story-computer-43-v2.webp'],
+          ['DADOS','story-archive-43-v2.webp'],
+          ['CHAVES','story-keys-43-v2.webp'],
+          ['MEMÓRIA','knowledge-notebook-v1.webp']
+        ].map(([label,asset],i)=><g data-story-layer={i} transform={`translate(${165+i*210} 200)`}><image href={`/assets/edition/${asset}`} x="-90" y="-95" width="180" height="145"/><text class="story-label story-object-label" y="69" text-anchor="middle">{label}</text></g>)}
       </>}
       {kind==='routes' && <>
-        <g class="story-houses"><path class="story-panel" d="M80 340V125L200 65l120 60v215ZM640 340V125l120-60 120 60v215Z"/><path class="story-fine" d="M100 150H300M100 180H300M660 150H860M660 180H860"/><text class="story-label" x="200" y="380" text-anchor="middle">DE ONDE VIEMOS</text><text class="story-label" x="760" y="380" text-anchor="middle">OUTRA CASA</text></g>
+        <g class="story-houses">
+          <image href="/assets/edition/story-house-43-v2.webp" x="35" y="50" width="320" height="320"/>
+          <image href="/assets/edition/story-house-43-v2.webp" x="605" y="50" width="320" height="320"/>
+          <text class="story-label" x="200" y="420" text-anchor="middle">DE ONDE VIEMOS</text><text class="story-label" x="760" y="420" text-anchor="middle">OUTRA CASA</text>
+        </g>
         <path class="story-wire" d="M200 235C340 40 620 420 760 235"/>
-        <g class="story-checkpoint"><circle class="story-paper" cx="480" cy="233" r="55"/><path class="story-root" d="m455 233 17 17 34-39"/><text x="480" y="322" text-anchor="middle" class="story-label">CONFERIR A MEMÓRIA</text></g>
-        <g data-story-capsule transform="translate(760 235)"><rect class="story-panel" x="-56" y="-45" width="112" height="90" rx="7"/><path class="story-root" d="M-34-22H34M-34-9H18M-34 4H27"/><circle cx="31" cy="25" r="5" fill="var(--story-accent)"/><text y="64" text-anchor="middle" class="story-label">SISTEMA</text></g>
-        {Array.from({length:6},(_,i)=><circle data-story-packet={i} cx={660+i*16} cy="300" r="5" class="story-packet"/>)}
-        <path class="story-root" d="M760 340v28m0-13-26 23m26-10 25 13M200 340v24m0-10-25 20m25-14 24 16"/>
+        <g class="story-checkpoint"><image href="/assets/edition/knowledge-notebook-v1.webp" x="425" y="270" width="110" height="110"/><text x="480" y="420" text-anchor="middle" class="story-label">CONFERIR A MEMÓRIA</text></g>
+        <g data-story-capsule transform="translate(760 235)"><image href="/assets/edition/story-archive-43-v2.webp" x="-75" y="-85" width="150" height="150"/><text y="90" text-anchor="middle" class="story-label story-object-label">SISTEMA + DADOS</text></g>
+        {Array.from({length:6},(_,i)=><circle data-story-packet={i} cx={660+i*16} cy="300" r="4" class="story-packet"/>)}
       </>}
     </svg>
   </div>

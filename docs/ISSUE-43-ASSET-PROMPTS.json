@@ -1,0 +1,43 @@
+{
+  "tool": "Built-in image generation",
+  "transparent_background": true,
+  "processing": "PNG originals preserved; resized to maximum 1024px and encoded as WebP, quality 83, alpha preserved.",
+  "assets": [
+    {
+      "name": "workshop",
+      "prompt": "Use case: illustration-story. One original isolated editorial cutout asset for an animated Brazilian social technology laboratory website. Genuine transparent alpha background. Rich tactile Brazilian printmaking, woodcut hatching mixed with botanical engraving and realistic paper collage; colored materials, not thin outline icons. Muted forest green, warm ochre, terracotta, aged wood, cream accents. Dignified contemporary Brazilian setting without stereotype. Clear complete silhouette, generous transparent margin, no lettering, logos, captions or rectangular background. High definition square composition. Subject: A beautifully detailed small cooperative workbench: a vintage letterpress mechanism combined naturally with a modern modest computer terminal and copper wiring, papers entering the press, a visible brass flywheel on the front. A tangible hand-built tool, warm wooden base, slightly frontal three-quarter view. One compact connected machine; no people. This symbolizes a tool organizing repetitive tasks.",
+      "path": "public/assets/edition/story-workshop-43-v2.webp",
+      "originalFile": "exec-51c82438-83f5-476a-9762-86db698ea05e.png"
+    },
+    {
+      "name": "commons",
+      "prompt": "Use case: illustration-story. One original isolated editorial cutout asset for an animated Brazilian social technology laboratory website. Genuine transparent alpha background. Rich tactile Brazilian printmaking, woodcut hatching mixed with botanical engraving and realistic paper collage; colored materials, not thin outline icons. Muted forest green, warm ochre, terracotta, aged wood, cream accents. Dignified contemporary Brazilian setting without stereotype. Clear complete silhouette, generous transparent margin, no lettering, logos, captions or rectangular background. High definition square composition. Subject: One cohesive miniature community garden/workshop scene: three adult Brazilian neighbors of different skin tones share a wooden table under a native leafy tree, one supports a young seedling, one works a pottery bowl, one listens and shares a notebook. Hands anatomically plausible, expressive calm faces, everyday clothing, collective care and creativity. All connected in one compact island vignette, no enclosing backdrop.",
+      "path": "public/assets/edition/story-commons-43-v2.webp",
+      "originalFile": "exec-f3503b64-b70c-45ad-9fa9-fc6895c8e01e.png"
+    },
+    {
+      "name": "computer",
+      "prompt": "Use case: illustration-story. One original isolated editorial cutout asset for an animated Brazilian social technology laboratory website. Genuine transparent alpha background. Rich tactile Brazilian printmaking, woodcut hatching mixed with botanical engraving and realistic paper collage; colored materials, not thin outline icons. Muted forest green, warm ochre, terracotta, aged wood, cream accents. Dignified contemporary Brazilian setting without stereotype. Clear complete silhouette, generous transparent margin, no lettering, logos, captions or rectangular background. High definition square composition. Subject: A single open rugged modest laptop on a slim wooden slab, oblique frontal view, detailed keys and tactile worn metal case, its screen dark green with fine abstract code-like colored strokes and a small botanical branching form, no readable text. A small exposed circuit board rests next to it connected by a cable. This is a tangible tool owned and repairable by its users.",
+      "path": "public/assets/edition/story-computer-43-v2.webp",
+      "originalFile": "exec-5d97fb1c-89fa-4287-8ea1-2465123d46ee.png"
+    },
+    {
+      "name": "archive",
+      "prompt": "Use case: illustration-story. One original isolated editorial cutout asset for an animated Brazilian social technology laboratory website. Genuine transparent alpha background. Rich tactile Brazilian printmaking, woodcut hatching mixed with botanical engraving and realistic paper collage; colored materials, not thin outline icons. Muted forest green, warm ochre, terracotta, aged wood, cream accents. Dignified contemporary Brazilian setting without stereotype. Clear complete silhouette, generous transparent margin, no lettering, logos, captions or rectangular background. High definition square composition. Subject: One small portable wooden archival crate filled with neatly layered paper folders, a rolled botanical drawing, a compact solid-state storage drive and a cloth-bound ledger. A tiny native seedling emerges at the back. Strong frontal three-quarter silhouette with handles, warm textures and detailed engraving. This symbolizes carrying digital data and the memory of collective work.",
+      "path": "public/assets/edition/story-archive-43-v2.webp",
+      "originalFile": "exec-54c9a5cc-66ab-4915-a5ab-4a490e4e7495.png"
+    },
+    {
+      "name": "keys",
+      "prompt": "Use case: illustration-story. One original isolated editorial cutout asset for an animated Brazilian social technology laboratory website. Genuine transparent alpha background. Rich tactile Brazilian printmaking, woodcut hatching mixed with botanical engraving and realistic paper collage; colored materials, not thin outline icons. Muted forest green, warm ochre, terracotta, aged wood, cream accents. Dignified contemporary Brazilian setting without stereotype. Clear complete silhouette, generous transparent margin, no lettering, logos, captions or rectangular background. High definition square composition. Subject: One adult brown-skinned working hand extended gently palm up, holding three detailed old brass keys on a ring together with a small contemporary metal USB security key. Wrist and fingers fully inside frame, natural anatomy, soft cloth sleeve, warm brass. Horizontal hand composition inside square transparent canvas. This symbolizes transferring access and control to the people who use a system.",
+      "path": "public/assets/edition/story-keys-43-v2.webp",
+      "originalFile": "exec-104f13ec-0e64-4660-b00e-a721c8630180.png"
+    },
+    {
+      "name": "house",
+      "prompt": "Use case: illustration-story. One original isolated editorial cutout asset for an animated Brazilian social technology laboratory website. Genuine transparent alpha background. Rich tactile Brazilian printmaking, woodcut hatching mixed with botanical engraving and realistic paper collage; colored materials, not thin outline icons. Muted forest green, warm ochre, terracotta, aged wood, cream accents. Dignified contemporary Brazilian setting without stereotype. Clear complete silhouette, generous transparent margin, no lettering, logos, captions or rectangular background. High definition square composition. Subject: One small contemporary Brazilian community technology workshop building, frontal three-quarter view, clay tiled roof, shaded veranda, wooden double doors open to reveal a modest server cabinet and workbench inside, native plants by the entrance, small rooftop solar panel. A real community-owned place, humble but well cared for, detailed wood, brick and foliage. Compact building silhouette on a tiny earthen base with visible fine roots, no surrounding landscape or people.",
+      "path": "public/assets/edition/story-house-43-v2.webp",
+      "originalFile": "exec-b8000f81-60d8-4cd5-a31b-1843f8a24c87.png"
+    }
+  ]
+}
