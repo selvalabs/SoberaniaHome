@@ -1,4 +1,5 @@
 ---
+import ThemeToggle from './ThemeToggle.astro';
 ---
 
 <header class="mast" id="mast">
@@ -12,6 +13,7 @@
     <a href="#contato" data-jump>Conversar ↗</a>
   </nav>
   <div class="mast-index">
+    <ThemeToggle />
     <button type="button" class="edition-reading-button" data-edition-reading aria-pressed="false">Modo leitura</button>
     <span id="section-counter" aria-label="Seção atual">01 / 16</span>
     <button type="button" id="open-index" aria-haspopup="dialog">Índice <span aria-hidden="true">+</span></button>

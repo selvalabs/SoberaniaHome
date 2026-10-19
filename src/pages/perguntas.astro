@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
 
 const questions = [
   {
@@ -94,7 +95,7 @@ const questions = [
   <div class="faq-page">
     <header class="faq-mast">
       <a class="faq-wordmark" href="/">SOBERANIA <b>LABS</b></a>
-      <a class="faq-return" href="/">← Voltar ao laboratório</a>
+      <div class="faq-tools"><ThemeToggle /><a class="faq-return" href="/">← Voltar ao laboratório</a></div>
     </header>
     <main id="conteudo" class="faq-main">
       <div class="faq-opening">
@@ -135,6 +136,7 @@ const questions = [
   .faq-page{min-height:100vh;background:var(--paper);color:var(--ink)}
   .faq-mast,.faq-footer{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:24px var(--pad);border-bottom:1px solid var(--rule);font:12px/1.6 var(--mono)}
   .faq-wordmark{letter-spacing:.08em}.faq-wordmark b{color:var(--rust)}
+  .faq-tools{display:flex;align-items:center;gap:18px}
   .faq-return{padding:8px 0}.faq-main{max-width:1600px;margin-inline:auto;padding:clamp(48px,8vw,120px) var(--pad) 90px}
   .faq-opening{max-width:1000px;margin-bottom:clamp(52px,8vw,100px)}
   .faq-kicker{font:11px/1.5 var(--mono);letter-spacing:.08em;color:var(--rust);margin-bottom:30px}

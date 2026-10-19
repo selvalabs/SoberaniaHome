@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140">
+  <!-- Original decorative rendition for the Soberania Labs paper collage. -->
+  <defs>
+    <clipPath id="disc"><circle cx="100" cy="70" r="35"/></clipPath>
+    <path id="star" d="M0-2.4.56-.77 2.28-.74.9.29 1.41 1.94 0 .95-1.41 1.94-.9.29-2.28-.74-.56-.77Z" fill="#fff"/>
+  </defs>
+  <path fill="#16854a" d="M0 0H200V140H0Z"/>
+  <path fill="#f5ce38" d="M100 15 184 70 100 125 16 70Z"/>
+  <circle cx="100" cy="70" r="35" fill="#20488b"/>
+  <path d="M62 57Q101 48 138 80" fill="none" stroke="#fff" stroke-width="6" clip-path="url(#disc)"/>
+  <g>
+    <use href="#star" x="107" y="48"/>
+    <use href="#star" x="74" y="66"/><use href="#star" x="80" y="78"/>
+    <use href="#star" x="72" y="76"/><use href="#star" x="83" y="70"/>
+    <use href="#star" x="91" y="78"/><use href="#star" x="86" y="86"/>
+    <use href="#star" x="96" y="70"/><use href="#star" x="101" y="80"/>
+    <use href="#star" x="106" y="73"/><use href="#star" x="110" y="83"/>
+    <use href="#star" x="118" y="78"/><use href="#star" x="128" y="82"/>
+    <use href="#star" x="122" y="88"/><use href="#star" x="115" y="94"/>
+    <use href="#star" x="105" y="97"/><use href="#star" x="97" y="92"/>
+    <use href="#star" x="88" y="95"/><use href="#star" x="81" y="90"/>
+    <use href="#star" transform="translate(94 84) scale(.6)"/>
+    <use href="#star" transform="translate(102 87) scale(.6)"/>
+    <use href="#star" transform="translate(111 89) scale(.6)"/>
+    <use href="#star" transform="translate(118 83) scale(.6)"/>
+    <use href="#star" transform="translate(99 99) scale(.6)"/>
+    <use href="#star" transform="translate(77 84) scale(.6)"/>
+    <use href="#star" transform="translate(89 73) scale(.6)"/>
+    <use href="#star" transform="translate(114 76) scale(.6)"/>
+  </g>
+</svg>

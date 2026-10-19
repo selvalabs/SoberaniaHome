@@ -7,6 +7,17 @@
  */
 export type LeafState = { x:number; vx:number; fallSpeed:number; bank:number; angularSpeed:number; twist:number; wind:number };
 
+// The scroll clock advances more slowly than the original 2.4 units/viewport.
+// Gust frequency is independent of that speed: more turns, longer glides.
+export const LEAF_SCROLL_PACE = 1.65;
+export function lifeOrbit(progress:number, width:number, height:number) {
+  const p=Math.max(0,Math.min(1,progress));
+  const phase=p*Math.PI*2*1.25;
+  const angle=-Math.PI/2+phase;
+  const radius=Math.min(width,height)*.29;
+  return {phase,angle,x:width/2+Math.cos(angle)*radius,y:height/2+Math.sin(angle)*radius*.84,radius};
+}
+
 /** A separate gust response preserves the accepted flutter orbit. The impulse
  * is filtered through damped inertial stages: displacement rises then relaxes;
  * angular momentum makes one turn and settles without winding back. This is

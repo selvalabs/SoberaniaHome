@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import '../styles/edition.css';
+import '../styles/theme.css';
 import { canonicalUrl, pageStructuredData, publication, publicUrl, serializeStructuredData, siteIdentity } from '../lib/seo';
 
 interface Props {
@@ -28,7 +29,8 @@ const structuredData = pageStructuredData(Astro.url.pathname, title, description
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#eee9df" />
-  <meta name="color-scheme" content="light" />
+  <meta name="color-scheme" content="light dark" />
+  <script is:inline src="/scripts/theme.js?v=41-1"></script>
   <meta name="description" content={description} />
   <meta name="robots" content={indexable ? 'index,follow,max-image-preview:large' : 'noindex,follow'} />
   {canonical && <link rel="canonical" href={canonical} />}
@@ -54,6 +56,7 @@ const structuredData = pageStructuredData(Astro.url.pathname, title, description
   <slot name="head" />
 </head>
 <body data-interactive={String(interactive)}>
+  <noscript><style>.theme-toggle,.theme-preference{display:none!important}</style></noscript>
   <a class="skip-link" href="#conteudo">Ir ao conteúdo</a>
   <slot />
 

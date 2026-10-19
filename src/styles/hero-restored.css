@@ -8,6 +8,10 @@
 #hero.hero-restored .hero-overline{margin:0 0 22px;padding:0;min-height:0;display:block}
 #hero.hero-restored .hero-identity{display:flex;align-items:baseline;justify-content:space-between;gap:14px;font:11px/1.4 var(--mono)}
 #hero.hero-restored .eyebrow-tech{font:500 11px/1.4 var(--mono);color:var(--ink)}
+#hero.hero-restored .hero-title-block .eyebrow-tech{position:relative;isolation:isolate;font-size:13px}
+#hero.hero-restored .eyebrow-tech::before{content:"";position:absolute;z-index:-1;pointer-events:none;right:12%;top:50%;width:6em;aspect-ratio:10/7;background:url('/assets/edition/brasil-colagem.svg') center/contain no-repeat;transform:translateY(-55%) rotate(-9deg);opacity:.8}
+#hero.hero-restored .eyebrow-tech-label{position:relative;display:inline-block;padding:.15em .35em;background:var(--paper);box-shadow:0 1px 0 var(--rule);color:var(--ink)}
+html.motion-edition #hero [data-scroll-glow="true"] .leaf-ink{background-image:linear-gradient(100deg,var(--signature-color-0),var(--signature-color-1) 35%,var(--signature-color-2) 70%,var(--signature-color-0));background-size:200% 100%;background-position:var(--signature-sweep) 0;background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 3px var(--signature-halo),0 0 9px var(--signature-halo)}
 #hero.hero-restored h1{display:block;margin:0 0 28px;font-size:clamp(66px,10.5vw,160px);line-height:.94;letter-spacing:-.055em;max-width:none;text-wrap:initial}
 #hero.hero-restored .hero-title-tech{display:inline-block;padding:.16em .3em .18em;background:var(--ink);color:var(--paper);font:400 .58em/.98 var(--mono);letter-spacing:-.06em;transform:rotate(-2deg);clip-path:polygon(0 3%,99% 0,100% 96%,1% 100%);vertical-align:middle}
 #hero.hero-restored .hero-title-service{display:inline-block;font:italic .85em/1 var(--serif);letter-spacing:-.04em;transform:rotate(.8deg);vertical-align:middle}
@@ -47,7 +51,7 @@
  #hero.hero-restored .leaf-origin,#hero.hero-restored .rest-leaf{left:80%;top:17%}
  #hero.hero-restored .hero-overline{margin-bottom:16px}
  #hero.hero-restored .hero-identity{font-size:9px;gap:10px}
- #hero.hero-restored .eyebrow-tech{font-size:9px;white-space:nowrap}
+ #hero.hero-restored .hero-title-block .eyebrow-tech{font-size:11px;white-space:nowrap}
  #hero.hero-restored h1{display:flex;flex-direction:column;align-items:flex-start;font-size:clamp(39px,12.56vw,60px);line-height:.98;margin-bottom:22px}
  #hero.hero-restored h1>br{display:none}
  #hero.hero-restored .hero-title-tech{font-size:1.08em;line-height:1;padding:.12em .22em .14em;transform:translateY(3px) rotate(-4deg)}
