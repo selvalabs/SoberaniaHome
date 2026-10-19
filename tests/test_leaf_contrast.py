@@ -4,7 +4,7 @@ from playwright.sync_api import sync_playwright
 
 parser=argparse.ArgumentParser();parser.add_argument('--url',default='http://127.0.0.1:4196/')
 args=parser.parse_args()
-selectors=['.hero-ink-note','.choices-paper','.choices-ink','.choices-closing strong',
+selectors=['.eyebrow-lab','.eyebrow-tech-label','.hero-ink-note','.choices-paper','.choices-ink','.choices-closing strong',
            '.knowledge-copy-technical','.knowledge-cover-closing','.knowledge-note',
            '.technology-note','.technology-closing strong']
 measure=r'''selector=>{
@@ -30,6 +30,8 @@ with sync_playwright() as pw:
         context=browser.new_context(viewport={'width':width,'height':height},color_scheme='dark')
         page=context.new_page();page.goto(args.url,wait_until='networkidle')
         page.wait_for_function('window.__SL_DEBUG?.ready')
+        for selector in ['.eyebrow-lab','.eyebrow-tech-label']:
+            assert page.locator(selector+' .leaf-ink').count()==1,('eyebrow missing glow ink',selector)
         for theme in ['dark','light','dark']:
             page.evaluate('(theme)=>{if(document.documentElement.dataset.theme!==theme)document.querySelector("[data-theme-toggle]").click()}',theme)
             page.evaluate('SLMotion.setReading(false)')

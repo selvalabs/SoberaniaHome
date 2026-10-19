@@ -53,7 +53,7 @@ export function initMotion() {
   let pendingSceneJump: {scene: Scene; index: number} | null = null;
   let navigationRevision=0;
   // Cache editorial targets once. Product interfaces and controls keep their own colors.
-  const glowTargets = all<HTMLElement>('h1,h2,h3,p,figcaption,.technology-note,.knowledge-note', document.querySelector('main') || document)
+  const glowTargets = all<HTMLElement>('h1,h2,h3,p,figcaption,.technology-note,.knowledge-note,.eyebrow-lab,.eyebrow-tech-label', document.querySelector('main') || document)
     .filter(el => !el.closest('button,a,.work-evidence,.cooperative-screen,.process-panels,.orbit-view,#referencias,dialog'))
     .flatMap(el => {
       const marks=all<HTMLElement>('strong,em,.hero-future,.choices-pencil,.choices-paper,.choices-ink',el);

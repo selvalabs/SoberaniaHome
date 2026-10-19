@@ -8,6 +8,9 @@
 #hero.hero-restored .hero-overline{margin:0 0 22px;padding:0;min-height:0;display:block}
 #hero.hero-restored .hero-identity{display:flex;align-items:baseline;justify-content:space-between;gap:14px;font:11px/1.4 var(--mono)}
 #hero.hero-restored .eyebrow-tech{font:500 11px/1.4 var(--mono);color:var(--ink)}
+#hero.hero-restored .hero-title-block .eyebrow-tech{position:relative;isolation:isolate}
+#hero.hero-restored .eyebrow-tech::before{content:"";position:absolute;z-index:-1;pointer-events:none;right:12%;top:50%;width:6em;aspect-ratio:10/7;background:url('/assets/edition/brasil-colagem.svg') center/contain no-repeat;transform:translateY(-55%) rotate(-9deg);opacity:.8}
+#hero.hero-restored .eyebrow-tech-label{position:relative;display:inline-block;padding:.15em .35em;background:var(--paper);box-shadow:0 1px 0 var(--rule);color:var(--ink)}
 #hero.hero-restored h1{display:block;margin:0 0 28px;font-size:clamp(66px,10.5vw,160px);line-height:.94;letter-spacing:-.055em;max-width:none;text-wrap:initial}
 #hero.hero-restored .hero-title-tech{display:inline-block;padding:.16em .3em .18em;background:var(--ink);color:var(--paper);font:400 .58em/.98 var(--mono);letter-spacing:-.06em;transform:rotate(-2deg);clip-path:polygon(0 3%,99% 0,100% 96%,1% 100%);vertical-align:middle}
 #hero.hero-restored .hero-title-service{display:inline-block;font:italic .85em/1 var(--serif);letter-spacing:-.04em;transform:rotate(.8deg);vertical-align:middle}

@@ -64,7 +64,7 @@ sequencial, com sucesso; nenhuma asserção foi relaxada para isso.
 
 Preview local de homologação: http://192.168.1.4:4196/
 
-Build canônica: `.edition-builds/leaf-theme-41-07`. O servidor da porta 4196 usa
+Build canônica: `.edition-builds/leaf-theme-41-08`. O servidor da porta 4196 usa
 `.edition-builds/leaf-theme-41-01`, atualizada com os mesmos arquivos finais;
 arquivos antigos sem referência são mantidos. Main permanece na porta 4190 e
 a correção independente #39 na 4193.
@@ -106,3 +106,19 @@ Validação adicional: 38 testes Node, tipos, build e verificação estática;
 `test_leaf_return.py` usa mouse real para soltura sem salto, retorno lento,
 torção, novo arrasto, scroll durante retorno, pausa, movimento reduzido e repouso
 sem RAF permanente. Suíte incluída no CI. Base desta iteração: `462967e`.
+
+
+## Assinatura da abertura e bandeira
+
+Restaurado o glow em “Laboratório independente” e “Sistemas brasileiros”: os
+textos do eyebrow não estavam incluídos na seleção dos alvos de iluminação.
+Uma ilustração SVG decorativa da bandeira brasileira aparece atrás da assinatura,
+com faixa de papel na cor do tema sob as letras. A camada não recebe eventos
+nem acrescenta texto à árvore de acessibilidade. É um desenho de colagem,
+não uma reprodução normativa da bandeira.
+
+Validação: tipos, 38 testes Node, build, verificação estática e auditorias de
+dependências; contraste e presença dos spans de glow nos dois temas, mobile e
+desktop. Passagem real da folha arrastada sobre os dois textos confirmou a
+ativação do glow. Capturas inspecionadas em 390×844 (claro/escuro) e 1440×900
+(claro); sem overflow horizontal. Base desta iteração: `e41036b`.
