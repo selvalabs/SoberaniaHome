@@ -64,7 +64,7 @@ sequencial, com sucesso; nenhuma asserção foi relaxada para isso.
 
 Preview local de homologação: http://192.168.1.4:4196/
 
-Build canônica: `.edition-builds/leaf-theme-41-06`. O servidor da porta 4196 usa
+Build canônica: `.edition-builds/leaf-theme-41-07`. O servidor da porta 4196 usa
 `.edition-builds/leaf-theme-41-01`, atualizada com os mesmos arquivos finais;
 arquivos antigos sem referência são mantidos. Main permanece na porta 4190 e
 a correção independente #39 na 4193.
@@ -90,3 +90,19 @@ dos gradientes (mínimo 4,5:1), além de testes no DOM real dos dois temas,
 celular/desktop, com passagem da folha, troca de tema e modo de leitura.
 A auditoria anterior não incluía todos os spans gerados pelo glow; a nova suíte
 `test_leaf_contrast.py` inclui esses textos e os destaques identificados.
+
+
+## Retorno da folha após arrasto
+
+A soltura agora inicia um retorno de 5,6 segundos ao destino atualizado pelo
+scroll, com transição suave de posição, orientação, escala e pivô. O balanço
+lateral e a torção vêm do mesmo oscilador da queda. O ponto onde o mouse pega
+na folha é preservado; pegar novamente durante o retorno parte da pose visível.
+Cancelamento/perda de captura também soltam a folha; leitura/movimento reduzido
+cancelam a interação. Pausa e aba oculta suspendem os frames, e o loop termina
+ao reencontrar a trajetória determinística.
+
+Validação adicional: 38 testes Node, tipos, build e verificação estática;
+`test_leaf_return.py` usa mouse real para soltura sem salto, retorno lento,
+torção, novo arrasto, scroll durante retorno, pausa, movimento reduzido e repouso
+sem RAF permanente. Suíte incluída no CI. Base desta iteração: `462967e`.

@@ -1,5 +1,6 @@
 import '../styles/motion-edition.css';
 import { createLeafFlight, leafGust, lifeOrbit, LEAF_SCROLL_PACE } from './leaf-physics';
+import { createLeafReturn, LEAF_RETURN_SECONDS, type LeafPose } from './leaf-return';
 import { glowColor, textSurface } from './leaf-contrast';
 
 /** One source of movement: the document's native scroll position.
@@ -41,7 +42,9 @@ export function initMotion() {
   let layoutHeight = smallViewportHeight();
   let pausedAnchor: {id:string;offset:number}|null=null, modeChangedWhilePaused=false;
   let mastHeight = 72, height = innerHeight, width = innerWidth, maxScroll = 1;
-  let previousY = scrollY, directionTravel = 0, activeId = 'hero', leafDrag: {x:number;y:number} | null = null;
+  let previousY = scrollY, directionTravel = 0, activeId = 'hero', leafDrag: {pointer:number;offsetX:number;offsetY:number;pose:LeafPose} | null = null;
+  let leafPose:LeafPose|null=null, naturalLeafPose:LeafPose|null=null;
+  let leafReturn:{sample:ReturnType<typeof createLeafReturn>;elapsed:number;last:number}|null=null;
   let sections: {element: HTMLElement; top: number; bottom: number}[] = [];
   let origin = {x: innerWidth * .31, y: 240}, dock = {x: innerWidth * .65, y: 0};
   const leafFlight = createLeafFlight();
@@ -146,7 +149,7 @@ export function initMotion() {
       scene.panels.forEach(panel=>{panel.inert=false;panel.removeAttribute('aria-hidden');panel.style.removeProperty('opacity');panel.hidden=false;});
     }
     if(flight) flight.hidden=!leafEnabled;
-    if(!leafEnabled) clearLeafGlow();
+    if(!leafEnabled){clearLeafGlow();cancelLeafInteraction();}
     syncControls(); measure();
     if(anchor&&!paused) scrollTo({top:scrollY+anchor.getBoundingClientRect().top-oldOffset,behavior:'instant'});
     request();
@@ -256,6 +259,7 @@ export function initMotion() {
     if(leafEnabled)renderLeaf(y);
     debug.scenes=scenes.map(s=>({id:s.id,start:s.start,end:s.start+s.run,raw:s.progress*(s.panels.length-1),visual:s.progress*(s.panels.length-1),lastIndex:s.index,static:!enabled||s.static,flow:s.flow}));
     metrics.idle=true;
+    if(leafReturn&&leafEnabled)request();
   }
 
   function renderTrack(scene:Scene) {
@@ -379,13 +383,23 @@ export function initMotion() {
     // Complete two axial turns during the orbit, retaining full turns after
     // departure so the leaf never unwinds when leaving the scene.
     const flightTurn=turn+orbitPhase/(Math.PI*2*1.25)*720;
-    const roll=mix(flightTurn,Math.round(flightTurn/360)*360,land);
+    let roll=mix(flightTurn,Math.round(flightTurn/360)*360,land);
     x=mix(x,dock.x,land);ly=mix(ly,dockY,land);rz=mix(rz,96,land);rx=mix(rx,7,land);ry=mix(ry,0,land);scale=mix(scale,.74,land);
     if(y>=maxScroll-1){x=dock.x;ly=dockY;rz=96;rx=7;ry=0;}
-    if(leafDrag){x=leafDrag.x;ly=leafDrag.y;}
+    let pivot=mix(91,50,travel);
+    naturalLeafPose={x,y:ly,rotation:rz,pitch:rx,yaw:ry,roll,scale,pivot};
+    let pose=naturalLeafPose;
+    if(leafDrag)pose=leafDrag.pose;
+    else if(leafReturn){
+      const now=performance.now();
+      leafReturn.elapsed+=Math.min(.05,Math.max(0,(now-leafReturn.last)/1000));
+      leafReturn.last=now;
+      pose=leafReturn.sample(leafReturn.elapsed,naturalLeafPose);
+      if(leafReturn.elapsed>=LEAF_RETURN_SECONDS)leafReturn=null;
+    }
+    ({x,y:ly,rotation:rz,pitch:rx,yaw:ry,roll,scale,pivot}=pose);
     flight.style.visibility='visible';
     flight.style.transform=`translate3d(${x}px,${ly}px,0)`;
-    const pivot=mix(91,50,travel);
     depth.style.transformOrigin=`50% ${pivot}%`;
     leaf.style.transformOrigin=`50% ${pivot}%`;
     depth.style.transform=`translate(-50%,-${pivot}%) scale(${scale})`;
@@ -410,7 +424,8 @@ export function initMotion() {
     flight.style.opacity=String(softened ? .42 : mix(1,.72,travel));
     root.dataset.leafInteractive=String(!softened&&!scene);
     root.dataset.leafOccluded='0';root.dataset.leafDepth='front';
-    debug.leaf={x,y:ly,rotation:rz,pitch:rx,yaw:ry,roll,drift,spin,orbitWeight,orbitPhase,clock:time,wind:physics.wind,lateralSpeed:physics.vx,fallSpeed:physics.fallSpeed,mode:land>.99?'rest':orbitWeight>.99?'orbit':'flight',occlusionState:softened?'softened':'visible'};
+    leafPose={x,y:ly,rotation:rz,pitch:rx,yaw:ry,roll,scale,pivot};
+    debug.leaf={returning:!!leafReturn,dragging:!!leafDrag,returnElapsed:leafReturn?.elapsed??0,x,y:ly,rotation:rz,pitch:rx,yaw:ry,roll,drift,spin,orbitWeight,orbitPhase,clock:time,wind:physics.wind,lateralSpeed:physics.vx,fallSpeed:physics.fallSpeed,mode:land>.99?'rest':orbitWeight>.99?'orbit':'flight',occlusionState:softened?'softened':'visible'};
     // Light follows the painted blade, including text alongside a mockup.
     const nextLit=new Set<HTMLElement>();
     for(const [index,mark] of glowTargets.entries()){
@@ -528,11 +543,32 @@ export function initMotion() {
     node.addEventListener('pointerup',release);node.addEventListener('pointercancel',release);
   });
   orbitNodes.forEach((node,index)=>node.addEventListener('click',()=>{orbitSelection=index;orbitSelectionAt=sceneProgress.espiral||0;orbitNodes.forEach((item,i)=>item.setAttribute('aria-pressed',String(i===index)));updateOrbitNote(index);request();}));
+  function cancelLeafInteraction(){
+    const pointer=leafDrag?.pointer;leafDrag=null;leafReturn=null;
+    if(pointer!==undefined&&leaf?.hasPointerCapture(pointer))leaf.releasePointerCapture(pointer);
+  }
   if(leaf){
-    leaf.addEventListener('pointerdown',event=>{if(!leafEnabled||event.pointerType!=='mouse'||event.button!==0)return;event.preventDefault();leafDrag={x:event.clientX,y:event.clientY};leaf.setPointerCapture(event.pointerId);request();});
-    leaf.addEventListener('pointermove',event=>{if(!leafDrag)return;leafDrag={x:event.clientX,y:event.clientY};request();});
-    const release=(event:PointerEvent)=>{leafDrag=null;if(leaf.hasPointerCapture(event.pointerId))leaf.releasePointerCapture(event.pointerId);request();};
-    leaf.addEventListener('pointerup',release);leaf.addEventListener('pointercancel',release);
+    leaf.addEventListener('pointerdown',event=>{
+      if(!leafEnabled||paused||!leafPose||event.pointerType!=='mouse'||event.button!==0)return;
+      event.preventDefault();leafReturn=null;
+      leafDrag={pointer:event.pointerId,offsetX:leafPose.x-event.clientX,offsetY:leafPose.y-event.clientY,pose:{...leafPose}};
+      leaf.setPointerCapture(event.pointerId);request();
+    });
+    leaf.addEventListener('pointermove',event=>{
+      if(leafDrag?.pointer!==event.pointerId)return;
+      leafDrag.pose.x=event.clientX+leafDrag.offsetX;leafDrag.pose.y=event.clientY+leafDrag.offsetY;request();
+    });
+    const release=(event:PointerEvent)=>{
+      if(leafDrag?.pointer!==event.pointerId)return;
+      const from=leafPose, target=naturalLeafPose;leafDrag=null;
+      if(from&&target&&leafEnabled){
+        const distance=Math.hypot(from.x-target.x,from.y-target.y);
+        leafReturn={sample:createLeafReturn(from,debug.leaf?.clock??0,distance),elapsed:0,last:performance.now()};
+      }
+      if(leaf.hasPointerCapture(event.pointerId))leaf.releasePointerCapture(event.pointerId);
+      request();
+    };
+    leaf.addEventListener('pointerup',release);leaf.addEventListener('pointercancel',release);leaf.addEventListener('lostpointercapture',release);
   }
   all<HTMLButtonElement>('[data-edition-reading]').forEach(button=>button.addEventListener('click',()=>window.SLMotion.setReading(leafEnabled)));
   addEventListener('scroll',request,{passive:true});
