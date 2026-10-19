@@ -76,10 +76,23 @@ with sync_playwright() as pw:
                             print('FAILED TAB',w,sid,index,button.inner_text(),json.dumps(card.evaluate('el=>({html:el.outerHTML,rect:el.getBoundingClientRect().toJSON(),scroll:scrollY,debug:__SL_DEBUG.scenes})')),errors,flush=True)
                             raise
                         loaded(page,card)
-                    bounds=card.evaluate('el=>({r:el.getBoundingClientRect().toJSON(),scroll:el.scrollHeight,client:el.clientHeight,body:el.querySelector(":scope>p").getBoundingClientRect().toJSON(),screen:el.querySelector(".work-screen").getBoundingClientRect().toJSON()})')
+                    bounds=card.evaluate('el=>({r:el.getBoundingClientRect().toJSON(),scroll:el.scrollHeight,client:el.clientHeight,body:el.querySelector(":scope>.project-explainer").getBoundingClientRect().toJSON(),screen:el.querySelector(".work-screen").getBoundingClientRect().toJSON()})')
                     assert bounds['scroll']<=bounds['client']+2,(sid,index,bounds)
                     assert bounds['body']['bottom']<=bounds['r']['bottom']+1,(sid,index,bounds)
                     assert bounds['screen']['height']>=100,(sid,index,bounds)
+                    detail=card.locator('.project-explainer')
+                    click_visible(page,detail.locator('summary'),touch=w<760)
+                    page.wait_for_timeout(80)
+                    assert detail.locator('p').is_visible() and len(detail.locator('p').inner_text())>50
+                    body=detail.locator('[data-independent-scroll]')
+                    if body.evaluate('e=>e.scrollHeight>e.clientHeight+1'):
+                        box=body.bounding_box();outer=page.evaluate('scrollY')
+                        page.mouse.move(box['x']+box['width']/2,box['y']+box['height']/2)
+                        page.mouse.wheel(0,180);page.wait_for_timeout(80)
+                        assert body.evaluate('e=>e.scrollTop')>0,'project detail cannot scroll'
+                        assert abs(page.evaluate('scrollY')-outer)<2,'project detail moved the gallery'
+                    click_visible(page,detail.locator('summary'),touch=w<760)
+
                 assert card.get_attribute('aria-hidden')=='false'
                 assert not card.evaluate('el=>el.inert')
                 controls=page.locator(f'#{sid} .scene-controls').bounding_box()

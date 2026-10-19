@@ -1,4 +1,5 @@
 ---
+import VisualStory from '../VisualStory.astro';
 import '../../styles/edition-interactions.css';
 ---
 
@@ -6,9 +7,12 @@ import '../../styles/edition-interactions.css';
   <div class="handover-heading">
     <div class="section-label"><span>08</span><span>O que fica</span></div>
     <h2 id="handover-title">A entrega também<br />é <em>autonomia.</em></h2>
-    <p>Quem recebe um sistema precisa conseguir operá-lo amanhã. Por isso, combinamos desde o início quais acessos, registros e conhecimentos vão acompanhar a entrega.</p>
+    <p>Código, acesso e conhecimento. Nas mãos de quem vai continuar.</p>
   </div>
 
+  <VisualStory kind="handover" />
+  <details class="narrative-detail"><summary>Abrir o inventário da entrega</summary><div>
+  <p>Quem recebe um sistema precisa conseguir operá-lo amanhã. Combinamos quais acessos, registros e conhecimentos acompanham a entrega.</p>
   <div class="handover-bench" data-edition-tabs data-active="acesso">
     <div class="handover-directory">
       <div class="instrument-label"><i aria-hidden="true"></i> Explore o que acompanha a entrega</div>
@@ -72,6 +76,7 @@ import '../../styles/edition-interactions.css';
       </article>
     </div>
   </div>
+  </div></details>
   <div class="handover-colophon"><span>O produto é uma parte da entrega.</span><span>A capacidade de continuar é a outra.</span></div>
 </section>
 

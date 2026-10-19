@@ -56,6 +56,8 @@ with sync_playwright() as pw:
             page.evaluate('SLMotion.setReading(false)')
             lit=0
             for selector in selectors:
+                page.locator(selector).first.evaluate('e=>{for(let p=e.parentElement;p;p=p.parentElement)if(p.tagName==="DETAILS")p.open=true}')
+                page.wait_for_timeout(120)
                 page.locator(selector).first.evaluate('e=>{const r=e.getBoundingClientRect();scrollTo({top:scrollY+r.top+r.height/2-innerHeight*.5,behavior:"instant"})}')
                 page.evaluate('()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))')
                 results=page.evaluate(measure,selector)

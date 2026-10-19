@@ -1,4 +1,5 @@
 ---
+const outputs = ['Uma pergunta delimitada','Uma hipótese a verificar','Algo que podemos experimentar','Uma versão utilizável','Evidências para melhorar','Condições para continuar'];
 const steps = [
   {name:'Entender', text:'Conversar com quem vive a rotina e observar como ela funciona. Saída: um problema delimitado e as pessoas envolvidas.'},
   {name:'Investigar', text:'Comparar caminhos, restrições e o que já existe. Saída: hipóteses de trabalho e perguntas que ainda precisam de resposta.'},
@@ -26,7 +27,7 @@ const steps = [
         <div class="process-panels" aria-label="Caderno de campo: as seis etapas">
           {steps.map((step,index)=><article class="process-panel">
             <h3><button type="button" data-process-step={index}><span class="process-step-number">{String(index+1).padStart(2,'0')}</span>{step.name}</button></h3>
-            <div class="process-body"><p>{step.text}</p></div>
+            <div class="process-body"><div class="process-proof" aria-hidden="true"><svg viewBox="0 0 180 32"><path d="M1 16H32l8-12 12 24 12-12H179"/></svg></div><details class="process-detail"><summary>{outputs[index]}</summary><p>{step.text}</p></details></div>
           </article>)}
         </div>
       </div>
