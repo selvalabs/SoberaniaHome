@@ -59,6 +59,7 @@ export function initMotion() {
       const marks=all<HTMLElement>('strong,em,.hero-future,.choices-pencil,.choices-paper,.choices-ink',el);
       return marks.length ? marks : [el];
     });
+  const heroGlowTargets=new Set(glowTargets.filter(mark=>mark.matches('.eyebrow-lab,.eyebrow-tech-label')));
   const litMarks = new Set<HTMLElement>();
   for(const mark of glowTargets) {
     mark.style.setProperty('--leaf-ink',getComputedStyle(mark).color);
@@ -256,7 +257,7 @@ export function initMotion() {
       const {scene,index}=pendingSceneJump;
       if(Math.abs(y-(scene.start+scene.run*index/Math.max(1,scene.panels.length-1)))<2)pendingSceneJump=null;
     }
-    if(leafEnabled)renderLeaf(y);
+    if(leafEnabled){renderLeaf(y);renderHeroGlow(y);}
     debug.scenes=scenes.map(s=>({id:s.id,start:s.start,end:s.start+s.run,raw:s.progress*(s.panels.length-1),visual:s.progress*(s.panels.length-1),lastIndex:s.index,static:!enabled||s.static,flow:s.flow}));
     metrics.idle=true;
     if(leafReturn&&leafEnabled)request();
@@ -429,6 +430,7 @@ export function initMotion() {
     // Light follows the painted blade, including text alongside a mockup.
     const nextLit=new Set<HTMLElement>();
     for(const [index,mark] of glowTargets.entries()){
+      if(heroGlowTargets.has(mark))continue;
       if(mark.closest('[inert],[aria-hidden="true"]'))continue;
       const r=mark.getBoundingClientRect();
       if(!r.width||!r.height||r.bottom<mastHeight||r.top>height)continue;
@@ -457,6 +459,26 @@ export function initMotion() {
   }
   function clearLeafGlow() {
     litMarks.forEach(resetLeafMark);litMarks.clear();
+    heroGlowTargets.forEach(mark=>delete mark.dataset.scrollGlow);
+  }
+
+  // The opening signature follows only document scroll, including reversal.
+  // Dragging/returning the leaf must never move or attenuate this color wave.
+  function renderHeroGlow(y:number) {
+    for(const mark of heroGlowTargets){
+      const rect=mark.getBoundingClientRect();
+      if(rect.bottom<0||rect.top>height){delete mark.dataset.scrollGlow;continue;}
+      mark.dataset.scrollGlow='true';
+      mark.style.setProperty('--signature-sweep',`${y*.7}%`);
+      for(const ink of inkRuns.get(mark)||[]){
+        const surface=inkSurfaces.get(ink);if(!surface)continue;
+        for(const [i,offset] of [0,90,190].entries()){
+          const color=glowColor(315+y*.85+offset,surface.background,surface.foreground);
+          ink.style.setProperty(`--signature-color-${i}`,`rgb(${color.join(',')})`);
+          if(i===0)ink.style.setProperty('--signature-halo',`rgb(${color.join(' ')} / .3)`);
+        }
+      }
+    }
   }
 
   function scrollToY(top:number) { scrollTo({top:clamp(top,0,maxScroll),behavior:reduced.matches||!enabled||Math.abs(top-scrollY)>height*1.5?'instant':'smooth'});request(); }

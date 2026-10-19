@@ -64,7 +64,7 @@ sequencial, com sucesso; nenhuma asserção foi relaxada para isso.
 
 Preview local de homologação: http://192.168.1.4:4196/
 
-Build canônica: `.edition-builds/leaf-theme-41-08`. O servidor da porta 4196 usa
+Build canônica: `.edition-builds/leaf-theme-41-09`. O servidor da porta 4196 usa
 `.edition-builds/leaf-theme-41-01`, atualizada com os mesmos arquivos finais;
 arquivos antigos sem referência são mantidos. Main permanece na porta 4190 e
 a correção independente #39 na 4193.
@@ -122,3 +122,20 @@ dependências; contraste e presença dos spans de glow nos dois temas, mobile e
 desktop. Passagem real da folha arrastada sobre os dois textos confirmou a
 ativação do glow. Capturas inspecionadas em 390×844 (claro/escuro) e 1440×900
 (claro); sem overflow horizontal. Base desta iteração: `e41036b`.
+
+
+## Direção final do glow da assinatura
+
+Conforme a revisão do usuário, o glow dos dois textos da abertura é independente
+da folha. Uma onda horizontal com três cores de tinta e halo mais intenso é
+calculada exclusivamente pelo scroll, incluindo a reversão. Arrastar ou soltar
+a folha não altera essas cores. Os demais alvos mantêm a iluminação da folha.
+Leitura e movimento reduzido desativam o efeito, sem loop permanente em repouso.
+“Sistemas brasileiros” aumenta de 9 para 11 px no mobile e de 11 para 13 px
+no desktop. A bandeira permanece na camada de colagem.
+
+Validação: suíte de contraste ampliada para os três tons e suas transições,
+reversibilidade no scroll e independência de um arrasto real da folha. Passou
+nos dois temas, mobile/desktop. Tipos, 38 testes Node, build, verificação estática
+e diff aprovados. Capturas em 320×740 e 390×844 revisadas; sem overflow em 320,
+390 e 1440 px, nem frames extras em repouso. Base da iteração: `1cfff5d`.

@@ -16,10 +16,12 @@ measure=r'''selector=>{
   return runs.map(ink=>{
    let chain=[],p=ink,bg=[255,255,255];while(p){chain.unshift(p);p=p.parentElement;}
    for(const el of chain){const c=rgb(getComputedStyle(el).backgroundColor),a=c.length===3?1:c[3];if(a)bg=bg.map((v,i)=>c[i]*a+v*(1-a));}
-   const s=getComputedStyle(ink),base=rgb(s.color),surface=lum(bg),lit=!!ink.closest('[data-leaf-lit="true"]');
-   const glow=rgb(s.getPropertyValue('--leaf-glow-color'));
+   const s=getComputedStyle(ink),base=rgb(s.color),surface=lum(bg),lit=!!ink.closest('[data-leaf-lit="true"],[data-scroll-glow="true"]');
+   const signature=!!ink.closest('[data-scroll-glow="true"]');
+   const palette=signature?[0,1,2].map(i=>rgb(s.getPropertyValue('--signature-color-'+i))):[rgb(s.getPropertyValue('--leaf-glow-color'))];
+   const colors=[base,...(lit?palette.filter(c=>c.length===3):[]),base];
    const ratios=[contrast(lum(base),surface)];
-   if(lit&&glow.length===3)for(let t=0;t<=1;t+=.1)ratios.push(contrast(lum(base.map((v,i)=>v+(glow[i]-v)*t)),surface));
+   for(let k=1;k<colors.length;k++)for(let t=0;t<=1;t+=.1)ratios.push(contrast(lum(colors[k-1].map((v,i)=>v+(colors[k][i]-v)*t)),surface));
    return {text:ink.textContent,lit,minimum:Math.min(...ratios),gradient:s.backgroundImage};
   });
  });
@@ -32,6 +34,23 @@ with sync_playwright() as pw:
         page.wait_for_function('window.__SL_DEBUG?.ready')
         for selector in ['.eyebrow-lab','.eyebrow-tech-label']:
             assert page.locator(selector+' .leaf-ink').count()==1,('eyebrow missing glow ink',selector)
+        page.bring_to_front();page.mouse.move(width-2,height-2)
+        signature="[...document.querySelectorAll('.eyebrow-lab .leaf-ink,.eyebrow-tech-label .leaf-ink')].map(e=>{const s=getComputedStyle(e);return [s.backgroundImage,s.backgroundPosition,s.textShadow]})"
+        samples=[]
+        for y in [0,40,80,40]:
+            page.evaluate('(y)=>scrollTo({top:y,behavior:"instant"})',y)
+            page.evaluate('()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))')
+            samples.append(page.evaluate(signature))
+        assert samples[0]!=samples[1]!=samples[2], 'signature glow must follow scroll'
+        assert samples[1]==samples[3], 'signature glow must reverse with scroll'
+        assert page.locator('.eyebrow-tech').evaluate('e=>parseFloat(getComputedStyle(e).fontSize)') >= (11 if width<760 else 13)
+        if width==1440:
+            box=page.locator('#wind-leaf').bounding_box()
+            page.mouse.move(box['x']+box['width']/2,box['y']+box['height']/2);page.mouse.down()
+            page.mouse.move(700,350,steps=10);page.wait_for_timeout(80)
+            assert page.evaluate('__SL_DEBUG.leaf.dragging'), 'leaf drag not exercised'
+            assert page.evaluate(signature)==samples[3], 'signature glow depends on leaf proximity'
+            page.mouse.up();page.evaluate('SLMotion.setReading(true);SLMotion.setReading(false)')
         for theme in ['dark','light','dark']:
             page.evaluate('(theme)=>{if(document.documentElement.dataset.theme!==theme)document.querySelector("[data-theme-toggle]").click()}',theme)
             page.evaluate('SLMotion.setReading(false)')
