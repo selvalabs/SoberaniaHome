@@ -640,8 +640,7 @@ export function initMotion() {
   document.dispatchEvent(new CustomEvent('sl:ready'));
 }
 
-/** Keep the technology signature fixed, moving it to a clear vertical slot
- * whenever page content passes. */
+/** Keep the technology signature fixed and fade it when page content passes. */
 function initBrandSignature(hero: HTMLElement | null) {
   const lab = hero?.querySelector<HTMLElement>('.eyebrow-lab');
   const tech = hero?.querySelector<HTMLElement>('.eyebrow-tech');
@@ -670,57 +669,27 @@ function renderBrandSignature(host: HTMLElement | null, mast: HTMLElement | null
 
   const mark = host.firstElementChild as HTMLElement | null;
   if (!mark) return;
-  const marks = [mark];
   const gap = Math.max(8, Math.min(14, width * .012));
   const inset = Math.max(14, Math.min(42, width * .035));
   const preferred = Math.max(16, Math.min(height - 42, height * (width <= 759 ? .12 : .19)));
-  const step = 12;
-  const candidates: number[] = [preferred];
-  for (let offset = step; offset < height * .48; offset += step) candidates.push(preferred - offset, preferred + offset);
-  candidates.push(8, height - 42);
   const obstacles = Array.from(document.querySelectorAll<HTMLElement>(
     'main h1,main h2,main h3,main p,main figcaption,main .portfolio-card,main .process-panel,main .spiral-caption,main .technology-note,main .knowledge-note,main .section-label,main .hero-bottom,main .text-actions,main .site-footer,main .reference-group,main .orbit-note'
   )).filter(el => !el.closest('.brand-signature') && el.getClientRects().length > 0);
   const measuredMast = mast?.getBoundingClientRect();
   const mastRect = measuredMast && measuredMast.height > 0 && measuredMast.bottom > 0 && measuredMast.top < height ? measuredMast : null;
 
-  for (let index = 0; index < marks.length; index++) {
-    const mark = marks[index];
-    const markWidth = Math.min(mark.getBoundingClientRect().width || (index === 0 ? 172 : 162), width - inset * 2);
-    const left = width - inset - markWidth;
-    const markHeight = Math.max(18, mark.getBoundingClientRect().height || 18);
-    const collidesAt = (top: number) => {
-      const box = { left, right: left + markWidth, top, bottom: top + markHeight };
-      const mastCollision = !!mastRect && box.top < mastRect.bottom + gap && box.bottom > mastRect.top - gap;
-      const contentCollision = obstacles.some(el => {
-        const rect = el.getBoundingClientRect();
-        return rect.width > 0 && rect.height > 0 && rect.left < box.right + gap && rect.right > box.left - gap && rect.top < box.bottom + gap && rect.bottom > box.top - gap;
-      });
-      return mastCollision || contentCollision;
-    };
-    if (width <= 759) {
-      const mobileTop = Math.max(8, Math.min(height - markHeight - 8, preferred));
-      mark.style.setProperty('--signature-y', `${mobileTop}px`);
-      mark.style.setProperty('--signature-x', `${left}px`);
-      mark.dataset.obstructed = String(collidesAt(mobileTop));
-      continue;
-    }
-    let best = preferred;
-    let bestCost = Infinity;
-    for (const top of candidates) {
-      const boundedTop = Math.max(8, Math.min(height - markHeight - 8, top));
-      const box = { left, right: left + markWidth, top: boundedTop, bottom: boundedTop + markHeight };
-      const mastCollision = !!mastRect && box.top < mastRect.bottom + gap && box.bottom > mastRect.top - gap;
-      const contentCollision = obstacles.some(el => {
-        const rect = el.getBoundingClientRect();
-        return rect.width > 0 && rect.height > 0 && rect.left < box.right + gap && rect.right > box.left - gap && rect.top < box.bottom + gap && rect.bottom > box.top - gap;
-      });
-      const cost = Math.abs(boundedTop - preferred) + (mastCollision || contentCollision ? 100000 : 0);
-      if (cost < bestCost) { best = boundedTop; bestCost = cost; }
-    }
-    mark.style.setProperty('--signature-y', `${best}px`);
-    mark.style.setProperty('--signature-x', `${left}px`);
-    mark.dataset.obstructed = String(bestCost >= 100000);
-  }
+  const markWidth = Math.min(mark.getBoundingClientRect().width || 172, width - inset * 2);
+  const left = width - inset - markWidth;
+  const markHeight = Math.max(18, mark.getBoundingClientRect().height || 18);
+  const fixedTop = Math.max(8, Math.min(height - markHeight - 8, preferred));
+  const box = { left, right: left + markWidth, top: fixedTop, bottom: fixedTop + markHeight };
+  const mastCollision = !!mastRect && box.top < mastRect.bottom + gap && box.bottom > mastRect.top - gap;
+  const contentCollision = obstacles.some(el => {
+    const rect = el.getBoundingClientRect();
+    return rect.width > 0 && rect.height > 0 && rect.left < box.right + gap && rect.right > box.left - gap && rect.top < box.bottom + gap && rect.bottom > box.top - gap;
+  });
+  mark.style.setProperty('--signature-y', `${fixedTop}px`);
+  mark.style.setProperty('--signature-x', `${left}px`);
+  mark.dataset.obstructed = String(mastCollision || contentCollision);
 }
 
