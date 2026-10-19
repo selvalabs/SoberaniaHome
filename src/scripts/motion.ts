@@ -1,5 +1,6 @@
 import '../styles/motion-edition.css';
 import { createLeafFlight, leafGust, lifeOrbit, LEAF_SCROLL_PACE } from './leaf-physics';
+import { glowColor, textSurface } from './leaf-contrast';
 
 /** One source of movement: the document's native scroll position.
  * Scenes use CSS sticky, never JS pin spacers. All rendering sleeps at rest. */
@@ -50,7 +51,7 @@ export function initMotion() {
   let navigationRevision=0;
   // Cache editorial targets once. Product interfaces and controls keep their own colors.
   const glowTargets = all<HTMLElement>('h1,h2,h3,p,figcaption,.technology-note,.knowledge-note', document.querySelector('main') || document)
-    .filter(el => !el.closest('button,a,.work-evidence,.process-panels,.orbit-view,#referencias,dialog'))
+    .filter(el => !el.closest('button,a,.work-evidence,.cooperative-screen,.process-panels,.orbit-view,#referencias,dialog'))
     .flatMap(el => {
       const marks=all<HTMLElement>('strong,em,.hero-future,.choices-pencil,.choices-paper,.choices-ink',el);
       return marks.length ? marks : [el];
@@ -65,9 +66,20 @@ export function initMotion() {
     const plainBlock=mark.childNodes.length===1&&getComputedStyle(mark).display==='block';
     for(const text of texts){const ink=document.createElement('span');ink.className='leaf-ink';if(plainBlock)ink.style.display='block';text.replaceWith(ink);ink.append(text);}
   }
-  document.addEventListener('sl:themechange',()=>{
+  const inkRuns=new Map(glowTargets.map(mark=>[mark,all<HTMLElement>('.leaf-ink',mark)]));
+  const inkSurfaces=new Map<HTMLElement,ReturnType<typeof textSurface>>();
+  function refreshInk() {
     clearLeafGlow();
     for(const mark of glowTargets){mark.style.removeProperty('--leaf-ink');mark.style.setProperty('--leaf-ink',getComputedStyle(mark).color);}
+    for(const ink of new Set([...inkRuns.values()].flat())){
+      ink.style.removeProperty('--leaf-ink');
+      const surface=textSurface(ink);inkSurfaces.set(ink,surface);
+      ink.style.setProperty('--leaf-ink',surface.color);
+    }
+  }
+  refreshInk();
+  document.addEventListener('sl:themechange',()=>{
+    refreshInk();
     request();
   });
   const processNodes = all<HTMLButtonElement>('#processo .process-node');
@@ -411,9 +423,13 @@ export function initMotion() {
       if(glow>.03){
         nextLit.add(mark);mark.dataset.leafLit='true';
         mark.style.setProperty('--leaf-glow',String(glow));
-        mark.style.setProperty('--leaf-hue',String((y*.16+index*47)%360));
+        const hue=(y*.16+index*47)%360;
+        mark.style.setProperty('--leaf-hue',String(hue));
+        for(const ink of inkRuns.get(mark)||[]){
+          const surface=inkSurfaces.get(ink);
+          if(surface)ink.style.setProperty('--leaf-glow-color',`rgb(${glowColor(hue,surface.background,surface.foreground).join(',')})`);
+        }
         mark.style.setProperty('--leaf-light-y',`${lightY-r.top}px`);
-        mark.style.setProperty('--leaf-lightness',root.dataset.theme==='dark'||mark.closest('.dark')?'74%':'32%');
       }
     }
     for(const mark of litMarks)if(!nextLit.has(mark))resetLeafMark(mark);
@@ -422,7 +438,7 @@ export function initMotion() {
 
   function resetLeafMark(mark:HTMLElement) {
     delete mark.dataset.leafLit;
-    for(const property of ['--leaf-glow','--leaf-hue','--leaf-lightness','--leaf-light-y'])mark.style.removeProperty(property);
+    for(const property of ['--leaf-glow','--leaf-hue','--leaf-light-y'])mark.style.removeProperty(property);
   }
   function clearLeafGlow() {
     litMarks.forEach(resetLeafMark);litMarks.clear();

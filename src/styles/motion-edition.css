@@ -32,9 +32,9 @@ html.motion-edition #espiral [data-motion-static="true"] .spiral-captions {displ
 html.motion-edition #espiral [data-motion-static="true"] .spiral-caption[hidden] {display:block!important;}
 html.motion-edition [data-leaf-lit="true"] .leaf-ink {
  color:var(--leaf-ink)!important;
- background-image:linear-gradient(to bottom,var(--leaf-ink) calc(var(--leaf-light-y) - 100px),hsl(var(--leaf-hue) 78% var(--leaf-lightness)) var(--leaf-light-y),var(--leaf-ink) calc(var(--leaf-light-y) + 100px));
+ background-image:linear-gradient(to bottom,var(--leaf-ink) calc(var(--leaf-light-y) - 100px),var(--leaf-glow-color,var(--leaf-ink)) var(--leaf-light-y),var(--leaf-ink) calc(var(--leaf-light-y) + 100px));
  background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
- text-shadow:0 0 5px hsl(var(--leaf-hue) 95% 60% / calc(var(--leaf-glow) * .32));
+ text-shadow:0 0 1px hsl(var(--leaf-hue) 78% 40% / calc(var(--leaf-glow) * .08));
 }
 html.motion-edition #leaf-flight {transition:opacity .16s ease;pointer-events:none;}
 html.motion-edition.leaf-motion .wind-global,html.motion-edition.leaf-motion #leaf-flight {display:block;}

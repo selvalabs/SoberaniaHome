@@ -64,7 +64,7 @@ sequencial, com sucesso; nenhuma asserção foi relaxada para isso.
 
 Preview local de homologação: http://192.168.1.4:4196/
 
-Build canônica: `.edition-builds/leaf-theme-41-04`. O servidor da porta 4196 usa
+Build canônica: `.edition-builds/leaf-theme-41-06`. O servidor da porta 4196 usa
 `.edition-builds/leaf-theme-41-01`, atualizada com os mesmos arquivos finais;
 arquivos antigos sem referência são mantidos. Main permanece na porta 4190 e
 a correção independente #39 na 4193.
@@ -72,3 +72,21 @@ a correção independente #39 na 4193.
 Sem merge, tag de release, publicação em produção, migração ou mudança de VPS.
 Espelho VPS não foi acessado. Rollback de referência: main `e3f4035`; basta usar
 seu preview ou, após eventual integração, reverter o PR por novo PR revisado.
+
+## Ajuste de contraste após homologação visual
+
+A revisão encontrou uma regra com `#folha` que prevalecia sobre o tema e
+mantinha o papel claro sob a tinta clara, além do fechamento de Inteligências
+e das anotações das colagens. Esses fundos e tintas foram corrigidos.
+
+O glow agora mede a superfície composta sob cada trecho real de texto,
+incluindo fundos translúcidos e elementos aninhados. Guarda a tinta própria de
+cada trecho e escolhe a cor do glow com contraste mínimo de 4,8:1, preservando
+a polaridade original quando possível. O halo foi reduzido para não lavar as
+letras. A interface demonstrativa da cooperativa não recebe a tinta editorial.
+
+A regressão inclui 120 matizes em sete pares de fundo/tinta e amostras internas
+dos gradientes (mínimo 4,5:1), além de testes no DOM real dos dois temas,
+celular/desktop, com passagem da folha, troca de tema e modo de leitura.
+A auditoria anterior não incluía todos os spans gerados pelo glow; a nova suíte
+`test_leaf_contrast.py` inclui esses textos e os destaques identificados.
