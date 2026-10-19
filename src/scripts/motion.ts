@@ -640,28 +640,25 @@ export function initMotion() {
   document.dispatchEvent(new CustomEvent('sl:ready'));
 }
 
-/** Keep the two hero identity marks visible after the opening scene, while
- * moving them to the nearest clear vertical slot whenever page content passes. */
+/** Keep the technology signature fixed, moving it to a clear vertical slot
+ * whenever page content passes. */
 function initBrandSignature(hero: HTMLElement | null) {
   const lab = hero?.querySelector<HTMLElement>('.eyebrow-lab');
   const tech = hero?.querySelector<HTMLElement>('.eyebrow-tech');
   const identity = lab?.parentElement;
   if (!hero || !lab || !tech || !identity) return null;
 
-  const placeholder = identity.cloneNode(true) as HTMLElement;
+  const placeholder = tech.cloneNode(true) as HTMLElement;
   placeholder.classList.add('brand-signature-placeholder');
   placeholder.setAttribute('aria-hidden', 'true');
-  placeholder.querySelectorAll<HTMLElement>('.eyebrow-lab,.eyebrow-tech').forEach(mark => mark.classList.add('brand-signature-placeholder-mark'));
+  placeholder.querySelectorAll<HTMLElement>('.eyebrow-tech-label').forEach(mark => mark.classList.add('brand-signature-placeholder-mark'));
 
   const host = document.createElement('div');
   host.className = 'brand-signature';
   host.setAttribute('role', 'group');
-  host.setAttribute('aria-label', 'Laboratório independente. Sistemas brasileiros.');
-  const row = document.createElement('span');
-  row.className = 'hero-identity';
-  row.append(lab, tech);
-  host.append(row);
-  identity.replaceWith(placeholder);
+  host.setAttribute('aria-label', 'Sistemas brasileiros.');
+  tech.replaceWith(placeholder);
+  host.append(tech);
   document.body.append(host);
   host.dataset.ready = 'true';
   return host;
@@ -671,9 +668,9 @@ function renderBrandSignature(host: HTMLElement | null, mast: HTMLElement | null
   if (!host) return;
   host.dataset.active = 'true';
 
-  const row = host.firstElementChild as HTMLElement | null;
-  if (!row) return;
-  const marks = Array.from(row.children) as HTMLElement[];
+  const mark = host.firstElementChild as HTMLElement | null;
+  if (!mark) return;
+  const marks = [mark];
   const gap = Math.max(8, Math.min(14, width * .012));
   const inset = Math.max(14, Math.min(42, width * .035));
   const preferred = Math.max(16, Math.min(height - 42, height * (width <= 759 ? .12 : .19)));
@@ -690,7 +687,7 @@ function renderBrandSignature(host: HTMLElement | null, mast: HTMLElement | null
   for (let index = 0; index < marks.length; index++) {
     const mark = marks[index];
     const markWidth = Math.min(mark.getBoundingClientRect().width || (index === 0 ? 172 : 162), width - inset * 2);
-    const left = index === 0 ? inset : width - inset - markWidth;
+    const left = width - inset - markWidth;
     const markHeight = Math.max(18, mark.getBoundingClientRect().height || 18);
     const collidesAt = (top: number) => {
       const box = { left, right: left + markWidth, top, bottom: top + markHeight };

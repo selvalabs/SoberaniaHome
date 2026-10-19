@@ -14,10 +14,7 @@
 html.motion-edition #hero [data-scroll-glow="true"] .leaf-ink,html.motion-edition .brand-signature [data-scroll-glow="true"] .leaf-ink{background-image:linear-gradient(100deg,var(--signature-color-0),var(--signature-color-1) 35%,var(--signature-color-2) 70%,var(--signature-color-0));background-size:200% 100%;background-position:var(--signature-sweep) 0;background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 3px var(--signature-halo),0 0 9px var(--signature-halo)}
 .brand-signature{position:fixed;inset:0;z-index:36;pointer-events:none;visibility:hidden;contain:layout style}
 .brand-signature[data-ready="true"][data-active="true"]{visibility:visible}
-.brand-signature .hero-identity{display:contents}
-.brand-signature .eyebrow-lab,.brand-signature .eyebrow-tech{position:fixed;top:var(--signature-y,12vh);left:var(--signature-x,16px);margin:0;color:var(--ink);font:500 11px/1.4 var(--mono);letter-spacing:.02em;white-space:nowrap;transition:top .38s cubic-bezier(.2,.72,.2,1),left .38s cubic-bezier(.2,.72,.2,1),opacity .25s ease}
-.brand-signature .eyebrow-lab{opacity:var(--signature-opacity,1)}
-.brand-signature .eyebrow-tech{isolation:isolate;font-size:13px;opacity:var(--signature-opacity,1)}
+.brand-signature .eyebrow-tech{position:fixed;top:var(--signature-y,12vh);left:var(--signature-x,16px);margin:0;color:var(--ink);font:500 13px/1.4 var(--mono);letter-spacing:.02em;white-space:nowrap;isolation:isolate;opacity:var(--signature-opacity,1);transition:top .38s cubic-bezier(.2,.72,.2,1),left .38s cubic-bezier(.2,.72,.2,1),opacity .25s ease}
 .brand-signature .eyebrow-tech::before{content:"";position:absolute;z-index:-1;pointer-events:none;right:12%;top:50%;width:6em;aspect-ratio:10/7;background:url('/assets/edition/brasil-colagem.svg') center/contain no-repeat;transform:translateY(-55%) rotate(-9deg);opacity:.8}
 .brand-signature .eyebrow-tech-label{position:relative;display:inline-block;padding:.15em .35em;background:var(--paper);box-shadow:0 1px 0 var(--rule);color:var(--ink)}
 .brand-signature [data-obstructed="true"]{--signature-opacity:.32}
@@ -75,11 +72,9 @@ html.motion-edition #hero [data-scroll-glow="true"] .leaf-ink,html.motion-editio
  #hero.hero-restored .text-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 10px 0}
  #hero.hero-restored .text-actions a{padding:10px 8px;font-size:11px}
  #hero.hero-restored .hero-bottom{display:none}
- .brand-signature .eyebrow-lab,.brand-signature .eyebrow-tech{transition:opacity .2s ease;}
- .brand-signature .eyebrow-lab{left:20px!important;top:12vh!important;font-size:9px}
- .brand-signature .eyebrow-tech{left:auto!important;right:20px;top:12vh!important;font-size:11px}
+ .brand-signature .eyebrow-tech{left:auto!important;right:20px;top:12vh!important;font-size:11px;transition:opacity .2s ease}
 }
-@media(prefers-reduced-motion:reduce){.brand-signature .eyebrow-lab,.brand-signature .eyebrow-tech{transition:none}}
+@media(prefers-reduced-motion:reduce){.brand-signature .eyebrow-tech{transition:none}}
 @media print{
  #hero.hero-restored .tree-wrap{display:none}
  #hero.hero-restored .hero-copy,#hero.hero-restored .hero-bottom{margin-left:0;width:100%}
