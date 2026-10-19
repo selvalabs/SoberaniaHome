@@ -1,5 +1,5 @@
 import '../styles/motion-edition.css';
-import { createLeafFlight, leafGust } from './leaf-physics';
+import { createLeafFlight, leafGust, lifeOrbit, LEAF_SCROLL_PACE } from './leaf-physics';
 
 /** One source of movement: the document's native scroll position.
  * Scenes use CSS sticky, never JS pin spacers. All rendering sleeps at rest. */
@@ -65,6 +65,11 @@ export function initMotion() {
     const plainBlock=mark.childNodes.length===1&&getComputedStyle(mark).display==='block';
     for(const text of texts){const ink=document.createElement('span');ink.className='leaf-ink';if(plainBlock)ink.style.display='block';text.replaceWith(ink);ink.append(text);}
   }
+  document.addEventListener('sl:themechange',()=>{
+    clearLeafGlow();
+    for(const mark of glowTargets){mark.style.removeProperty('--leaf-ink');mark.style.setProperty('--leaf-ink',getComputedStyle(mark).color);}
+    request();
+  });
   const processNodes = all<HTMLButtonElement>('#processo .process-node');
   const assembled = new Set<number>();
   let puzzleDrag: {id:number; pointer:number; x:number; y:number; dx:number; dy:number; moved:boolean} | null = null;
@@ -154,7 +159,7 @@ export function initMotion() {
       scene.sequence.dataset.motionStatic=String(scene.static);
       scene.flow=scene.kind==='process'&&width<760;
       scene.sequence.dataset.processFlow=String(scene.flow);
-      scene.run=enabled&&!scene.flow&&!scene.static ? Math.round(scene.kind==='horizontal'?steps*clamp(width*.66,430,900):scene.kind==='process'?clamp(height*1.8,1100,1650):clamp(height*1.25,760,1150)) : 0;
+      scene.run=enabled&&!scene.flow&&!scene.static ? Math.round(scene.kind==='horizontal'?steps*clamp(width*.66,430,900):scene.kind==='process'?clamp(height*1.8,1100,1650):clamp(height*2.4,1500,2200)) : 0;
       scene.sequence.style.setProperty('--motion-run',`${scene.run}px`);
       scene.sequence.style.height=enabled&&!scene.flow&&!scene.static?`${(fullViewport?height:height-mastHeight)+scene.run}px`:'';
       if(scene.track) {
@@ -280,13 +285,14 @@ export function initMotion() {
     if(orbitSelection!==null&&Math.abs(scene.progress-orbitSelectionAt)>.13)orbitSelection=null;
     const selected=orbitSelection??[0,3,4,7][scene.index]??0;
     const w=scene.stageWidth,h=scene.stageHeight,base=Math.min(w,h);
+    const {phase}=lifeOrbit(scene.progress,w,h);
     orbitNodes.forEach((node,index)=>{
-      const angle=index/orbitNodes.length*Math.PI*2-Math.PI/2+scene.progress*.7;
+      const angle=index/orbitNodes.length*Math.PI*2-Math.PI/2+phase;
       const radius=base*(index%2?.36:.43);
       node.style.left=`${w/2+Math.cos(angle)*radius}px`;node.style.top=`${h/2+Math.sin(angle)*radius*.84}px`;
       node.setAttribute('aria-pressed',String(index===selected));
     });
-    const ring=scene.section.querySelector<HTMLElement>('.ring-outer');if(ring)ring.style.transform=`translate(-50%,-50%) rotate(${scene.progress*70}deg)`;
+    const ring=scene.section.querySelector<HTMLElement>('.ring-outer');if(ring)ring.style.transform=`translate(-50%,-50%) rotate(${phase*180/Math.PI}deg)`;
     scene.panels.forEach((panel,index)=>{panel.hidden=index!==scene.index;panel.inert=index!==scene.index;});
     updateOrbitNote(selected);
   }
@@ -301,23 +307,24 @@ export function initMotion() {
   function renderLeaf(y:number) {
     if(!flight||!leaf||!depth)return;
     const hero=sections[0];
-    const launch=clamp(y/Math.max(1,(hero?.bottom||height)-height*.32));
+    const launch=clamp(y/Math.max(1,((hero?.bottom||height)-height*.32)*1.22));
     const travel=smooth(launch);
     // Scroll is the clock, not the force. Replaying the same position restores
     // the same inertial state, even after a jump, reversal or toolbar resize.
-    const clockScale=2.4/Math.max(layoutHeight,1),time=y*clockScale;
+    const clockScale=LEAF_SCROLL_PACE/Math.max(layoutHeight,1),time=y*clockScale;
     const physics=leafFlight(time);
     const horizontal=enabled?scenes.filter(s=>s.kind==='horizontal'):[];
     const bursts=horizontal.flatMap(s=>{
-      const starts=[s.start+s.run*.08];
-      if(s.run*clockScale>5)starts.push(s.start+s.run*.58);
+      const starts=[s.start+s.run*.04];
+      for(let elapsed=3.4;elapsed<s.run*clockScale-.6;elapsed+=3.4)starts.push(s.start+elapsed/clockScale);
       return starts.map(start=>({time:start*clockScale,direction:s.reverse?1:-1}));
     });
     // Occasional turns continue in editorial folds. Keep them away from the
     // gallery gusts so entering a scene does not pile up two strong impulses.
-    for(let at=7;at<=time;at+=9){
-      if(!horizontal.some(s=>at> s.start*clockScale-4&&at<(s.start+s.run)*clockScale+3))
-        bursts.push({time:at,direction:Math.floor(at/9)%2?1:-1});
+    bursts.push({time:-.45,direction:1});
+    for(let at=3.6;at<=time;at+=4.6){
+      if(!horizontal.some(s=>at> s.start*clockScale-2&&at<(s.start+s.run)*clockScale+1.6))
+        bursts.push({time:at,direction:Math.floor(at/4.6)%3===2?-1:1});
     }
     let drift=0,turn=0,spin=0;
     // Finish each turn before approaching the resting place in the footer.
@@ -327,22 +334,40 @@ export function initMotion() {
       const gust=leafGust(time-burst.time,burst.direction);drift+=gust.drift;turn+=gust.turn;spin+=gust.spin;
     }
     const degrees=180/Math.PI;
-    const lateral=Math.tanh((physics.x-.95)*1.35);
-    let x=mix(origin.x,width*(.5+lateral*.37+drift*.1),travel);
+    const lateral=Math.tanh((physics.x-.95)*1.45);
+    let x=mix(origin.x,width*(.5+lateral*.4+drift*.1),travel);
     // A following camera removes the mean descent. Kinetic energy exchanged
     // for height gives the shallow rising cusps at the ends of each glide.
     const dip=physics.vx**2/(2*1.45);
-    let ly=mix(origin.y-y,height*(.465+dip*.28+(physics.fallSpeed-.92)*.045),travel);
+    let ly=mix(origin.y,height*(.465+dip*.28+(physics.fallSpeed-.92)*.045),travel);
     let rz=mix(118,90+physics.bank*degrees*.72+physics.wind*9+spin*28,travel);
     let rx=mix(7,18+physics.twist*degrees*1.6,travel);
     let ry=mix(0,physics.vx*22+physics.angularSpeed*10,travel);
     let scale=mix(width<760?.62:.82,(width<760?.46:.68)*(1+physics.twist*.08),travel);
+    // Join the same phase as the ring and words. Smooth spatial capture/release
+    // leaves both ends continuous and keeps VIDA free in the center.
+    const spiral=scenes.find(s=>s.kind==='spiral'&&!s.static);
+    let orbitWeight=0,orbitPhase=0;
+    if(spiral&&enabled){
+      const margin=height*.32,raw=(y-spiral.start)/Math.max(1,spiral.run);
+      orbitPhase=lifeOrbit(raw,spiral.stageWidth,spiral.stageHeight).phase;
+      orbitWeight=smooth((y-spiral.start+margin)/(margin+spiral.run*.1))*smooth((spiral.start+spiral.run+margin-y)/(margin+spiral.run*.1));
+      if(orbitWeight>0&&spiral.stage){
+        const r=spiral.stage.getBoundingClientRect(),orbit=lifeOrbit(raw,r.width,r.height);
+        x=mix(x,r.left+orbit.x,orbitWeight);ly=mix(ly,r.top+orbit.y,orbitWeight);
+        rz+=Math.sin(orbit.angle)*18*orbitWeight;rx+=Math.cos(orbit.angle)*16*orbitWeight;
+        scale=mix(scale,width<760?.46:.6,orbitWeight);
+      }
+    }
     // Scene entry never restarts the wind or substitutes a second sine path.
     const scene=enabled?scenes.find(s=>s.kind==='horizontal'&&y>=s.start-height*.25&&y<=s.start+s.run+height*.25):undefined;
     const dockY=dock.y-y,land=smooth((height+180-dockY)/(height*.7+180));
     // Settle on the nearest complete turn at the dock, never rewind a long
     // page's accumulated rotations. Local Y rolls around the blade's length.
-    const roll=mix(turn*travel,Math.round(turn/360)*360,land);
+    // Complete two axial turns during the orbit, retaining full turns after
+    // departure so the leaf never unwinds when leaving the scene.
+    const flightTurn=turn+orbitPhase/(Math.PI*2*1.25)*720;
+    const roll=mix(flightTurn,Math.round(flightTurn/360)*360,land);
     x=mix(x,dock.x,land);ly=mix(ly,dockY,land);rz=mix(rz,96,land);rx=mix(rx,7,land);ry=mix(ry,0,land);scale=mix(scale,.74,land);
     if(y>=maxScroll-1){x=dock.x;ly=dockY;rz=96;rx=7;ry=0;}
     if(leafDrag){x=leafDrag.x;ly=leafDrag.y;}
@@ -365,7 +390,7 @@ export function initMotion() {
     // Keep the leaf present in every fold. Only soften it over interfaces;
     // pointer pass-through protects controls instead of hiding the animation.
     let covered=false;
-    if(current&&!leafDrag)for(const surface of all<HTMLElement>('.work-evidence,.process-periphery,.process-panels,.orbit-view,button,input,select,textarea',current)){
+    if(current&&!leafDrag)for(const surface of all<HTMLElement>('.work-evidence,.process-periphery,.process-panels,button,input,select,textarea',current)){
       const r=surface.getBoundingClientRect();
       if(r.width&&r.height&&bounds.right+dx>r.left-8&&bounds.left+dx<r.right+8&&bounds.bottom+dy>r.top-8&&bounds.top+dy<r.bottom+8){covered=true;break;}
     }
@@ -373,7 +398,7 @@ export function initMotion() {
     flight.style.opacity=String(softened ? .42 : mix(1,.72,travel));
     root.dataset.leafInteractive=String(!softened&&!scene);
     root.dataset.leafOccluded='0';root.dataset.leafDepth='front';
-    debug.leaf={x,y:ly,rotation:rz,pitch:rx,yaw:ry,roll,drift,spin,wind:physics.wind,lateralSpeed:physics.vx,fallSpeed:physics.fallSpeed,mode:land>.99?'rest':'flight',occlusionState:softened?'softened':'visible'};
+    debug.leaf={x,y:ly,rotation:rz,pitch:rx,yaw:ry,roll,drift,spin,orbitWeight,orbitPhase,clock:time,wind:physics.wind,lateralSpeed:physics.vx,fallSpeed:physics.fallSpeed,mode:land>.99?'rest':orbitWeight>.99?'orbit':'flight',occlusionState:softened?'softened':'visible'};
     // Light follows the painted blade, including text alongside a mockup.
     const nextLit=new Set<HTMLElement>();
     for(const [index,mark] of glowTargets.entries()){
@@ -388,7 +413,7 @@ export function initMotion() {
         mark.style.setProperty('--leaf-glow',String(glow));
         mark.style.setProperty('--leaf-hue',String((y*.16+index*47)%360));
         mark.style.setProperty('--leaf-light-y',`${lightY-r.top}px`);
-        mark.style.setProperty('--leaf-lightness',mark.closest('.dark')?'74%':'32%');
+        mark.style.setProperty('--leaf-lightness',root.dataset.theme==='dark'||mark.closest('.dark')?'74%':'32%');
       }
     }
     for(const mark of litMarks)if(!nextLit.has(mark))resetLeafMark(mark);
