@@ -30,6 +30,8 @@ export function initMotion() {
   if (window.__SL_DEBUG?.ready) return;
   const root = document.documentElement;
   const mast = document.getElementById('mast');
+  const hero = document.getElementById('hero');
+  const brandSignature = initBrandSignature(hero);
   const flight = document.getElementById('leaf-flight');
   const depth = document.getElementById('leaf-depth');
   const leaf = document.getElementById('wind-leaf');
@@ -229,6 +231,7 @@ export function initMotion() {
     if(y<80||directionTravel<-8||mast?.contains(document.activeElement))root.dataset.mastHidden='false';
     else if(directionTravel>36&&!document.querySelector('dialog[open]'))root.dataset.mastHidden='true';
     previousY=y;
+    renderBrandSignature(brandSignature, hero, mast, y, height, width);
     for(const scene of scenes) {
       const animated=enabled&&!scene.static;
       scene.progress=animated||scene.flow&&leafEnabled?clamp((y-scene.start)/Math.max(1,scene.run)):1;
@@ -635,5 +638,95 @@ export function initMotion() {
   configure(false);render();debug.ready=true;
   if(document.querySelector('dialog[open]'))window.SLMotion.pause();
   document.dispatchEvent(new CustomEvent('sl:ready'));
+}
+
+/** Keep the two hero identity marks visible after the opening scene, while
+ * moving them to the nearest clear vertical slot whenever page content passes. */
+function initBrandSignature(hero: HTMLElement | null) {
+  const lab = hero?.querySelector<HTMLElement>('.eyebrow-lab');
+  const tech = hero?.querySelector<HTMLElement>('.eyebrow-tech');
+  const identity = lab?.parentElement;
+  if (!hero || !lab || !tech || !identity) return null;
+
+  const placeholder = identity.cloneNode(true) as HTMLElement;
+  placeholder.classList.add('brand-signature-placeholder');
+  placeholder.setAttribute('aria-hidden', 'true');
+  placeholder.querySelectorAll<HTMLElement>('.eyebrow-lab,.eyebrow-tech').forEach(mark => mark.classList.add('brand-signature-placeholder-mark'));
+
+  const host = document.createElement('div');
+  host.className = 'brand-signature';
+  host.setAttribute('role', 'group');
+  host.setAttribute('aria-label', 'Laboratório independente. Sistemas brasileiros.');
+  const row = document.createElement('span');
+  row.className = 'hero-identity';
+  row.append(lab, tech);
+  host.append(row);
+  identity.replaceWith(placeholder);
+  document.body.append(host);
+  host.dataset.ready = 'true';
+  return host;
+}
+
+function renderBrandSignature(host: HTMLElement | null, hero: HTMLElement | null, mast: HTMLElement | null, y: number, height: number, width: number) {
+  if (!host || !hero) return;
+  const heroBottom = hero.getBoundingClientRect().bottom + y;
+  const active = y > heroBottom - Math.min(90, height * .12);
+  host.dataset.active = String(active);
+  if (!active) return;
+
+  const row = host.firstElementChild as HTMLElement | null;
+  if (!row) return;
+  const marks = Array.from(row.children) as HTMLElement[];
+  const gap = Math.max(8, Math.min(14, width * .012));
+  const inset = Math.max(14, Math.min(42, width * .035));
+  const preferred = Math.max(16, Math.min(height - 42, height * (width <= 759 ? .12 : .19)));
+  const step = 12;
+  const candidates: number[] = [preferred];
+  for (let offset = step; offset < height * .48; offset += step) candidates.push(preferred - offset, preferred + offset);
+  candidates.push(8, height - 42);
+  const obstacles = Array.from(document.querySelectorAll<HTMLElement>(
+    'main h1,main h2,main h3,main p,main figcaption,main .portfolio-card,main .process-panel,main .spiral-caption,main .technology-note,main .knowledge-note,main .section-label,main .hero-bottom,main .text-actions,main .site-footer,main .reference-group,main .orbit-note'
+  )).filter(el => !el.closest('.brand-signature') && el.getClientRects().length > 0);
+  const measuredMast = mast?.getBoundingClientRect();
+  const mastRect = measuredMast && measuredMast.height > 0 && measuredMast.bottom > 0 && measuredMast.top < height ? measuredMast : null;
+
+  for (let index = 0; index < marks.length; index++) {
+    const mark = marks[index];
+    const markWidth = Math.min(mark.getBoundingClientRect().width || (index === 0 ? 172 : 162), width - inset * 2);
+    const left = index === 0 ? inset : width - inset - markWidth;
+    const markHeight = Math.max(18, mark.getBoundingClientRect().height || 18);
+    const collidesAt = (top: number) => {
+      const box = { left, right: left + markWidth, top, bottom: top + markHeight };
+      const mastCollision = !!mastRect && box.top < mastRect.bottom + gap && box.bottom > mastRect.top - gap;
+      const contentCollision = obstacles.some(el => {
+        const rect = el.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0 && rect.left < box.right + gap && rect.right > box.left - gap && rect.top < box.bottom + gap && rect.bottom > box.top - gap;
+      });
+      return mastCollision || contentCollision;
+    };
+    if (width <= 759) {
+      const mobileTop = Math.max(8, Math.min(height - markHeight - 8, preferred));
+      mark.style.setProperty('--signature-y', `${mobileTop}px`);
+      mark.style.setProperty('--signature-x', `${left}px`);
+      mark.dataset.obstructed = String(collidesAt(mobileTop));
+      continue;
+    }
+    let best = preferred;
+    let bestCost = Infinity;
+    for (const top of candidates) {
+      const boundedTop = Math.max(8, Math.min(height - markHeight - 8, top));
+      const box = { left, right: left + markWidth, top: boundedTop, bottom: boundedTop + markHeight };
+      const mastCollision = !!mastRect && box.top < mastRect.bottom + gap && box.bottom > mastRect.top - gap;
+      const contentCollision = obstacles.some(el => {
+        const rect = el.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0 && rect.left < box.right + gap && rect.right > box.left - gap && rect.top < box.bottom + gap && rect.bottom > box.top - gap;
+      });
+      const cost = Math.abs(boundedTop - preferred) + (mastCollision || contentCollision ? 100000 : 0);
+      if (cost < bestCost) { best = boundedTop; bestCost = cost; }
+    }
+    mark.style.setProperty('--signature-y', `${best}px`);
+    mark.style.setProperty('--signature-x', `${left}px`);
+    mark.dataset.obstructed = String(bestCost >= 100000);
+  }
 }
 
