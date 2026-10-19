@@ -71,3 +71,44 @@ Rótulos explícitos, erro associado por `aria-describedby`, `aria-invalid`, est
 ## Handoff
 
 Resultado, SHA, PR, verificações e endereço da prévia serão registrados no PR. Main permanece na base; não há merge ou release nesta tarefa. A prévia estática não representa publicação nem serviço de inferência. Rollback da proposta: retornar à versão da base preservada; após eventual merge, usar revert por PR. Nenhuma migração, ação na VPS ou sincronização de mirror.
+
+## Continuação: reorganização conservadora — 19/10/2026
+
+O mantenedor aprovou reorganizar as dobras sem retirar conteúdo, fundir seções ou reescrever os textos. Base desta continuação: `7912cf8ec0c289bd1368a101fdc8ba47bf206e66`, que já inclui a paráfrase de Lenin aprovada. A main continua em `6cfe886`; a branch da issue 38 não é parte deste trabalho.
+
+| Número | Dobra | Posição anterior |
+| --- | --- | --- |
+| 01 | Abertura | 01 |
+| 02 | Escolhas / trabalho humano | 02 |
+| 03 | Trabalho | 05 |
+| 04 | Inteligências | 04 |
+| 05 | Processo | 06 |
+| 06 | Laboratório | 08 |
+| 07 | Alta tecnologia | 03 |
+| 08 | Autonomia / entrega | 07 |
+| 09 | Soberania | 10 |
+| 10 | Conexões / espiral | 09 |
+| 11 | Sobre | 12 |
+| 12 | Manifesto | 13 |
+| 13 | Referências | 11 |
+| 14 | Caderno | 14 |
+| 15 | Mesa de possibilidades | Entre 07 e 08, sem número |
+| 16 | Contato | 15 |
+
+A Mesa recebe um número próprio: são as mesmas 16 dobras, agora todas identificadas no índice e no contador. Foram atualizados `data-number`, rótulos globais e cabeçalhos de cena; as contagens internas de projetos, etapas e vistas permanecem iguais. Menu principal e rodapé seguem a nova ordem dos seus links existentes. IDs, destinos e textos dos links são preservados.
+
+### Preservação verificada
+
+Comparei os dois builds com DOMParser, seção por seção, descontando apenas a numeração global e a ordem dos links do rodapé. As 16 seções produziram HTML interno idêntico. A figura independente com a citação de Freire e as 15 imagens iniciais do HTML também coincidem. Não houve alteração em CSS, scripts de interação, física, assets, produtos, versos/citações, manifesto ou notas do Caderno.
+
+Em 390×844, a abertura de Trabalho passa de aproximadamente 3.736 para 1.708px de distância do topo: cerca de 4,4 para 2 alturas de tela. Em 1440×960, passa de 3.512 para 1.861px. São medidas de layout, sem inferência sobre retenção ou conversão. As duas galerias continuam separadas por Inteligências e Processo; a Mesa passa a anteceder Contato.
+
+### Verificação desta continuação
+
+O teste de movimento agora percorre os 16 links reais do índice e confere ordem, hash, capítulo ativo e contador, incluindo Mesa 15 e Contato 16. A regressão do site exige as 16 seções numeradas. Validação existente de movimento, leitura, redução de movimento, folha/glow, controles, galerias, resize/orientação, celulares internos, exportação e API simulada permanece aplicável. Build candidato: `.edition-builds/order-36-01`.
+
+A prévia de homologação permanece na porta 4193; a porta 4190 continua servindo main. Nenhum merge, release, alteração de credenciais ou operação em VPS/mirror faz parte desta continuação. Retorno da reorganização: commit anterior `7912cf8`, por revisão/revert se necessário.
+
+As sete suites de navegador passaram localmente no build candidato, assim como tipos, 36 testes Node/Worker, build/check estático, diff check, npm audit e pip-audit. As capturas do índice, das galerias e da Mesa foram revisadas em 390px e 1440px.
+
+Limitação anterior identificada na exploração: selecionar Abertura pelo índice, rolar até um projeto e abrir/fechar o índice pode devolver a página ao topo. Reproduzi tanto no build `7912cf8` quanto no reorganizado: a posição passou respectivamente de 4.547/2.519px para zero. O cenário de histórico é independente da ordem; `public/scripts/app.js` e o runtime de movimento permanecem intactos nesta proposta conservadora. Correção desse comportamento requer uma mudança funcional separada. Os testes de navegação sequencial e os cenários de modal são isolados para não compartilhar histórico entre casos.
