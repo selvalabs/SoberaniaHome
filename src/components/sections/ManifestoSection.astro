@@ -11,19 +11,25 @@ const principles = [
   ['Cooperação como tecnologia.','Construir capacidade em comum.','Definir acordos claros, compartilhar conhecimento e criar ferramentas que apoiem o trabalho coletivo. A forma de colaborar faz parte da solução.'],
   ['Construção como parte da crítica.','Experimentar. Verificar. Refazer.','Transformar uma hipótese em algo que possa ser usado, observado e contestado. Mostrar os limites do que existe e usar o retorno das pessoas para orientar a próxima versão.']
 ];
+const examples:Record<number,{href:string;label:string}> = {
+  1:{href:'#editor',label:'Na entrega: acesso, documentação e continuidade'},
+  2:{href:'#possibilidades',label:'Na Mesa: contexto, limites e revisão da proposta'},
+  4:{href:'#soberania',label:'Na arquitetura: hospedar, levar dados e conectar'},
+  9:{href:'#laboratorio',label:'No laboratório: interfaces em diferentes estágios'}
+};
 ---
 
-<section id="manifesto" class="section manifesto dark manifesto-edition" data-number="13" aria-labelledby="manifesto-title">
+<section id="manifesto" class="section manifesto dark manifesto-edition" data-number="12" aria-labelledby="manifesto-title">
   <div class="manifesto-heading">
-    <div class="section-label"><span>13</span><span>Manifesto</span></div>
+    <div class="section-label"><span>12</span><span>Manifesto</span></div>
     <h2 id="manifesto-title">O que orienta<br /><em>cada escolha.</em></h2>
-    <p>Princípios só ganham sentido quando chegam às decisões de um projeto.</p>
+    <p>Cada princípio muda uma decisão: o que automatizar, quais dados guardar, quem pode intervir e como continuar. Abra um deles para ver a consequência no projeto.</p>
     <div class="manifesto-compass" aria-hidden="true"><span data-manifesto-number>01</span><svg viewBox="0 0 240 240"><circle cx="120" cy="120" r="104"/><circle cx="120" cy="120" r="78"/><path d="M120 0V42M120 198V240M0 120H42M198 120H240M47 47L68 68M172 172L193 193M47 193L68 172M172 68L193 47"/></svg><small>PRINCÍPIO EM FOCO</small></div>
   </div>
   <div class="manifesto-ledger" data-manifesto-ledger>
     {principles.map(([principle,title,body],index)=><details class="manifesto-principle" open={index===0} data-principle-number={String(index+1).padStart(2,'0')}>
       <summary><span class="principle-index">{String(index+1).padStart(2,'0')}</span><span class="principle-statement">{principle}</span><span class="principle-toggle" aria-hidden="true">+</span></summary>
-      <div class="principle-consequence"><span>NO PROJETO</span><div><h3>{title}</h3><p>{body}</p></div></div>
+      <div class="principle-consequence"><span>NO PROJETO</span><div><h3>{title}</h3><p>{body}</p>{examples[index] && <a class="principle-example" href={examples[index].href} data-jump>{examples[index].label} ↗</a>}</div></div>
     </details>)}
     <p class="manifesto-signature">Soberania Labs <span>—</span> tecnologia para ampliar autonomia.</p>
   </div>

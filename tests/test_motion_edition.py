@@ -26,6 +26,29 @@ def open_index(page):
     page.mouse.click(box['x']+box['width']/2,box['y']+box['height']/2)
     page.wait_for_function('document.querySelector("#index-dialog").open')
 
+
+def ordered_navigation(page):
+    expected=['hero','folha','trabalho','deslocamento-2','processo','laboratorio',
+              'deslocamento-1','editor','soberania','espiral','sobre','manifesto',
+              'referencias','caderno','possibilidades','contato']
+    actual=page.locator('main > section[data-number]').evaluate_all('(els)=>els.map(e=>e.id)')
+    assert actual==expected,actual
+    index=page.locator('#index-dialog .index-links a')
+    assert index.evaluate_all('(links)=>links.map(a=>a.hash.slice(1))')==expected
+    assert index.locator('span').all_text_contents()==[f'{i:02}' for i in range(1,17)]
+    # Activate the actual index links and check the hash, active chapter and
+    # mast counter, including the newly numbered atelier near the footer.
+    for number,sid in enumerate(expected,1):
+        page.locator('#open-index').focus()
+        open_index(page)
+        page.locator(f'#index-dialog a[href="#{sid}"]').click()
+        page.wait_for_function('(id)=>location.hash==="#"+id&&!document.querySelector("#index-dialog").open&&__SL_DEBUG.activeId===id',arg=sid)
+        assert page.locator('#section-counter').text_content()==f'{number:02} / 16'
+    page.locator('#open-index').focus()
+    open_index(page)
+    page.locator('#index-dialog a[href="#hero"]').click()
+    page.wait_for_function('__SL_DEBUG.activeId==="hero"')
+
 def leaf_state(page):
     return page.evaluate('''() => {
       const flight=document.querySelector('#leaf-flight'),leaf=document.querySelector('#wind-leaf');
@@ -103,8 +126,9 @@ with sync_playwright() as pw:
             assert page.evaluate('__SL_DEBUG.scenes.filter(s=>["trabalho","laboratorio"].includes(s.id)).every(s=>!s.static&&s.end>s.start)')
             assert page.evaluate('__SL_DEBUG.leafEnabled'),'short desktop hid the leaf'
             page.set_viewport_size({'width':w,'height':h});page.wait_for_function('__SL_DEBUG.enabled')
+        ordered_navigation(page)
         assert not errors,errors
-        print(f'PASS {w}x{h}: scenes, nodes, controls, modal, idle, reading, persistence, reduced motion',flush=True)
+        print(f'PASS {w}x{h}: ordered index, scenes, nodes, controls, modal, idle, reading, persistence, reduced motion',flush=True)
         context.close()
 
     # Browser toolbars change available height without changing the user's

@@ -1,33 +1,45 @@
 ---
+import { scenarios, sectorLabels } from '../../data/atelier';
+import '../../styles/editorial-atelier.css';
 const edgeEnabled = import.meta.env.PUBLIC_EDGE_AI === 'true';
+const initial = scenarios.cooperativa;
 ---
-<section id="possibilidades" class="section atelier-section" aria-labelledby="atelier-title" data-atelier data-edge-enabled={String(edgeEnabled)}>
-  <div class="section-label"><span>↳</span><span>Mesa de possibilidades / experimento aberto</span></div>
+<section id="possibilidades" class="section atelier-section" data-number="15" aria-labelledby="atelier-title" data-atelier data-edge-enabled={String(edgeEnabled)}>
+  <div class="section-label"><span>15</span><span>Mesa de possibilidades / do problema ao primeiro teste</span></div>
   <div class="atelier-heading">
     <h2 id="atelier-title">E se o próximo sistema<br/><em>começasse aqui?</em></h2>
-    <p>Traga uma situação do mundo. Explore como ela poderia virar uma ferramenta — com os dados, as pessoas e os limites à vista.</p>
+    <p>Escolha uma situação, examine um caminho possível e leve um esboço para conversar com sua equipe. Comece pelo que precisa mudar na rotina.</p>
   </div>
+  <ol class="atelier-guide" aria-label="Como usar esta mesa"><li><span>01</span> Escolha um exemplo</li><li><span>02</span> Anote sua situação</li><li><span>03</span> Leve um primeiro passo</li></ol>
   <div class="atelier-workspace">
     <form class="atelier-input" data-atelier-form>
       <fieldset disabled data-atelier-controls>
       <span class="atelier-mode" data-atelier-mode>Demonstração local · sem envio de dados</span>
       <label for="atelier-sector">01 / De onde vem a pergunta?</label>
-      <select id="atelier-sector" name="sector"><option value="cooperativa">Uma cooperativa ou pequeno negócio</option><option value="comunidade">Uma comunidade ou território</option><option value="educacao">Uma escola ou espaço de aprendizagem</option><option value="cultura">Um projeto cultural ou independente</option></select>
-      <label for="atelier-context">02 / O que precisa funcionar melhor?</label>
-      <textarea id="atelier-context" name="context" rows="5" maxlength="1800" placeholder="Por exemplo: organizar os pedidos da feira sem perder a conversa com quem produz."></textarea>
-      <div class="atelier-actions"><button type="submit" class="atelier-primary">Traçar possibilidades ↗</button><button type="button" data-atelier-ai hidden>Explorar com IA ↗</button></div>
-      <p class="atelier-privacy" data-atelier-privacy>A demonstração usa cenários preparados, sem inferência de IA. Seu texto permanece neste navegador. Não inclua informações pessoais ou confidenciais.</p>
-      <p class="atelier-status" data-atelier-status role="status">Escolha um contexto. O mapa já está aberto para investigar.</p>
+      <select id="atelier-sector" name="sector">{Object.entries(sectorLabels).map(([value,label])=><option value={value}>{label}</option>)}</select>
+      <label for="atelier-context">02 / O que precisa funcionar melhor? <span>(opcional no exemplo local)</span></label>
+      <p id="atelier-context-hint" class="atelier-help">Quem enfrenta a dificuldade? Como resolve hoje? O que gostaria de mudar?</p>
+      <textarea id="atelier-context" name="context" rows="5" maxlength="1800" aria-describedby="atelier-context-hint atelier-context-error" placeholder="Por exemplo: organizar os pedidos da feira sem perder a conversa com quem produz."></textarea>
+      <div class="atelier-input-tools"><button type="button" data-atelier-example>Usar um exemplo de situação</button><span data-atelier-count>0 / 1800</span></div>
+      <p id="atelier-context-error" class="atelier-field-error" data-atelier-error hidden></p>
+      <div class="atelier-actions"><button type="submit" class="atelier-primary">Montar meu esboço local ↗</button><button type="button" data-atelier-ai hidden>Explorar com IA ↗</button></div>
+      <p class="atelier-privacy" data-atelier-privacy>O exemplo local é um roteiro preparado para o campo escolhido. Sua anotação acompanha o esboço, mas não altera esse roteiro. Não há inferência de IA nem envio do texto. Evite dados pessoais ou confidenciais.</p>
       </fieldset>
+      <div class="atelier-connection"><strong>IA nesta versão</strong><p data-atelier-connection role="status">{edgeEnabled ? 'Aguardando verificação da conexão. O exemplo local está disponível.' : 'Não conectada. Você pode explorar os quatro exemplos locais e baixar seu esboço.'}</p><button type="button" data-atelier-retry hidden>Verificar conexão novamente</button></div>
+      <p class="atelier-status" data-atelier-status role="status" aria-atomic="true">O exemplo de cooperativa está aberto. Escolha outro campo para comparar.</p>
+      <a class="atelier-view" href="#atelier-result" data-atelier-view>Ver o último esboço ↓</a>
     </form>
     <div class="atelier-output" data-atelier-output>
-      <span class="atelier-mode" data-atelier-output-mode>Esboço 01 / cooperativa</span>
-      <h3 data-atelier-title>Da feira ao pedido.<br/><em>Sem perder quem produz.</em></h3>
-      <p class="atelier-summary" data-atelier-summary>Um caderno digital compartilhado para organizar a oferta, reunir os pedidos e acompanhar a entrega. Começar pequeno permite descobrir o que realmente precisa ser automatizado.</p>
-      <ol class="atelier-flow" data-atelier-steps><li data-step="01"><strong>Escutar a operação</strong><p>Mapear como produtores e compradores já combinam oferta, preço e retirada.</p></li><li data-step="02"><strong>Conectar o essencial</strong><p>Um catálogo simples e um registro exportável de pedidos, sem exigir um aplicativo de cada pessoa.</p></li><li data-step="03"><strong>Devolver o controle</strong><p>A cooperativa decide disponibilidade, confirma os pedidos e mantém uma cópia dos registros.</p></li></ol>
-      <div class="atelier-boundaries"><div><h4>Dados que fazem sentido</h4><ul data-atelier-data><li>Produtos e disponibilidade</li><li>Pedidos e situação da entrega</li></ul></div><div><h4>Decisões que continuam humanas</h4><ul data-atelier-human><li>Preço, partilha e condições de trabalho</li><li>Autorizar uma comunicação ou cobrança</li></ul></div></div>
-      <p class="atelier-next" data-atelier-next>Primeiro experimento: acompanhar uma feira com um registro simples antes de escolher a tecnologia.</p>
+      <span class="atelier-mode" data-atelier-output-mode>Demonstração local / cenário preparado</span>
+      <h3 id="atelier-result" data-atelier-title tabindex="-1">{initial.title}</h3>
+      <p class="atelier-summary" data-atelier-summary>{initial.summary}</p>
+      <div class="atelier-context-note"><strong>Sua situação neste esboço</strong><p data-atelier-result-context>Nenhuma anotação incluída. Este é o exemplo de cooperativa.</p><small data-atelier-context-origin>Anotação de contexto; o roteiro local é preparado.</small></div>
+      <p class="atelier-draft" data-atelier-draft role="status" hidden>Há uma anotação nova. Atualize o esboço para incorporá-la. O download mantém o último resultado.</p>
+      <ol class="atelier-flow" data-atelier-steps>{initial.steps.map((step,index)=><li data-step={String(index+1).padStart(2,'0')}><strong>{step.title}</strong><p>{step.detail}</p></li>)}</ol>
+      <div class="atelier-boundaries"><div><h4>Dados que fazem sentido</h4><ul data-atelier-data>{initial.data.map(item=><li>{item}</li>)}</ul></div><div><h4>Decisões que continuam humanas</h4><ul data-atelier-human>{initial.human.map(item=><li>{item}</li>)}</ul></div></div>
+      <p class="atelier-next" data-atelier-next>{initial.next}</p>
       <button class="atelier-export" type="button" data-atelier-export hidden>Levar este esboço ↓</button>
+      <p class="atelier-continuation">Para levar à conversa: quem precisa participar desse primeiro teste? <a href="#laboratorio" data-jump>Conheça outras ferramentas do laboratório ↗</a></p>
     </div>
   </div>
   <noscript><p class="atelier-privacy">Este cenário pode ser lido sem JavaScript. Para combinar outros contextos e exportar um esboço, ative os recursos interativos do navegador.</p></noscript>
