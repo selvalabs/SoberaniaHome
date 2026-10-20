@@ -1,5 +1,9 @@
 /** Shared publication policy. Development and unconfigured builds stay previews. */
 export function resolveSitePolicy(values = {}, production = false) {
+  const basePath = values.PUBLIC_BASE_PATH || '/';
+  if (basePath.length > 200 || !/^\/(?:[A-Za-z0-9_-]+\/)*$/.test(basePath)) {
+    throw new Error('PUBLIC_BASE_PATH must be a slash-delimited local path, such as /SoberaniaHome/.');
+  }
   const requested = values.PUBLIC_INDEXABLE;
   if (requested && requested !== 'true' && requested !== 'false') {
     throw new Error('PUBLIC_INDEXABLE must be "true" or "false".');
@@ -24,5 +28,10 @@ export function resolveSitePolicy(values = {}, production = false) {
     throw new Error('PUBLIC_INDEXABLE=true requires a confirmed PUBLIC_SITE_URL.');
   }
 
-  return { siteUrl, indexable: production && requested === 'true' && Boolean(siteUrl) };
+  return { siteUrl, basePath, indexable: production && requested === 'true' && Boolean(siteUrl) };
+}
+
+export function localPath(path, basePath = '/') {
+  if (!path.startsWith('/') || path.startsWith('//')) throw new Error('Expected a local absolute path.');
+  return basePath === '/' || path.startsWith(basePath) ? path : basePath + path.slice(1);
 }

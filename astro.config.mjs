@@ -8,6 +8,7 @@ const publication = resolveSitePolicy(values, mode === 'production');
 
 export default defineConfig({
   ...(publication.siteUrl ? { site: publication.siteUrl } : {}),
+  base: publication.basePath,
   outDir: process.env.BUILD_DIR || './.edition-builds/latest/',
   trailingSlash: 'always',
   compressHTML: true,
