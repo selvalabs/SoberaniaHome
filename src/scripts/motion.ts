@@ -663,33 +663,36 @@ function initBrandSignature(hero: HTMLElement | null) {
   return host;
 }
 
-function renderBrandSignature(host: HTMLElement | null, mast: HTMLElement | null, y: number, height: number, width: number) {
+function renderBrandSignature(host: HTMLElement | null, mast: HTMLElement | null, _y: number, _height: number, _width: number) {
   if (!host) return;
   host.dataset.active = 'true';
-
   const mark = host.firstElementChild as HTMLElement | null;
   if (!mark) return;
-  const gap = Math.max(8, Math.min(14, width * .012));
-  const inset = Math.max(14, Math.min(42, width * .035));
-  const preferred = Math.max(16, Math.min(height - 42, height * (width <= 759 ? .12 : .19)));
-  const obstacles = Array.from(document.querySelectorAll<HTMLElement>(
-    'main h1,main h2,main h3,main p,main figcaption,main .portfolio-card,main .process-panel,main .spiral-caption,main .technology-note,main .knowledge-note,main .section-label,main .hero-bottom,main .text-actions,main .site-footer,main .reference-group,main .orbit-note'
-  )).filter(el => !el.closest('.brand-signature') && el.getClientRects().length > 0);
-  const measuredMast = mast?.getBoundingClientRect();
-  const mastRect = measuredMast && measuredMast.height > 0 && measuredMast.bottom > 0 && measuredMast.top < height ? measuredMast : null;
-
-  const markWidth = Math.min(mark.getBoundingClientRect().width || 172, width - inset * 2);
-  const left = width - inset - markWidth;
-  const markHeight = Math.max(18, mark.getBoundingClientRect().height || 18);
-  const fixedTop = Math.max(8, Math.min(height - markHeight - 8, preferred));
-  const box = { left, right: left + markWidth, top: fixedTop, bottom: fixedTop + markHeight };
-  const mastCollision = !!mastRect && box.top < mastRect.bottom + gap && box.bottom > mastRect.top - gap;
-  const contentCollision = obstacles.some(el => {
-    const rect = el.getBoundingClientRect();
-    return rect.width > 0 && rect.height > 0 && rect.left < box.right + gap && rect.right > box.left - gap && rect.top < box.bottom + gap && rect.bottom > box.top - gap;
+  // CSS owns the anchor. Measure the rendered position, including mobile safe areas.
+  const box = mark.getBoundingClientRect();
+  const gap = 6;
+  const overlaps = (rect: DOMRect) => rect.width > 0 && rect.height > 0 &&
+    rect.left < box.right + gap && rect.right > box.left - gap &&
+    rect.top < box.bottom + gap && rect.bottom > box.top - gap;
+  const mastCollision = !!mast && overlaps(mast.getBoundingClientRect());
+  const obstacles = document.querySelectorAll<HTMLElement>(
+    'main h1,main h2,main h3,main p,main figcaption,main li,main .section-label,main .technology-note,main .knowledge-note,main .orbit-word,main a,main button,main input,main textarea,main summary,main img:not(.tree),main svg,main canvas,main video,main iframe'
+  );
+  const contentCollision = Array.from(obstacles).some(el => {
+    if (!overlaps(el.getBoundingClientRect())) return false;
+    const style = getComputedStyle(el);
+    if (style.visibility === 'hidden' || style.opacity === '0') return false;
+    if (el.matches('img,svg,canvas,video,iframe,button,input,textarea,summary')) return true;
+    // Text occupies lines, not the full rectangular width of its paragraph/card.
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    const range = document.createRange();
+    while (walker.nextNode()) {
+      if (!walker.currentNode.textContent?.trim()) continue;
+      range.selectNodeContents(walker.currentNode);
+      if (Array.from(range.getClientRects()).some(overlaps)) return true;
+    }
+    return false;
   });
-  mark.style.setProperty('--signature-y', `${fixedTop}px`);
-  mark.style.setProperty('--signature-x', `${left}px`);
   mark.dataset.obstructed = String(mastCollision || contentCollision);
 }
 
