@@ -1,4 +1,5 @@
 import '../styles/motion-edition.css';
+import { createHeroPrint } from './hero-print';
 import { createLeafFlight, leafGust, lifeOrbit, LEAF_SCROLL_PACE } from './leaf-physics';
 import { createLeafReturn, LEAF_RETURN_SECONDS, type LeafPose } from './leaf-return';
 import { glowColor, textSurface } from './leaf-contrast';
@@ -32,6 +33,7 @@ export function initMotion() {
   const mast = document.getElementById('mast');
   const hero = document.getElementById('hero');
   const brandSignature = initBrandSignature(hero);
+  const heroPrint = createHeroPrint(hero);
   const flight = document.getElementById('leaf-flight');
   const depth = document.getElementById('leaf-depth');
   const leaf = document.getElementById('wind-leaf');
@@ -55,7 +57,7 @@ export function initMotion() {
   let pendingSceneJump: {scene: Scene; index: number} | null = null;
   let navigationRevision=0;
   // Cache editorial targets once. Product interfaces and controls keep their own colors.
-  const glowTargets = all<HTMLElement>('h1,h2,h3,p,figcaption,.technology-note,.knowledge-note,.eyebrow-lab,.eyebrow-tech-label', document.querySelector('main') || document)
+  const glowTargets = all<HTMLElement>('main h1,main h2,main h3,main p,main figcaption,main .technology-note,main .knowledge-note,main .eyebrow-lab,.brand-signature .eyebrow-tech-label')
     .filter(el => !el.closest('button,a,.work-evidence,.cooperative-screen,.process-panels,.orbit-view,#referencias,dialog'))
     .flatMap(el => {
       const marks=all<HTMLElement>('strong,em,.hero-future,.choices-pencil,.choices-paper,.choices-ink',el);
@@ -163,6 +165,7 @@ export function initMotion() {
     metrics.measurements++;
     width=document.documentElement.clientWidth;height=innerHeight;
     mastHeight=mast?.offsetHeight||64;
+    heroPrint?.measure(enabled,height,width,mastHeight);
     root.style.setProperty('--motion-stage-height',`${Math.max(1,height-mastHeight)}px`);
     root.style.setProperty('--motion-mast-height',`${mastHeight}px`);
     for(const scene of scenes) {
@@ -231,6 +234,7 @@ export function initMotion() {
     if(y<80||directionTravel<-8||mast?.contains(document.activeElement))root.dataset.mastHidden='false';
     else if(directionTravel>36&&!document.querySelector('dialog[open]'))root.dataset.mastHidden='true';
     previousY=y;
+    heroPrint?.render(y);
     renderBrandSignature(brandSignature, mast, y, height, width);
     for(const scene of scenes) {
       const animated=enabled&&!scene.static;
