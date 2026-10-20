@@ -9,7 +9,7 @@ with sync_playwright() as pw:
   page.on('pageerror',lambda e:errors.append(str(e)))
   page.goto(args.url,wait_until='networkidle');page.wait_for_function('window.__SL_DEBUG?.ready')
   original=page.locator('.hero-message').inner_text()
-  def values():return page.locator('[data-print-progress]').evaluate_all('(es)=>es.map(e=>Number(e.dataset.printProgress))')
+  def values():return page.locator('#hero [data-print-progress]').evaluate_all('(es)=>es.map(e=>Number(e.dataset.printProgress))')
   start,run=page.locator('#hero').evaluate('(e)=>[+e.dataset.printStart,+e.dataset.printRun]')
   assert run>=1800
   assert page.locator('#hero').get_attribute('data-print-pinned')=='true'
@@ -28,7 +28,7 @@ with sync_playwright() as pw:
    go(progress);states=values()
    assert 0<states[active]<1,states
    assert states[:active]==[1]*active and states[active+1:]==[0]*(2-active),states
-   r=page.locator('[data-print-progress]').nth(active).bounding_box()
+   r=page.locator('#hero [data-print-progress]').nth(active).bounding_box()
    assert r['y']>=-2 and r['y']+r['height']<=h+2,(w,h,progress,r)
    if w==1440 and active==0: assert buttons.bounding_box()['y']>initial_button_y+15,'text did not push buttons'
    stage=page.locator('.hero-stage').bounding_box()

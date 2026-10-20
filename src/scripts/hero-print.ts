@@ -1,44 +1,51 @@
 import '../styles/hero-print.css';
 
 const clamp = (n: number, max = 1) => Math.max(0, Math.min(max, n));
-const starts = [.07, .38, .69];
-const duration = .24;
+type PrintOptions = { stage: string; message: string; blocks: string; finishAtBottom?: boolean };
+const heroOptions: PrintOptions = {stage: '.hero-stage', message: '.hero-message', blocks: '.hero-lead,.hero-argument,.hero-method'};
 
 /** One complete paragraph per print pass, with a reading pause between passes. */
-export function createHeroPrint(hero: HTMLElement | null) {
-  const stage = hero?.querySelector<HTMLElement>('.hero-stage');
+export function createHeroPrint(hero: HTMLElement | null, options: PrintOptions = heroOptions) {
+  const stage = hero?.querySelector<HTMLElement>(options.stage);
   if (!hero || !stage) return null;
-  const message = hero.querySelector<HTMLElement>('.hero-message');
+  const message = hero.querySelector<HTMLElement>(options.message);
   const blockGeometry: { top: number; height: number; lines: number }[] = [];
   let messageHeight = 0;
-  const blocks = Array.from(hero.querySelectorAll<HTMLElement>('.hero-lead,.hero-argument,.hero-method'));
+  const blocks = Array.from(hero.querySelectorAll<HTMLElement>(options.blocks));
+  const step = .93 / Math.max(1,blocks.length);
+  const duration = step - .07;
+  const starts = blocks.map((_,index) => .07 + index * step);
   let enabled = false, start = 0, run = 1, anchor = 0;
   let framing: number[] = [];
   function measure(active: boolean, height: number, _width: number, mast: number) {
     enabled = active;
     hero!.dataset.printPinned = 'false';
+    hero!.dataset.printEnabled = 'false';
     message?.style.removeProperty('height');
     const rect = stage!.getBoundingClientRect();
     const messageRect = message!.getBoundingClientRect();
     messageHeight = messageRect.height;
     blockGeometry.length = 0;
-    blocks.forEach(block => { const r=block.getBoundingClientRect(); blockGeometry.push({top:r.top-messageRect.top,height:r.height,lines:Math.max(1,Math.round(r.height/parseFloat(getComputedStyle(block).lineHeight)))}); });
+    blocks.forEach(block => { const r=block.getBoundingClientRect(); blockGeometry.push({top:r.top-messageRect.top,height:r.height,lines:Math.max(1,Math.round(r.height/(parseFloat(getComputedStyle(block).lineHeight)||parseFloat(getComputedStyle(block.querySelector("p")||block).lineHeight)||24)))}); });
     hero!.style.setProperty('--print-stage-height', `${rect.height}px`);
     const padding = parseFloat(getComputedStyle(hero!).paddingTop) + parseFloat(getComputedStyle(hero!).paddingBottom);
     anchor = mast + 12;
     start = Math.max(0, hero!.getBoundingClientRect().top + scrollY + parseFloat(getComputedStyle(hero!).paddingTop) - anchor);
-    run = Math.round(Math.max(1800, Math.min(3400, height * 2.8)));
+    run = Math.round(Math.max(1800, Math.min(3400, height * 2.8 * blocks.length/3)));
     const room = height - anchor - 16;
     const travel = Math.max(0, rect.height - room);
     framing = blocks.map(block => {
       const r = block.getBoundingClientRect();
       return clamp(r.top - rect.top - Math.max(12,(room-r.height)/2),travel);
     });
+    if (options.finishAtBottom && framing.length) framing[framing.length-1] = travel;
     hero!.dataset.printEnabled = String(active);
     hero!.dataset.printPinned = String(active);
     hero!.dataset.printStart = String(start);
     hero!.dataset.printRun = String(run);
     hero!.style.height = active ? `${rect.height + run + padding}px` : '';
+    // Restore the reveal before the measurement can be painted or observed.
+    render(scrollY);
   }
   function render(y: number) {
     const progress = clamp((y-start)/run);
@@ -47,6 +54,7 @@ export function createHeroPrint(hero: HTMLElement | null) {
       // Finish the previous block before the next even starts.
       const p = enabled ? clamp((progress-starts[index])/duration) : 1;
       element.dataset.printProgress = p.toFixed(3);
+      if (element.querySelector("a,button")) element.inert = enabled && p < 1;
       const geometry = blockGeometry[index];
       const cursor=p*geometry.lines;
       const fraction=cursor-Math.floor(cursor);

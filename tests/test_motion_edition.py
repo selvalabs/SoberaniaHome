@@ -177,7 +177,11 @@ with sync_playwright() as pw:
     page.locator('#folha').evaluate('el=>{if(parseFloat(getComputedStyle(el).paddingLeft)<20)throw new Error("Missing editorial gutter")}')
     hero_bottom=page.locator('#hero').evaluate('el=>el.getBoundingClientRect().bottom+scrollY')
     previous=None;positions=[];attitudes=[]
-    for y in range(0,int(hero_bottom+844*2.5),20):
+    # A longer pinned opening changes the phase at free-flight entry. Sample
+    # more than one 4.6-unit gust cycle instead of a short flank of one glide.
+    first_gallery=page.evaluate('Math.min(...__SL_DEBUG.scenes.filter(s=>s.id==="trabalho"||s.id==="laboratorio").map(s=>s.start))')
+    sweep_end=min(hero_bottom+844*5,first_gallery-60)
+    for y in range(0,int(sweep_end),20):
         page.evaluate('(y)=>scrollTo({top:y,behavior:"instant"})',y);page.wait_for_timeout(20)
         point=page.evaluate('({...__SL_DEBUG.leaf})')
         if previous: assert abs(point['x']-previous['x'])<30,('leaf path jumps',y,previous,point)

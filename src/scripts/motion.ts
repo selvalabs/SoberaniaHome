@@ -34,6 +34,10 @@ export function initMotion() {
   const hero = document.getElementById('hero');
   const brandSignature = initBrandSignature(hero);
   const heroPrint = createHeroPrint(hero);
+  const choicesPrint = createHeroPrint(document.getElementById('folha'), {
+    stage: '.choices-print-stage', message: '.choices-print-body', finishAtBottom: true,
+    blocks: '.choices-opening > p,.choices-reference,.choices-benefit'
+  });
   const flight = document.getElementById('leaf-flight');
   const depth = document.getElementById('leaf-depth');
   const leaf = document.getElementById('wind-leaf');
@@ -166,6 +170,7 @@ export function initMotion() {
     width=document.documentElement.clientWidth;height=innerHeight;
     mastHeight=mast?.offsetHeight||64;
     heroPrint?.measure(enabled,height,width,mastHeight);
+    choicesPrint?.measure(enabled,height,width,mastHeight);
     root.style.setProperty('--motion-stage-height',`${Math.max(1,height-mastHeight)}px`);
     root.style.setProperty('--motion-mast-height',`${mastHeight}px`);
     for(const scene of scenes) {
@@ -235,6 +240,7 @@ export function initMotion() {
     else if(directionTravel>36&&!document.querySelector('dialog[open]'))root.dataset.mastHidden='true';
     previousY=y;
     heroPrint?.render(y);
+    choicesPrint?.render(y);
     renderBrandSignature(brandSignature, mast, y, height, width);
     for(const scene of scenes) {
       const animated=enabled&&!scene.static;
