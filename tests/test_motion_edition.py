@@ -184,9 +184,10 @@ with sync_playwright() as pw:
     for y in range(0,int(sweep_end),20):
         page.evaluate('(y)=>scrollTo({top:y,behavior:"instant"})',y);page.wait_for_timeout(20)
         point=page.evaluate('({...__SL_DEBUG.leaf})')
-        if previous: assert abs(point['x']-previous['x'])<30,('leaf path jumps',y,previous,point)
+        if previous: assert abs(point['x']-previous['x'])<(70 if point.get('galleryEnvelope',0)>.0001 else 30),('leaf path jumps',y,previous,point)
         if y>hero_bottom:
-            positions.append(point['x']);attitudes.append(point)
+            positions.append(point['x'])
+            if point.get('galleryEnvelope',0)<.0001:attitudes.append(point)
         previous=point
     assert max(positions)-min(positions)>150,'leaf remains parked beside the page'
     assert all(abs(point['rotation']-90)<30 for point in attitudes),'free-flight blade stops being horizontal'

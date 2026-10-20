@@ -46,6 +46,7 @@ jobs:
           python tests/test_leaf_flow.py --url http://127.0.0.1:4361/
           python tests/test_leaf_return.py --url http://127.0.0.1:4361/
           python tests/test_leaf_reveal_origin.py --url http://127.0.0.1:4361/
+          python tests/test_leaf_gallery_spiral.py --url http://127.0.0.1:4361/
           python tests/test_theme_orbit.py --url http://127.0.0.1:4361/
           python tests/test_leaf_contrast.py --url http://127.0.0.1:4361/
           python tests/test_horizontal_viewports.py --url http://127.0.0.1:4361/

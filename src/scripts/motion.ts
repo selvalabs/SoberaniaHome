@@ -1,6 +1,7 @@
 import '../styles/motion-edition.css';
 import { createHeroPrint } from './hero-print';
 import { leafScrollClock } from './leaf-scroll-clock';
+import { galleryLeafSpiral } from './leaf-gallery-spiral';
 import { createLeafFlight, leafGust, lifeOrbit, LEAF_SCROLL_PACE } from './leaf-physics';
 import { createLeafReturn, LEAF_RETURN_SECONDS, type LeafPose } from './leaf-return';
 import { glowColor, textSurface } from './leaf-contrast';
@@ -383,6 +384,20 @@ export function initMotion() {
     let rx=mix(7,18+physics.twist*degrees*1.6,travel);
     let ry=mix(0,physics.vx*22+physics.angularSpeed*10,travel);
     let scale=mix(width<760?.62:.82,(width<760?.46:.68)*(1+physics.twist*.08),travel);
+    let galleryRoll=0,galleryEnvelope=0,gallerySpiralX=0,gallerySpiralY=0;
+    for(const gallery of horizontal){
+      const local=galleryLeafSpiral((y-gallery.start)/Math.max(1,gallery.run),gallery.panels.length-1,gallery.reverse?1:-1);
+      galleryRoll+=local.roll;
+      if(local.envelope<.000001)continue;
+      galleryEnvelope=local.envelope;
+      // Recenter the helical flight so each loop can open without edge clamping.
+      x=mix(x,width*(.5+lateral*.18+drift*.06),local.envelope*.85);
+      const dx=local.x*Math.min(104,width*.12),dy=local.y*Math.min(58,height*.065);
+      gallerySpiralX=dx;gallerySpiralY=dy;
+      x+=dx;ly+=dy;
+      rx+=local.pitch;ry+=local.yaw;rz+=local.bank;
+      scale*=1+local.envelope*.06*Math.sin(local.roll*Math.PI/180);
+    }
     // Join the same phase as the ring and words. Smooth spatial capture/release
     // leaves both ends continuous and keeps VIDA free in the center.
     const spiral=scenes.find(s=>s.kind==='spiral'&&!s.static);
@@ -405,7 +420,7 @@ export function initMotion() {
     // page's accumulated rotations. Local Y rolls around the blade's length.
     // Complete two axial turns during the orbit, retaining full turns after
     // departure so the leaf never unwinds when leaving the scene.
-    const flightTurn=turn+orbitPhase/(Math.PI*2*1.25)*720;
+    const flightTurn=turn+galleryRoll+orbitPhase/(Math.PI*2*1.25)*720;
     let roll=mix(flightTurn,Math.round(flightTurn/360)*360,land);
     x=mix(x,dock.x,land);ly=mix(ly,dockY,land);rz=mix(rz,96,land);rx=mix(rx,7,land);ry=mix(ry,0,land);scale=mix(scale,.74,land);
     if(y>=maxScroll-1){x=dock.x;ly=dockY;rz=96;rx=7;ry=0;}
@@ -448,7 +463,7 @@ export function initMotion() {
     root.dataset.leafInteractive=String(!softened&&!scene);
     root.dataset.leafOccluded='0';root.dataset.leafDepth='front';
     leafPose={x,y:ly,rotation:rz,pitch:rx,yaw:ry,roll,scale,pivot};
-    debug.leaf={returning:!!leafReturn,dragging:!!leafDrag,returnElapsed:leafReturn?.elapsed??0,x,y:ly,rotation:rz,pitch:rx,yaw:ry,roll,drift,spin,orbitWeight,orbitPhase,clock:time,clockScroll:clockY,wind:physics.wind,lateralSpeed:physics.vx,fallSpeed:physics.fallSpeed,mode:land>.99?'rest':orbitWeight>.99?'orbit':'flight',occlusionState:softened?'softened':'visible'};
+    debug.leaf={returning:!!leafReturn,dragging:!!leafDrag,returnElapsed:leafReturn?.elapsed??0,x,y:ly,rotation:rz,pitch:rx,yaw:ry,roll,drift,spin,orbitWeight,orbitPhase,galleryRoll,galleryEnvelope,gallerySpiralX,gallerySpiralY,clock:time,clockScroll:clockY,wind:physics.wind,lateralSpeed:physics.vx,fallSpeed:physics.fallSpeed,mode:land>.99?'rest':orbitWeight>.99?'orbit':'flight',occlusionState:softened?'softened':'visible'};
     // Light follows the painted blade, including text alongside a mockup.
     const nextLit=new Set<HTMLElement>();
     for(const [index,mark] of glowTargets.entries()){
