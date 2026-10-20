@@ -1,0 +1,42 @@
+{
+  "tool": "built-in image_gen",
+  "date": "2026-10-19",
+  "transparent_background": true,
+  "conversion": "PNG RGBA to WebP quality=84, method=6; original dimensions and alpha preserved; lossy color compression, no crop or retouch.",
+  "original_directory": "$CODEX_HOME/generated_images/01a10256-6b0e-7c91-80b7-b98d8ea40e26",
+  "assets": [
+    {
+      "file": "public/assets/edition/story-collective-43-v3.webp",
+      "source": "exec-6b7a9b64-9df5-44ad-a339-98c901814c26.png",
+      "purpose": "Trabalho em uma cooperativa, na cena de distribuição dos ganhos.",
+      "prompt": "Create a high-resolution transparent-background editorial photographic collage cutout for a Brazilian social technology laboratory website. ONE coherent scene: three contemporary Brazilian adult cooperative workers, a Black woman with natural short curls in a moss-green work shirt at center, a brown man with short hair in a faded terracotta cotton shirt at left, and an older brown woman in a cream linen shirt at right, collaborating around a broad worn wooden table, with ONE modern understated open laptop and a few practical papers, a pencil, a small native seedling in a clay pot at the far edge. People have purposeful natural posture, discussing work with each other, not facing camera. Chest-to-table crop with complete hands and table, all isolated as a single clean silhouette. Landscape 3:2 composition. Art direction: sophisticated Brazilian independent magazine, documentary photographic realism turned into a tactile cut-paper collage with fine printed halftone, honest human faces, warm natural side light, subdued forest-green, burnt terracotta, cream and ochre, high material fidelity, clear large forms that read at 320px. Authentic present-day community workshop, no rustic fantasy, no vintage machinery, no steampunk, no roots growing through hardware, no floating props, no generic cartoon, no glossy 3D. The laptop and paperwork are context rather than focal clutter. No readable text, no typography, no watermarks, no frame, no background rectangle. Preserve genuinely transparent alpha outside the cutout. Output ONE finished image asset, not a website.",
+      "bytes": 313102,
+      "dimensions": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "public/assets/edition/story-hands-43-v3.webp",
+      "source": "exec-1b780d48-377c-4a6e-9a08-1ef225401166.png",
+      "purpose": "Bancada compartilhada que recebe as quatro camadas da entrega.",
+      "prompt": "Generate one landscape 3:2 transparent PNG editorial photographic cutout for a Brazilian technology-cooperative website. Subject: two pairs of realistically proportioned working adult hands of different brown skin tones entering from lower left and lower right, gently supporting ONE wide simple shallow empty wooden tray / workbench plank from underneath. Hands at the bottom corners, the EMPTY top face and broad rectangular wood surface clearly visible, front view slightly from above. The central upper two thirds of the image must remain genuinely transparent empty space, reserved for separately animated digital documents; do NOT put any items on the tray. Contemporary rolled cotton sleeves in muted forest-green and terracotta, detailed natural skin, worn honest wood. Sophisticated independent-magazine photographic cut-paper collage, subtle fine printed halftone at edges, warm soft daylight, physically believable hands and wood, dignified cooperative labor. No laptop, no plants, no roots, no keys, no paper, no objects, no text, no logos, no stamps, no frames, no background. Clean silhouette, actual alpha transparency, no checkerboard. Purpose: material foreground at bottom of an interactive exploded-view of a software delivery.",
+      "bytes": 111210,
+      "dimensions": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "public/assets/edition/story-server-43-v3.webp",
+      "source": "exec-4c95384f-e1ca-4ead-b1ac-2b22714c1f55.png",
+      "purpose": "Infraestrutura identificável nas duas pontas da demonstração de portabilidade.",
+      "prompt": "Create one high-resolution transparent-background editorial photographic cutout of contemporary small-scale computing infrastructure for a Brazilian community technology laboratory. ONE compact upright dark graphite four-bay network storage / mini server, modest realistic hardware, a small silver network switch beside it connected by one short neatly looped muted terracotta Ethernet cable, resting on a thin natural cork pad. Three-quarter front view, clear readable silhouette, whole objects fully in frame. Tiny status LEDs in warm green, believable ventilation and ports, no brands, no text. Modern 2026 everyday maintainable computing hardware, not a giant corporate data center. Art direction: sophisticated documentary product photograph made into tactile cut-paper editorial collage, subtle fine halftone only in shadow, natural soft studio daylight, warm off-white highlights, graphite and restrained forest green, high material detail. No steampunk, no fantasy, no plants growing into electronics, no roots, no house, no dramatic neon, no glossy 3D cartoon, no floating panels. Genuinely transparent alpha surrounding subject, no floor or background rectangle or watermark. This single object will be reused at both ends of an illustrated data migration to communicate technical continuity.",
+      "bytes": 191286,
+      "dimensions": [
+        1536,
+        1024
+      ]
+    }
+  ]
+}

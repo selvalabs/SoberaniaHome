@@ -18,18 +18,19 @@ const nodes = [
       <header class="scene-head"><span>Do código à vida, da vida ao código</span><span class="scene-count">01 / 04</span></header>
       <div class="spiral-stage">
         <div class="orbit-view" id="orbit-view" role="group" aria-label="Explore as relações entre tecnologia e sociedade">
+          <svg class="orbit-connections" aria-hidden="true"><path data-orbit-connection /></svg>
           <i class="orbit-ring ring-outer" aria-hidden="true"></i><i class="orbit-ring ring-inner" aria-hidden="true"></i>
           <strong class="orbit-center">VIDA<span>no centro</span></strong>
           {nodes.map((node,index)=><button type="button" class="orbit-word" data-orbit-node={index} data-orbit-title={node.title} data-orbit-text={node.text} aria-pressed={index===0?'true':'false'}>{node.name}</button>)}
         </div>
         <div class="spiral-reading">
           <div class="spiral-captions">
-            <article class="spiral-caption"><span class="small-label">01 / Organizar</span><p>A demanda vira processo.<br/>O processo encontra o software.</p></article>
-            <article class="spiral-caption"><span class="small-label">02 / Sustentar</span><p>O software usa energia.<br/>A energia vem do território.</p></article>
-            <article class="spiral-caption"><span class="small-label">03 / Nutrir</span><p>O território sustenta a vida.<br/>A vida sustenta a comunidade.</p></article>
-            <article class="spiral-caption"><span class="small-label">04 / Imaginar</span><p>A comunidade cria cultura.<br/>A cultura transforma o código.</p></article>
+            <article class="spiral-caption"><span class="small-label">01 / Organizar</span><p>Uma necessidade encontra uma ferramenta.</p></article>
+            <article class="spiral-caption"><span class="small-label">02 / Sustentar</span><p>O código também precisa de energia.</p></article>
+            <article class="spiral-caption"><span class="small-label">03 / Nutrir</span><p>O território sustenta a vida.</p></article>
+            <article class="spiral-caption"><span class="small-label">04 / Imaginar</span><p>A cultura muda o que construímos.</p></article>
           </div>
-          <div class="orbit-note" id="orbit-note" aria-live="polite" aria-atomic="true"><h3 id="orbit-note-title">{nodes[0].title}</h3><p id="orbit-note-text">{nodes[0].text}</p></div>
+          <details class="orbit-note" id="orbit-note"><summary id="orbit-note-title">{nodes[0].title}</summary><p id="orbit-note-text">{nodes[0].text}</p></details>
           <p class="orbit-instruction">Toque em uma palavra para seguir a conexão.</p>
         </div>
       </div>

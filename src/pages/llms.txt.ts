@@ -33,6 +33,8 @@ A Mesa de possibilidades apresenta um de quatro roteiros preparados no modo loca
 
 ## Leitura e acessibilidade
 
+As cenas de trabalho, entrega e portabilidade são diagramas conceituais, não métricas ou demonstrações de migrações reais. As cenas usam colagens com ilustrações geradas. Os argumentos principais acompanham a leitura; referências e detalhes técnicos adicionais podem ser abertos em elementos expansíveis. A seção Inteligências reúne referências de tecnologia e cultura brasileiras: Lua, RNP, SciELO, Álvaro Vieira Pinto, Paulo Freire e Gilberto Gil, com links para as fontes. Essas referências não indicam parceria ou adoção dessas tecnologias pelo laboratório.
+
 O conteúdo principal está em português brasileiro. A navegação oferece modo de leitura e respeita a preferência por movimento reduzido. Este índice é documentação complementar; não substitui o texto visível das páginas.
 `;
   return new Response(text, { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });

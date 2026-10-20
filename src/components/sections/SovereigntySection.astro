@@ -1,4 +1,5 @@
 ---
+import VisualStory from '../VisualStory.astro';
 const routes = [
   {key:'hospedar', label:'Hospedar', title:'Seu sistema pode encontrar outra casa.', path:['Aplicação','Configuração documentada','Infraestrutura escolhida'], text:'Conhecer a arquitetura, os requisitos e o processo de instalação abre a possibilidade de mudar a hospedagem. A decisão considera custo, capacidade de operação e proteção dos dados.', note:'Dependências visíveis. Decisões conscientes.'},
   {key:'migrar', label:'Levar os dados', title:'A memória do trabalho pode seguir com você.', path:['Dados','Exportação e validação','Novo destino'], text:'Exportar é o começo. Preservar significado, relações e histórico exige formatos compreensíveis, documentação e uma conferência do que chegou ao outro lado.', note:'Portabilidade precisa ser praticável.'},
@@ -10,8 +11,10 @@ const routes = [
   <div class="route-heading">
     <div class="section-label"><span>09</span><span>Soberania</span></div>
     <h2 id="route-title">Poder escolher.<br /><em>E mudar de caminho.</em></h2>
-    <p>E se a hospedagem precisar mudar? Se os dados tiverem outro destino? Explore três decisões que ajudam a manter o futuro do sistema aberto.</p>
+    <p>Escolher uma tecnologia também é poder mudar de caminho. Código acessível, dados exportáveis e decisões documentadas ajudam a levar o que foi construído para outra infraestrutura, com planejamento e conferência.</p>
   </div>
+  <VisualStory kind="routes" />
+  <details class="narrative-detail"><summary>Como hospedar, levar os dados e conectar ferramentas</summary><div>
   <div class="sovereign-instrument" data-edition-tabs data-active="hospedar">
     <nav class="route-tabs" data-edition-tablist aria-label="Caminhos de autonomia">
       {routes.map((route,index)=><a href={`#caminho-${route.key}`} data-edition-tab={route.key}><span>0{index+1}</span>{route.label}<i aria-hidden="true">↗</i></a>)}
@@ -39,5 +42,6 @@ const routes = [
       </article>)}
     </div>
   </div>
+  </div></details>
   <p class="route-footnote">Um mapa de possibilidades. Cada implantação exige avaliar contexto, segurança e condições reais de operação.</p>
 </section>

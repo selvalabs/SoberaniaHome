@@ -294,6 +294,7 @@ export function initMotion() {
     scene.panels.forEach((panel,index)=>{
       panel.classList.toggle('is-active',index===scene.index);panel.classList.toggle('is-past',index<scene.index);
       panel.style.setProperty('--step-light',index<=scene.index?'1':scene.flow?'.8':'.45');
+      panel.style.setProperty('--proof',String(smooth((scene.progress-index*.14)/.3)));
       const button=panel.querySelector('button');if(index===scene.index)button?.setAttribute('aria-current','step');else button?.removeAttribute('aria-current');
     });
   }
@@ -310,6 +311,8 @@ export function initMotion() {
       node.setAttribute('aria-pressed',String(index===selected));
     });
     const ring=scene.section.querySelector<HTMLElement>('.ring-outer');if(ring)ring.style.transform=`translate(-50%,-50%) rotate(${phase*180/Math.PI}deg)`;
+    const angle=selected/orbitNodes.length*Math.PI*2-Math.PI/2+phase,radius=base*(selected%2?.36:.43);
+    scene.section.querySelector('[data-orbit-connection]')?.setAttribute('d',`M${w/2} ${h/2}Q${w/2+Math.cos(angle-.5)*radius*.4} ${h/2+Math.sin(angle-.5)*radius*.4} ${w/2+Math.cos(angle)*radius} ${h/2+Math.sin(angle)*radius*.84}`);
     scene.panels.forEach((panel,index)=>{panel.hidden=index!==scene.index;panel.inert=index!==scene.index;});
     updateOrbitNote(selected);
   }

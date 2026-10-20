@@ -71,7 +71,7 @@ const notes = [
       <div class="field-note-meta"><span>{String(index+1).padStart(2,'0')} / {note.category}</span><span>Nota do laboratório</span></div>
       <h3 id={`titulo-${note.id}`}>{note.title}</h3>
       <p class="field-note-deck">{note.deck}</p>
-      <details class="field-note-reading" open={index===0}>
+      <details class="field-note-reading">
         <summary><span class="note-open-label">Ler a nota</span><span class="note-close-label">Recolher a nota</span><i aria-hidden="true">↗</i></summary>
         <div class="field-note-body">{note.paragraphs.map(paragraph=><p>{paragraph}</p>)}<p class="field-note-question">{note.closing}</p></div>
       </details>

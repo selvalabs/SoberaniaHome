@@ -31,7 +31,7 @@ with sync_playwright() as p:
             assert 0<state['raw']<1,('vertical scroll did not scrub',w,h,sid,state,page.evaluate('({y:scrollY,dy:__SL_DEBUG.scroll,active:__SL_DEBUG.activeId,hit:document.elementFromPoint(innerWidth*.45,52)?.outerHTML,mast:document.documentElement.dataset.mastHidden})'),before)
             jump(page,sid,0)
             # On short screens all content is reachable by scrolling the card.
-            if h<620:
+            if h<620 and card.evaluate('e=>e.scrollHeight>e.clientHeight+1'):
                 bounds=card.bounding_box();y=bounds['y']+min(70,bounds['height']/2)
                 page.mouse.move(bounds['x']+5,y);outer=page.evaluate('scrollY');page.mouse.wheel(0,120);page.wait_for_timeout(150)
                 assert card.evaluate('e=>e.scrollTop')>0,('card cannot scroll',w,h,sid)
@@ -47,6 +47,14 @@ with sync_playwright() as p:
                 page.mouse.move(bounds['x']+5,y);page.mouse.wheel(sign*-180,0);page.wait_for_timeout(100)
                 assert page.evaluate('(id)=>__SL_DEBUG.scenes.find(s=>s.id===id).raw',sid)>.1,'horizontal wheel lost inside card'
                 card.evaluate('e=>e.scrollTop=0')
+            elif h<620:
+                # Concise cards can now fit: the tail must already be reachable,
+                # and wheel input must continue scrubbing the outer gallery.
+                bounds=card.bounding_box();tail=card.locator(':scope > *').last.bounding_box()
+                assert bounds['y']<tail['y']+tail['height']<=bounds['y']+bounds['height']+1
+                page.mouse.move(bounds['x']+5,bounds['y']+30);outer=page.evaluate('scrollY')
+                page.mouse.wheel(0,100);page.wait_for_timeout(180)
+                assert page.evaluate('scrollY')>outer+50,'a fitting card traps page scrolling'
             jump(page,sid,1)
             controls=page.locator(f'#{sid} .scene-controls').bounding_box()
             assert controls['y']>=0 and controls['y']+controls['height']<=h+1,(w,h,sid,controls)
