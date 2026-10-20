@@ -11,6 +11,8 @@ export function createHeroPrint(hero: HTMLElement | null, options: PrintOptions 
   const message = hero.querySelector<HTMLElement>(options.message);
   const blockGeometry: { top: number; height: number; lines: number }[] = [];
   let messageHeight = 0;
+  let natural = {bottom: 0, origin: null as {x:number; y:number} | null};
+  let runway = {start:0,end:0,extra:0};
   const blocks = Array.from(hero.querySelectorAll<HTMLElement>(options.blocks));
   const step = .93 / Math.max(1,blocks.length);
   const duration = step - .07;
@@ -29,6 +31,13 @@ export function createHeroPrint(hero: HTMLElement | null, options: PrintOptions 
     blocks.forEach(block => { const r=block.getBoundingClientRect(); blockGeometry.push({top:r.top-messageRect.top,height:r.height,lines:Math.max(1,Math.round(r.height/(parseFloat(getComputedStyle(block).lineHeight)||parseFloat(getComputedStyle(block.querySelector("p")||block).lineHeight)||24)))}); });
     hero!.style.setProperty('--print-stage-height', `${rect.height}px`);
     const padding = parseFloat(getComputedStyle(hero!).paddingTop) + parseFloat(getComputedStyle(hero!).paddingBottom);
+    // Capture the launch in document space while the stage is unpinned.
+    const launchMark = hero!.querySelector<HTMLElement>('#leaf-origin,#cover-origin');
+    const launchRect = launchMark?.getBoundingClientRect();
+    natural = {
+      bottom: hero!.getBoundingClientRect().top + scrollY + rect.height + padding,
+      origin: launchRect ? {x:launchRect.left+launchRect.width/2,y:launchRect.top+scrollY} : null
+    };
     anchor = mast + 12;
     start = Math.max(0, hero!.getBoundingClientRect().top + scrollY + parseFloat(getComputedStyle(hero!).paddingTop) - anchor);
     run = Math.round(Math.max(1800, Math.min(3400, height * 2.8 * blocks.length/3)));
@@ -43,6 +52,8 @@ export function createHeroPrint(hero: HTMLElement | null, options: PrintOptions 
     hero!.dataset.printPinned = String(active);
     hero!.dataset.printStart = String(start);
     hero!.dataset.printRun = String(run);
+    const sectionTop=hero!.getBoundingClientRect().top+scrollY;
+    runway={start:sectionTop,end:sectionTop+rect.height+padding+(active?run:0),extra:active?run:0};
     hero!.style.height = active ? `${rect.height + run + padding}px` : '';
     // Restore the reveal before the measurement can be painted or observed.
     render(scrollY);
@@ -79,5 +90,5 @@ export function createHeroPrint(hero: HTMLElement | null, options: PrintOptions 
     if (message) message.style.height = enabled ? `${Math.min(messageHeight,occupied)}px` : '';
     hero!.style.setProperty('--print-anchor',`${anchor-(enabled?shift:0)}px`);
   }
-  return { measure, render };
+  return { measure, render, naturalGeometry: () => natural, runway: () => runway };
 }

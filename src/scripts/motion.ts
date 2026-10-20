@@ -1,5 +1,6 @@
 import '../styles/motion-edition.css';
 import { createHeroPrint } from './hero-print';
+import { leafScrollClock } from './leaf-scroll-clock';
 import { createLeafFlight, leafGust, lifeOrbit, LEAF_SCROLL_PACE } from './leaf-physics';
 import { createLeafReturn, LEAF_RETURN_SECONDS, type LeafPose } from './leaf-return';
 import { glowColor, textSurface } from './leaf-contrast';
@@ -210,7 +211,10 @@ export function initMotion() {
     maxScroll=Math.max(1,document.documentElement.scrollHeight-height);
     const o=(document.getElementById('leaf-origin')||document.getElementById('cover-origin'))?.getBoundingClientRect();
     const d=document.getElementById('leaf-dock')?.getBoundingClientRect();
-    if(o)origin={x:o.left+o.width/2,y:o.top+y};
+    const naturalOrigin = heroPrint?.naturalGeometry().origin;
+    if(naturalOrigin)origin={...naturalOrigin};
+    else if(o)origin={x:o.left+o.width/2,y:o.top+y};
+    debug.leafOrigin={...origin};
     if(d)dock={x:d.left+d.width/2,y:d.top+y};
     debug.maxScroll=maxScroll;
     request();
@@ -337,28 +341,33 @@ export function initMotion() {
   function renderLeaf(y:number) {
     if(!flight||!leaf||!depth)return;
     const hero=sections[0];
-    const launch=clamp(y/Math.max(1,((hero?.bottom||height)-height*.32)*1.22));
+    // Reveal runway is reading time, not extra distance from the branch.
+    const runways=[heroPrint?.runway(),choicesPrint?.runway()].filter((item):item is NonNullable<typeof item>=>!!item);
+    const leafScroll=(position:number)=>leafScrollClock(position,runways);
+    const clockY=leafScroll(y);
+    const launchBottom=heroPrint?.naturalGeometry().bottom||hero?.bottom||height;
+    const launch=clamp(clockY/Math.max(1,(launchBottom-height*.32)*1.22));
     const travel=smooth(launch);
     // Scroll is the clock, not the force. Replaying the same position restores
     // the same inertial state, even after a jump, reversal or toolbar resize.
-    const clockScale=LEAF_SCROLL_PACE/Math.max(layoutHeight,1),time=y*clockScale;
+    const clockScale=LEAF_SCROLL_PACE/Math.max(layoutHeight,1),time=clockY*clockScale;
     const physics=leafFlight(time);
     const horizontal=enabled?scenes.filter(s=>s.kind==='horizontal'):[];
     const bursts=horizontal.flatMap(s=>{
       const starts=[s.start+s.run*.04];
       for(let elapsed=3.4;elapsed<s.run*clockScale-.6;elapsed+=3.4)starts.push(s.start+elapsed/clockScale);
-      return starts.map(start=>({time:start*clockScale,direction:s.reverse?1:-1}));
+      return starts.map(start=>({time:leafScroll(start)*clockScale,direction:s.reverse?1:-1}));
     });
     // Occasional turns continue in editorial folds. Keep them away from the
     // gallery gusts so entering a scene does not pile up two strong impulses.
     bursts.push({time:-.45,direction:1});
     for(let at=3.6;at<=time;at+=4.6){
-      if(!horizontal.some(s=>at> s.start*clockScale-2&&at<(s.start+s.run)*clockScale+1.6))
+      if(!horizontal.some(s=>at> leafScroll(s.start)*clockScale-2&&at<leafScroll(s.start+s.run)*clockScale+1.6))
         bursts.push({time:at,direction:Math.floor(at/4.6)%3===2?-1:1});
     }
     let drift=0,turn=0,spin=0;
     // Finish each turn before approaching the resting place in the footer.
-    const lastGust=(dock.y-height-180)*clockScale-4;
+    const lastGust=leafScroll(dock.y-height-180)*clockScale-4;
     for(const burst of bursts){
       if(burst.time>lastGust)continue;
       const gust=leafGust(time-burst.time,burst.direction);drift+=gust.drift;turn+=gust.turn;spin+=gust.spin;
@@ -439,7 +448,7 @@ export function initMotion() {
     root.dataset.leafInteractive=String(!softened&&!scene);
     root.dataset.leafOccluded='0';root.dataset.leafDepth='front';
     leafPose={x,y:ly,rotation:rz,pitch:rx,yaw:ry,roll,scale,pivot};
-    debug.leaf={returning:!!leafReturn,dragging:!!leafDrag,returnElapsed:leafReturn?.elapsed??0,x,y:ly,rotation:rz,pitch:rx,yaw:ry,roll,drift,spin,orbitWeight,orbitPhase,clock:time,wind:physics.wind,lateralSpeed:physics.vx,fallSpeed:physics.fallSpeed,mode:land>.99?'rest':orbitWeight>.99?'orbit':'flight',occlusionState:softened?'softened':'visible'};
+    debug.leaf={returning:!!leafReturn,dragging:!!leafDrag,returnElapsed:leafReturn?.elapsed??0,x,y:ly,rotation:rz,pitch:rx,yaw:ry,roll,drift,spin,orbitWeight,orbitPhase,clock:time,clockScroll:clockY,wind:physics.wind,lateralSpeed:physics.vx,fallSpeed:physics.fallSpeed,mode:land>.99?'rest':orbitWeight>.99?'orbit':'flight',occlusionState:softened?'softened':'visible'};
     // Light follows the painted blade, including text alongside a mockup.
     const nextLit=new Set<HTMLElement>();
     for(const [index,mark] of glowTargets.entries()){
