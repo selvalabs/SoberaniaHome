@@ -12,3 +12,6 @@ Hover acelera para 2,4 vezes o ritmo e a saída retorna ao normal, com interpola
 Validação: typecheck, 38 testes Node, build, verificador estático e npm audit aprovados (zero vulnerabilidades reportadas). Chromium em desktop, mobile e paisagem: largura dos grupos e continuidade, movimento, hover/retorno, pausa, texto/ordem, navegação da galeria, redução de movimento/leitura/no-JS e ausência de overflow. Screenshot mobile inspecionado. Safari/iOS físico pendente de homologação.
 
 Prévia no servidor existente 0.0.0.0:4198, PID 12972. Nenhum processo interrompido; porta 4197 independente. Main preservada; sem merge, release/tag, deploy de produção, migração ou operação/sincronização VPS. PR rascunho coordenado com as dependências, reversão por commit revisado.
+
+
+Em 20/10, a pedido do usuário, removidos o parágrafo introdutório Organizar uma operação… e a nota Explore as interfaces… da abertura. A faixa passa diretamente à galeria. Rollback desta remoção: b9b039f. Mesmo servidor, branch e PR; sem merge ou publicação.
