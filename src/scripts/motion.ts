@@ -171,8 +171,8 @@ export function initMotion() {
     metrics.measurements++;
     width=document.documentElement.clientWidth;height=innerHeight;
     mastHeight=mast?.offsetHeight||64;
-    heroPrint?.measure(enabled,height,width,mastHeight);
-    choicesPrint?.measure(enabled,height,width,mastHeight);
+    heroPrint?.measure(enabled,height,width,mastHeight,layoutHeight);
+    choicesPrint?.measure(enabled,height,width,mastHeight,layoutHeight);
     root.style.setProperty('--motion-stage-height',`${Math.max(1,height-mastHeight)}px`);
     root.style.setProperty('--motion-mast-height',`${mastHeight}px`);
     for(const scene of scenes) {
@@ -635,6 +635,8 @@ export function initMotion() {
   for(const type of ['wheel','touchstart','pointerdown','keydown'])addEventListener(type,()=>{pendingSceneJump=null;navigationRevision++;},{passive:true,capture:true});
   addEventListener('resize',()=>{
     const revision=navigationRevision;
+    const print=all<HTMLElement>('#hero[data-print-pinned="true"],#folha[data-print-pinned="true"]').find(element=>scrollY>=Number(element.dataset.printStart)&&scrollY<=Number(element.dataset.printStart)+Number(element.dataset.printRun));
+    const printStart=Number(print?.dataset.printStart),printRun=Number(print?.dataset.printRun);
     const active=pendingSceneJump?.scene||scenes.find(scene=>scene.active&&!scene.flow&&!scene.static);
     const jump=pendingSceneJump?.scene===active?pendingSceneJump:null;
     // Capture the logical position before content/ResizeObserver measurements
@@ -649,6 +651,7 @@ export function initMotion() {
     const currentJump=pendingSceneJump||(revision===navigationRevision?jump:null);
     const currentScene=currentJump?.scene||(revision===navigationRevision?active:null)||scenes.find(scene=>scene.active&&!scene.flow&&!scene.static);
     const currentProgress=currentJump?currentJump.index/Math.max(1,currentJump.scene.panels.length-1):currentScene===active?progress:currentScene?.progress;
+    const printProgress=print&&revision===navigationRevision?clamp((scrollY-printStart)/printRun):undefined;
     resizedWidth=document.documentElement.clientWidth;resizedHeight=innerHeight;
     const landscape=matchMedia('(orientation: landscape)').matches;
     if(innerWidth!==layoutWidth||landscape!==layoutLandscape||(innerWidth>=760&&innerHeight!==layoutHeight)){
@@ -658,6 +661,8 @@ export function initMotion() {
     if(currentScene&&currentProgress!==undefined&&!paused&&enabled&&!currentScene.static){
       if(currentJump){pendingSceneJump=currentJump;scrollToY(currentScene.start+currentScene.run*currentProgress);}
       else scrollTo({top:currentScene.start+currentScene.run*currentProgress,behavior:'instant'});
+    }else if(print&&printProgress!==undefined&&!paused&&enabled){
+      scrollTo({top:Number(print.dataset.printStart)+Number(print.dataset.printRun)*printProgress,behavior:'instant'});
     }
   },140);},{passive:true});
   addEventListener('load',measure,{once:true});

@@ -1,0 +1,104 @@
+/* Phone layouts use the available reading surface, not desktop minimum heights. */
+:root{--mobile-safe-bottom:env(safe-area-inset-bottom,0px)}
+@media(max-width:759px), (max-height:619px){
+ html.motion-edition :is(#hero,#folha)[data-print-viewport="true"] :is(.hero-stage,.choices-print-stage){height:var(--print-stage-height)!important;min-height:0!important;box-sizing:border-box;overflow:visible}
+ html.motion-edition :is(#hero,#folha)[data-print-viewport="true"] :is(.hero-message,.choices-print-body){overflow:hidden!important;overscroll-behavior:auto;scroll-behavior:auto;overflow-anchor:none}
+ html.motion-edition #hero.hero-restored .hero-stage{padding-block:16px max(12px,var(--mobile-safe-bottom));gap:12px}
+ html.motion-edition #hero.hero-restored .hero-bottom{display:none}
+ html.motion-edition #hero.hero-restored .hero-overline{margin-bottom:12px}
+ html.motion-edition #hero.hero-restored h1{font-size:clamp(32px,min(12vw,8svh),60px);margin-bottom:16px}
+ html.motion-edition #hero.hero-restored .hero-message{grid-template-columns:minmax(0,1fr);grid-template-rows:max-content max-content;gap:12px;align-content:start;padding-block:6px}
+ html.motion-edition #hero.hero-restored .hero-thesis{min-height:max-content}
+ html.motion-edition #hero.hero-restored .text-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin:12px 10px 0;gap:8px}
+ html.motion-edition #hero.hero-restored .text-actions a{font-size:15px;min-height:48px;padding:10px 8px}
+ html.motion-edition #folha.choices{padding:20px var(--pad)!important}
+ html.motion-edition #folha.choices .choices-print-stage{padding:12px 0 max(16px,var(--mobile-safe-bottom))}
+ html.motion-edition #folha.choices h2{font-size:clamp(28px,min(8.8vw,5.8svh),42px);margin:16px 0;line-height:1.08}
+ html.motion-edition #folha .choices-print-body{gap:18px;grid-auto-rows:max-content}
+ html.motion-edition #folha .choices-opening{font-size:16px;line-height:1.45}
+ html.motion-edition #folha .choices-reference{margin-block:18px;padding-block:16px;padding-left:14px}
+ html.motion-edition #folha .choices-reference blockquote{font-size:clamp(18px,4.7vw,22px);line-height:1.3}
+ html.motion-edition #folha .choices-reference figcaption{font-size:11px;line-height:1.45}
+ html.motion-edition #folha .choices-resolution{margin-top:16px}
+ html.motion-edition #folha .choices-resolution .choices-closing{font-size:clamp(19px,5vw,25px);line-height:1.18}
+ html.motion-edition.motion .sequence[data-motion-scene="horizontal"] .scene-foot{padding-bottom:max(4px,var(--mobile-safe-bottom))}
+ html.motion-edition.motion .sequence[data-motion-scene="horizontal"] .scene-head{min-height:max(60px,var(--motion-header-clearance,0px))}
+}
+@media(min-width:760px) and (max-height:619px){
+ html.motion-edition #hero.hero-restored .hero-stage{padding-block:8px max(8px,var(--mobile-safe-bottom))}
+ html.motion-edition #hero.hero-restored h1{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px;font-size:clamp(28px,8svh,42px);margin-bottom:12px}
+ html.motion-edition #hero.hero-restored h1>br{display:none}
+ html.motion-edition #hero.hero-restored .hero-title-tech{font-size:.9em}
+ html.motion-edition #hero.hero-restored .hero-title-service{font-size:.9em}
+ html.motion-edition #hero.hero-restored .hero-title-human{font-size:1em;white-space:normal}
+ html.motion-edition #hero.hero-restored .hero-message .hero-method{padding:8px 0 0;border-left:0;border-top:1px solid var(--rule)}
+ html.motion-edition #folha.choices h2{font-size:28px;margin-block:10px}
+}
+@media(max-width:759px){
+ html.motion-edition{--mobile-space:clamp(20px,4svh,36px)}
+ /* Keep the fixed Brazilian signature clear of the first headline on tall
+    phones without moving its viewport anchor. */
+ html.motion-edition #hero.hero-restored .hero-stage{padding-top:max(16px,calc(12svh - var(--motion-mast-height,var(--mast-h)) - 8px))}
+ html.motion-edition main>.prose-section,html.motion-edition :is(.handover-section,.route-section,.manifesto.manifesto-edition,.atelier-section){padding-block:var(--mobile-space)}
+ html.motion-edition .section-label{margin-bottom:16px;line-height:1.45;flex-wrap:wrap;gap:8px 16px}
+ html.motion-edition :is(.knowledge-cover-stage,.technology-stage){padding-block:var(--mobile-space)!important;gap:16px}
+ html.motion-edition :is(#deslocamento-1,#deslocamento-2) h2{font-size:clamp(32px,min(9.5vw,6svh),44px);line-height:1.08}
+ html.motion-edition #deslocamento-2 .knowledge-collage{width:min(100%,370px);height:auto;aspect-ratio:1.08;margin:12px auto 48px}
+ html.motion-edition #deslocamento-1 .technology-collage{width:min(100%,400px);height:auto;aspect-ratio:1.4;margin:10px auto 22px}
+ html.motion-edition .knowledge-cover-copy>p,html.motion-edition .technology-copy>p{font-size:16px;line-height:1.45}
+ html.motion-edition .knowledge-cover-copy .knowledge-cover-closing{font-size:22px;margin-top:20px}
+ html.motion-edition .knowledge-reference{padding-block:24px}
+ html.motion-edition :is(.knowledge-cover-stage,.technology-stage,.handover-heading,.route-heading,.atelier-heading,.two-columns)>*{min-width:0}
+ html.motion-edition .references>h2{font-size:clamp(32px,9vw,44px);line-height:1.1;max-width:none}
+ html.motion-edition .reference-search-top{margin-top:14px}
+ html.motion-edition .reference-board-shell{width:min(100%,38svh);margin-inline:auto}
+ html.motion-edition :is(.handover-heading,.route-heading,.atelier-heading){gap:16px;margin-bottom:24px}
+ html.motion-edition :is(.handover-heading,.route-heading,.manifesto-heading,.field-journal-heading,.atelier-heading) h2{font-size:clamp(32px,9vw,44px);line-height:1.08}
+ html.motion-edition :is(.handover-heading,.route-heading,.manifesto-heading,.atelier-heading)>p{font-size:16px;line-height:1.45;margin-top:12px}
+ html.motion-edition .handover-bench{padding:16px 12px;gap:18px}
+ html.motion-edition .handover-directory>.instrument-label{margin-bottom:12px;font-size:9px;letter-spacing:.04em}
+ html.motion-edition .handover-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+ html.motion-edition .handover-tabs>a{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:12px 6px;min-width:0;min-height:64px;border-inline-end:1px solid #637064}
+ html.motion-edition .handover-tabs>a>b{font-size:clamp(13px,3.7vw,18px);letter-spacing:-.03em;overflow-wrap:anywhere}
+ html.motion-edition .handover-tabs>a>span{padding:0}
+ html.motion-edition .handover-tabs>a>small{font-size:11px;line-height:1.3}
+ html.motion-edition .handover-tabs>a>i{display:none}
+ html.motion-edition .handover-tabs>a[aria-selected=true]::before{inset:auto 6px 0;height:2px;width:auto}
+ html.motion-edition .handover-bench[data-enhanced=true] .handover-document{min-height:0}
+ html.motion-edition .document-body{padding:20px 16px}
+ html.motion-edition .document-body h3{font-size:28px;line-height:1.1}
+ html.motion-edition .document-body>p:not(.document-annotation){font-size:14px;line-height:1.45}
+ html.motion-edition .route-diagram{height:clamp(140px,24svh,210px)}
+ html.motion-edition .route-panel{padding:20px 16px;gap:16px}
+ html.motion-edition .route-panel h3{font-size:29px}
+ html.motion-edition .route-panel-copy>p{font-size:15px;line-height:1.45}
+ html.motion-edition #sobre .two-columns{gap:20px}
+ html.motion-edition #sobre h2,html.motion-edition #contato h2{font-size:clamp(32px,9vw,44px);line-height:1.1}
+ html.motion-edition .about-copy p{font-size:16px!important;line-height:1.5!important;margin-bottom:16px!important}
+ html.motion-edition .about-ledger{margin-top:24px;padding-top:20px;gap:18px}
+ html.motion-edition .about-ledger dd{font-size:16px;line-height:1.4}
+ html.motion-edition .editorial-paths{margin-top:24px}
+ html.motion-edition .manifesto.manifesto-edition{gap:24px}
+ html.motion-edition .manifesto-heading>.section-label{margin-bottom:16px}
+ html.motion-edition .manifesto-principle summary{padding-block:16px;gap:10px}
+ html.motion-edition .principle-statement{font-size:19px;line-height:1.25}
+ html.motion-edition .principle-consequence{padding:0 8px 20px 32px}
+ html.motion-edition .principle-consequence p{font-size:15px;line-height:1.45}
+ html.motion-edition .field-journal-heading{padding-block:28px}
+ html.motion-edition .field-journal-heading p{font-size:16px;line-height:1.45;margin-top:16px}
+ html.motion-edition .field-note,.field-note-lead,html.motion-edition .field-note:last-child{padding-block:24px}
+ html.motion-edition .field-note h3,html.motion-edition .field-note-lead h3{font-size:clamp(30px,8.5vw,40px);line-height:1.08;margin-block:16px}
+ html.motion-edition .field-note-deck,html.motion-edition .field-note-lead>.field-note-deck{font-size:18px;line-height:1.4}
+ html.motion-edition .field-note-body{font-size:17px;line-height:1.5}
+ html.motion-edition .atelier-guide{gap:8px;margin-bottom:20px}
+ html.motion-edition .atelier-input,html.motion-edition .atelier-output{padding:20px 16px}
+ html.motion-edition .atelier-input textarea{min-height:110px}
+ html.motion-edition .atelier-flow{gap:20px}
+ html.motion-edition #contato>.prose-section{padding-block:var(--mobile-space)}
+ html.motion-edition #contato .two-columns{grid-template-columns:1fr;gap:24px}
+ html.motion-edition .contact-list{font-size:16px;line-height:1.5}
+ html.motion-edition .site-footer{padding-top:24px}
+ html.motion-edition .site-footer .footer-content{padding-top:20px;gap:24px}
+ html.motion-edition .footer-content h3{font-size:clamp(34px,10vw,48px)}
+ html.motion-edition .pile-field{height:clamp(150px,27svh,230px);margin-top:16px}
+}

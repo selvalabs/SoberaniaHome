@@ -14,6 +14,8 @@ ROOT_TESTS = [
     'test_leaf_contrast.py', 'test_horizontal_viewports.py', 'test_project_galleries.py',
     'test_site_edition.py', 'test_landing_touch.py', 'test_atelier_edge_ui.py',
     'test_brand_signature.py', 'test_hero_print.py', 'test_choices_print.py', 'test_work_marquee.py',
+    'test_mobile_viewport_fit.py',
+    'test_mobile_safe_area.py',
 ]
 PAGES_TESTS = ['test_pages_edition.py', 'test_project_galleries.py', 'test_hero_print.py', 'test_choices_print.py']
 

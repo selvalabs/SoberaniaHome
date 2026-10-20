@@ -9,7 +9,12 @@ export function initEditionInteractions() {
       if (!tabs.length || !list || panels.length !== tabs.length) return;
 
       list.setAttribute('role', 'tablist');
-      if (list.classList.contains('handover-tabs')) list.setAttribute('aria-orientation', 'vertical');
+      if (list.classList.contains('handover-tabs')) {
+        const compact = matchMedia('(max-width:759px)');
+        const orient = () => list.setAttribute('aria-orientation', compact.matches ? 'horizontal' : 'vertical');
+        orient();
+        compact.addEventListener('change', orient);
+      }
       tabs.forEach((tab,index) => {
         const panel = panels.find(item => item.dataset.editionPanel === tab.dataset.editionTab)!;
         tab.id = `${panel.id}-tab`;
