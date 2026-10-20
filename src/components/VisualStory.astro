@@ -1,63 +1,80 @@
 ---
 import '../styles/visual-stories.css';
+import '../styles/story-theatre.css';
 interface Props { kind:'time'|'handover'|'routes'; }
 const {kind}=Astro.props;
 const content={
- time:{title:'O tempo que a ferramenta abre.',steps:['A rotina','A ferramenta','A partilha'],lines:['Repetir ocupa o dia.','A ferramenta reúne o que se repete.','Quem trabalha precisa participar do ganho.'],end:'Tempo para cuidar. Criar. Viver.'},
- handover:{title:'Abra o sistema. Veja o que fica.',steps:['Por fora','Por dentro','Nas suas mãos'],lines:['Uma tela é só a parte visível.','Código, dados, acesso e memória de como cuidar.','Entregar é compartilhar a capacidade de continuar.'],end:'As chaves também fazem parte da entrega.'},
- routes:{title:'Muda a casa. A história continua.',steps:['Preparar','Conferir','Continuar'],lines:['Escolher um caminho começa por conhecer o sistema.','Levar os dados exige conferir o que chegou.','Outra infraestrutura. A mesma memória de trabalho.'],end:'Portabilidade é um caminho a construir.'}
+ time:{title:'O que fazemos com o tempo que sobra?',steps:['Repetir','Organizar','Repartir'],lines:[
+  ['O mesmo trabalho. De novo.','Conferir pedidos, copiar cadastros, avisar a equipe. Quando tudo depende de repetir à mão, a rotina ocupa o dia.'],
+  ['A repetição pode virar uma rotina do sistema.','As tarefas continuam existindo. A ferramenta organiza o fluxo e deixa a equipe acompanhar o que precisa de atenção.'],
+  ['O ganho precisa chegar a quem trabalha.','Tempo liberado pode virar descanso, cuidado e criação. Também pode virar apenas mais cobrança. Essa escolha é política.']
+ ],end:'Uma cena para pensar a distribuição dos ganhos. Não é uma medição de produtividade.'},
+ handover:{title:'Um sistema por inteiro.',steps:['A interface','As camadas','A entrega'],lines:[
+  ['Uma tela é só o começo.','A interface permite usar um sistema. Para cuidar dele, a equipe também precisa compreender o que existe por trás.'],
+  ['Abra. Entenda. Tenha as chaves.','Código para adaptar. Dados para preservar. Acessos para operar. Documentação para que a próxima pessoa consiga continuar.'],
+  ['A capacidade de continuar fica com você.','A entrega reúne essas partes e combina responsabilidades, permissões e orientação com quem vai operar o sistema.']
+ ],end:'O inventário e os direitos de uso são definidos no escopo de cada projeto.'},
+ routes:{title:'Mudar de infraestrutura sem perder a história.',steps:['Preparar','Conferir','Continuar'],lines:[
+  ['O caminho começa antes da mudança.','Mapeamos aplicação, dados e dependências. A origem permanece disponível enquanto a nova infraestrutura é preparada.'],
+  ['Copiar não é o mesmo que conferir.','Arquivos, relações entre os dados e permissões precisam ser verificados no destino antes da troca.'],
+  ['Outra infraestrutura. O trabalho continua.','Só depois da validação o novo ambiente assume a operação. Documentação e um plano de retorno acompanham a mudança.']
+ ],end:'Demonstração conceitual. Uma migração real exige planejamento e validação específicos.'}
 }[kind];
+const inventory=[
+ {key:'code',title:'Código',file:'projeto /',hint:'Adaptar e evoluir',lines:['src / aplicação','histórico / decisões','licença / condições']},
+ {key:'data',title:'Dados',file:'memória /',hint:'Preservar e recuperar',lines:['registros / relações','exportação / formatos','cópias / recuperação']},
+ {key:'access',title:'Acessos',file:'operação /',hint:'Operar com responsabilidade',lines:['contas / responsáveis','permissões / limites','recuperação / acesso']},
+ {key:'guide',title:'Documentação',file:'LEIA-ME',hint:'Continuar o trabalho',lines:['comece por aqui','como operar','como recuperar']}
+];
 ---
-<figure class:list={['visual-story',`story-${kind}`]} data-visual-story={kind} data-story-step="2" aria-label={content.title}>
-  <header class="story-mast"><span>Oficina do comum / {kind==='time'?'01':kind==='handover'?'02':'03'}</span><span>Colagem em movimento</span></header>
-  <div class="story-theatre">
-    {kind==='handover' && <img class="story-bench-art" src="/assets/edition/cooperative-bench-43.webp" alt="Ilustração gerada: mãos sustentam juntas uma bancada com computador, caderno, chaves e uma planta enraizada." width="1536" height="1024" loading="lazy" decoding="async" />}
-    <svg viewBox="0 0 960 460" role="img" aria-label={`${content.title} Colagem conceitual com ilustrações geradas.`} class="story-drawing">
-      <defs>
-        <pattern id={`story-grid-${kind}`} width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".9" fill="currentColor" opacity=".16"/></pattern>
-        <pattern id={`story-hatch-${kind}`} width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><path d="M0 0V7" stroke="currentColor" stroke-width="1" opacity=".25"/></pattern>
-      </defs>
-      <rect width="960" height="460" fill={`url(#story-grid-${kind})`}/>
-      <path class="story-ground" d="M20 415Q150 387 290 415T560 412T940 415"/>
-      {kind==='time' && <>
-        <path class="story-wire" d="M85 240H420M530 240C650 240 625 140 790 140M530 240C650 240 625 340 790 340"/>
-        {Array.from({length:12},(_,i)=><g data-story-ticket={i} transform={`translate(${75+i%3*64} ${90+Math.floor(i/3)*74})`}><image href="/assets/edition/knowledge-notebook-v1.webp" x="-4" y="-5" width="64" height="70"/></g>)}
-        <g data-story-gear transform="translate(470 235)"><image href="/assets/edition/story-workshop-43-v2.webp" x="-175" y="-175" width="350" height="350"/></g>
-        <g data-story-reveal class="story-commons"><image href="/assets/edition/story-commons-43-v2.webp" x="650" y="85" width="300" height="300"/></g>
-        <text x="85" y="65" class="story-label">O TRABALHO SE REPETE</text>
-        <text x="470" y="435" class="story-label" text-anchor="middle">A FERRAMENTA</text>
-        <text x="800" y="420" class="story-label" text-anchor="middle">CUIDAR · CRIAR · VIVER</text>
-      </>}
-      {kind==='handover' && <>
-        <path class="story-wire" d="M140 185Q480 40 820 185M140 185Q480 395 820 185"/>
-        <g data-story-shell transform="translate(480 220)"><image href="/assets/edition/story-computer-43-v2.webp" x="-170" y="-150" width="340" height="280"/></g>
-        {[
-          ['CÓDIGO','story-computer-43-v2.webp'],
-          ['DADOS','story-archive-43-v2.webp'],
-          ['CHAVES','story-keys-43-v2.webp'],
-          ['MEMÓRIA','knowledge-notebook-v1.webp']
-        ].map(([label,asset],i)=><g data-story-layer={i} transform={`translate(${165+i*210} 200)`}><image href={`/assets/edition/${asset}`} x="-90" y="-95" width="180" height="145"/><text class="story-label story-object-label" y="69" text-anchor="middle">{label}</text></g>)}
-      </>}
-      {kind==='routes' && <>
-        <g class="story-houses">
-          <image href="/assets/edition/story-house-43-v2.webp" x="35" y="50" width="320" height="320"/>
-          <image href="/assets/edition/story-house-43-v2.webp" x="605" y="50" width="320" height="320"/>
-          <text class="story-label" x="200" y="420" text-anchor="middle">DE ONDE VIEMOS</text><text class="story-label" x="760" y="420" text-anchor="middle">OUTRA CASA</text>
-        </g>
-        <path class="story-wire" d="M200 235C340 40 620 420 760 235"/>
-        <g class="story-checkpoint"><image href="/assets/edition/knowledge-notebook-v1.webp" x="425" y="270" width="110" height="110"/><text x="480" y="420" text-anchor="middle" class="story-label">CONFERIR A MEMÓRIA</text></g>
-        <g data-story-capsule transform="translate(760 235)"><image href="/assets/edition/story-archive-43-v2.webp" x="-75" y="-85" width="150" height="150"/><text y="90" text-anchor="middle" class="story-label story-object-label">SISTEMA + DADOS</text></g>
-        {Array.from({length:6},(_,i)=><circle data-story-packet={i} cx={660+i*16} cy="300" r="4" class="story-packet"/>)}
-      </>}
-    </svg>
-  </div>
-  <figcaption>
-    <ol class="story-captions">{content.lines.map((line,i)=><li data-story-caption={i}><span>0{i+1}</span><p>{line}</p></li>)}</ol>
-    <div class="story-controls" role="group" aria-label={`Percorrer: ${content.title}`}>{content.steps.map((step,i)=><button type="button" data-story-go={i} aria-pressed={i===2}><span>0{i+1}</span>{step}</button>)}</div>
+<figure class:list={['visual-story','story-edition',`story-${kind}`]} data-visual-story={kind} data-story-step="2" data-time-distribution="shared" data-route-error="false" aria-label={content.title}>
+ <div class="story-frame">
+  <header class="story-mast"><span>Oficina do comum / {kind==='time'?'01':kind==='handover'?'02':'03'}</span><span class="story-instruction">Explore a cena</span></header>
+  <div class="story-composition">
+   <div class="story-stage" aria-label={content.title}>
+    {kind==='time' && <>
+     <div class="story-scene-heading"><span>TECNOLOGIA + TRABALHO</span><strong>Quem ganha <em>tempo?</em></strong></div>
+     <img class="time-people story-art" src="/assets/edition/story-collective-43-v3.webp" alt="Colagem ilustrativa gerada: três pessoas de uma cooperativa trabalham juntas à mesa, com computador e registros." width="1536" height="1024" loading="lazy" decoding="async" />
+     <div class="time-tickets" aria-hidden="true">{['Conferir pedidos','Copiar cadastros','Avisar a equipe'].map((label,i)=><div class="time-ticket" data-time-ticket={i}><small>ROTINA / 0{i+1}</small><b>{label}</b><span>de novo ↻</span></div>)}</div>
+     <div class="time-processor" aria-hidden="true"><span class="story-node-label">FLUXO COMPARTILHADO</span><b>Uma rotina.<br /> Para a equipe.</b><div>{['Pedidos','Cadastros','Avisos'].map(label=><span><i>✓</i>{label}</span>)}</div></div>
+     <div class="time-day" aria-label="Esquema de tempo ocupado pela rotina e tempo que pode ser repartido, sem escala numérica">
+      <div class="time-day-label"><span>O mesmo dia.</span><span class="time-day-ending">Outra possibilidade.</span></div>
+      <div class="time-day-track"><div class="time-occupied"><span>Repetição</span></div><div class="time-reclaimed"><span class="time-shared-label">Cuidar · criar · viver</span><span class="time-quota-label">Mais cobrança</span></div></div>
+      <span class="time-day-note">Esquema ilustrativo · sem escala de horas</span>
+     </div>
+    </>}
+    {kind==='handover' && <>
+     <div class="story-scene-heading"><span>DA INTERFACE À AUTONOMIA</span><strong>O que fica <em>com você.</em></strong></div>
+     <div class="handover-system" aria-hidden="true"><header><i></i><i></i><i></i><span>COOPERATIVA / SISTEMA</span></header><div class="handover-ui"><small>Bom trabalho, equipe.</small><strong>Uma ferramenta<br />em uso.</strong><div><span>Pedidos</span><b>→</b></div><div><span>Registros</span><b>→</b></div><div><span>Pessoas</span><b>→</b></div></div><footer>Uma interface. Várias camadas.</footer></div>
+     <div class="handover-kit">{inventory.map((item,i)=><div class:list={['handover-piece',`piece-${item.key}`]} data-delivery-piece={i}><header><span>0{i+1}</span><b>{item.title}</b><i aria-hidden="true">↗</i></header><code>{item.file}</code><ul>{item.lines.map(line=><li>{line}</li>)}</ul><footer>{item.hint}</footer></div>)}</div>
+     <img class="handover-hands story-art" src="/assets/edition/story-hands-43-v3.webp" alt="Colagem ilustrativa gerada: mãos de pessoas diferentes sustentam uma bancada, como uma entrega compartilhada." width="1536" height="1024" loading="lazy" decoding="async" />
+     <div class="handover-receipt">Sistema + conhecimento + capacidade de cuidar.</div>
+    </>}
+    {kind==='routes' && <>
+     <div class="story-scene-heading"><span>PORTABILIDADE EM TRÊS ATOS</span><strong>A memória <em>vai junto.</em></strong></div>
+     <div class="migration-node migration-origin"><span class="story-node-label">01 / ORIGEM</span><img class="story-art" src="/assets/edition/story-server-43-v3.webp" alt="Ilustração gerada de um pequeno servidor e equipamento de rede, representando a infraestrutura de origem." width="1536" height="1024" loading="lazy" decoding="async" /><span class="migration-status"><i></i>Preservada</span></div>
+     <div class="migration-node migration-destination"><span class="story-node-label">02 / NOVO AMBIENTE</span><img class="story-art" src="/assets/edition/story-server-43-v3.webp" alt="A mesma infraestrutura ilustrativa representa outro ambiente preparado para receber o sistema." width="1536" height="1024" loading="lazy" decoding="async" /><span class="migration-status"><i></i><span data-route-status>Validado</span></span></div>
+     <div class="migration-rail" aria-hidden="true"><span></span><i></i><b>CONFERÊNCIA</b></div>
+     <div class="migration-bundle" aria-hidden="true"><span>MEMÓRIA DO TRABALHO</span><strong>projeto /</strong><div><span>aplicação</span><span>dados</span><span>histórico</span></div><small>O mesmo conteúdo, outro lugar.</small></div>
+     <div class="migration-checks" aria-label="Conferências antes de ativar o destino">{['Arquivos','Relações','Permissões'].map((label,i)=><span data-migration-check={i}><i aria-hidden="true">✓</i>{label}</span>)}</div>
+     <div class="migration-result"><span class="migration-success">Conferir antes de continuar.</span><span class="migration-failure">A conferência falhou. A origem continua operando.</span></div>
+    </>}
+   </div>
+   <div class="story-commentary">
+    <ol class="story-captions">{content.lines.map(([title,description],i)=><li data-story-caption={i}><span class="story-act">ATO 0{i+1} / 03</span><p>{title}</p><div class="story-explanation">{description}</div></li>)}</ol>
+    {kind==='time' && <div class="story-experiment time-experiment"><span>E se o ganho fosse usado para…</span><div role="group" aria-label="Destino do ganho de tempo"><button type="button" data-distribution="shared" aria-pressed="true">Repartir o tempo ↗</button><button type="button" data-distribution="quota" aria-pressed="false">Só aumentar a meta ↗</button></div><p class="distribution-result" aria-live="polite">A equipe participa do benefício.</p></div>}
+    {kind==='routes' && <div class="story-experiment route-experiment"><span>Teste o ponto de decisão.</span><button type="button" data-route-test aria-pressed="false">E se a conferência falhar? ↗</button><p class="route-test-result" aria-live="polite">O destino só assume depois de validado.</p></div>}
+    {kind==='handover' && <div class="story-delivery-note"><span>QUEM RECEBE TAMBÉM PODE</span><p>Operar.<br />Adaptar.<br /><em>Transmitir.</em></p></div>}
     <p class="story-conclusion">{content.end}</p>
-  </figcaption>
+   </div>
+  </div>
+  <nav class="story-controls" aria-label={`Percorrer: ${content.title}`}>
+   {content.steps.map((step,i)=><button type="button" data-story-go={i} aria-pressed={i===2}><span>0{i+1}</span>{step}<i aria-hidden="true"></i></button>)}
+  </nav>
+ </div>
+ <figcaption class="story-accessible-summary">{content.title}</figcaption>
 </figure>
 <script>
-  import {initVisualStories} from '../scripts/visual-stories';
-  initVisualStories();
+ import {initVisualStories} from '../scripts/visual-stories';
+ initVisualStories();
 </script>

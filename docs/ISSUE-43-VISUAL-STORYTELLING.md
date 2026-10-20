@@ -109,3 +109,37 @@ Medição comparável desta revisão: as dez dobras editoriais passam de 827 par
 Build desta revisão: `.edition-builds/visual-storytelling-43-07`. Tipos, 38 testes Node, build, saída estática e auditorias npm/Python passaram. Nenhuma vulnerabilidade conhecida reportada. Cenas geradas, todas as galerias, conteúdo e contraste foram revalidados em navegador; sem JavaScript e movimento reduzido continuam disponíveis. A suíte de cenas agora verifica também o carregamento de cada imagem usada pelo SVG. O ajuste final de espaçamento das peças foi revalidado visualmente em 390 px e pela suíte de cenas.
 
 Rolagem horizontal: passou em dez viewports (240×320 a 1440×900), três formatos de toque e mudanças de orientação. As cinco suítes reexecutadas nesta revisão passaram: cenas, galerias, edição, contraste e viewports horizontais. CI completo da implementação anterior (`60172b8`) estava verde; um novo ciclo será disparado pelo push desta revisão. Sem publicação de release ou acesso à VPS.
+
+
+## Segunda revisão visual — cenas que demonstram uma transformação (19/10/2026)
+
+Continuação da issue #43 e do PR #44, a partir de `44a3eb5`. A avaliação do usuário foi que a ideia estava interessante, mas os assets e os movimentos não a representavam bem. Na inspeção em 390 e 1440 px, a entrega sobrepunha duas representações do computador; a portabilidade reduzia casas e textos a miniaturas; mover objetos isolados não explicava o processo.
+
+### Composição e comportamento
+
+- **Trabalho e tempo:** registros de pedidos, cadastros e avisos convergem para uma rotina compartilhada. Uma faixa do dia abre espaço para outro uso do tempo. O leitor escolhe entre repartir o tempo e somente aumentar a meta; a faixa, o estado do controle e a consequência textual mudam juntos. Não há escala numérica ou promessa de produtividade. A decisão sobre a distribuição continua explícita.
+- **Entrega:** uma interface se abre em quatro documentos legíveis: código, dados, acessos e documentação. Os mesmos documentos passam a formar o conjunto sustentado pelas mãos da equipe. A composição evita duplicar computador e bancada. O inventário completo permanece acessível logo abaixo.
+- **Portabilidade:** origem e destino são representados por equipamentos atuais. Um único pacote identificado como memória do trabalho segue o percurso, pausa na conferência e só chega ao destino depois dela. É possível simular falha: o pacote permanece na conferência, o destino não assume e a origem continua preservada. Uma nova conferência permite concluir a demonstração.
+- Os três atos podem ser percorridos com botões, teclado e scroll. Quando o quadro inteiro cabe no viewport, há um trecho curto de fixação para acompanhar a transformação. Em telas baixas, a composição segue o fluxo normal e os controles continuam disponíveis.
+- As transições interpolam até o estado solicitado e param; não há relógio permanente ou captura da roda do mouse. Rolar novamente devolve o controle à progressão da página. Leitura e movimento reduzido expõem os três argumentos, com a composição estática; sem JavaScript, permanecem composição e legendas completas.
+- Uma coluna editorial associa título, explicação e consequência à cena. No celular, ela vem abaixo da imagem. A altura das legendas é reservada para não deslocar as dobras seguintes ao mudar de ato. A regra antiga de flex nos textos ocultos foi retirada porque contrariava essa reserva de altura na nova composição.
+
+### Imagens e referências
+
+Três imagens novas, geradas pela ferramenta integrada `image_gen`: trabalho cooperativo contemporâneo, mãos sustentando uma bancada vazia e um pequeno servidor com equipamento de rede. Os textos e documentos são HTML; as imagens fornecem pessoas, materiais e infraestrutura. PNGs originais preservados no diretório de geração, WebPs de 1536×1024 com alpha no projeto; os três somam 615.598 bytes (~601 KiB). Prompts finais, origem e conversão em `docs/ISSUE-43-ASSETS-V3.json`. As pessoas são ilustrativas e geradas, não retratos de clientes ou membros reais.
+
+Referências consultadas para progressão por estados e narrativa ambiental: [GSAP ScrollTrigger](https://gsap.com/docs/v3/Plugins/ScrollTrigger/) e [Ocean Lovers Guide to Compost / Awwwards](https://www.awwwards.com/sites/ocean-lovers-guide-to-compost). A implementação continua nativa, coordenada com a rolagem existente. Não há nova dependência, reprodução de site de referência ou renderização em vídeo que impeça a leitura sem animação.
+
+### Limites e recuperação
+
+Prévia na porta 4197, reaproveitando o listener existente. A branch das etiquetas (#45 / porta 4198) permanece independente; esta revisão não integra seus commits. A main remota foi conferida por fetch e continua em `77cbc76`. Base da revisão recuperável: `44a3eb5`. Sem merge, release/tag, publicação em produção, migração ou acesso à VPS. As cenas são demonstrações editoriais, não fluxos produtivos em execução; Safari/iOS físico ainda precisa de homologação.
+
+
+### Validação desta revisão
+
+- Tipos (`npm run check`), 38 testes Node, build, `check-static.mjs` e `git diff --check`: passaram. Auditorias npm e Python: nenhuma vulnerabilidade conhecida reportada.
+- Onze suítes Chromium passaram: `test_visual_stories`, `test_leaf_flow`, `test_leaf_return`, `test_theme_orbit`, `test_motion_edition`, `test_horizontal_viewports`, `test_project_galleries`, `test_site_edition`, `test_leaf_contrast`, `test_landing_touch` e `test_atelier_edge_ui`.
+- A suíte das cenas valida seleção por teclado, reversibilidade, altura estável, retomada por roda do mouse, fixação real do quadro durante scroll, escolhas com resultados diferentes, falha e recuperação da conferência, carregamento dos recortes, ausência de overflow, repouso após assentamento, movimento reduzido e ausência de JavaScript. A conferência com falha reserva a altura da mensagem para não deslocar a página ao alternar estados.
+- Nos primeiros lotes paralelos, o servidor Python existente na porta 4197 recusou conexões de módulos e imagens (`net::ERR_CONNECTION_REFUSED`). Os casos afetados foram diagnosticados com registro de requests e repetidos em um servidor local de teste com fila de 128 conexões. Esse servidor teve o ciclo de vida limitado à suíte; o listener da prévia Wi-Fi não foi encerrado.
+- Screenshots de referência e revisão em `.playwright/review43/` (fora do Git), com inspeção em 320, 390 e 1440 px. As capturas isoladas das cenas ocultam temporariamente navbar/folha apenas durante a captura; os testes de interação mantêm esses elementos ativos. A última composição mobile posiciona a rotina abaixo dos rostos, preservando a leitura das pessoas na imagem.
+- O último ajuste de composição foi revalidado com a suíte das cenas, tipos, build e validação estática. Não se repetiram indiscriminadamente as suítes de recursos que não receberam novas alterações.

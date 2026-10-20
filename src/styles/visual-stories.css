@@ -22,10 +22,6 @@
 @media(prefers-reduced-motion:reduce){.story-drawing *{transition:none!important}}
 @media(max-width:759px){.story-handover .story-drawing{width:100%;margin:0;min-height:290px}.story-handover .story-bench-art{height:60%;width:145%;left:-22.5%;bottom:0}.story-controls{margin-top:8px}.hero-restored .hero-argument-detail{margin-inline:10px}.knowledge-cover-copy .knowledge-synthesis{font-size:25px!important}.project-explainer>div{max-height:100px}}
 @media(max-width:759px){.story-time .story-drawing,.story-routes .story-drawing{width:100%;margin-left:0}.story-drawing text,.story-drawing .story-label{font-size:25px;letter-spacing:0}.story-controls button{font-size:11px}.story-handover .story-bench-art{width:100%;left:0;height:55%}.story-handover .story-drawing .story-label{font-size:20px}}
-/* Reserve the tallest caption so changing phases never moves later scenes. */
-.visual-story[data-story-static="false"] .story-captions{display:grid}
-.visual-story[data-story-static="false"] .story-captions li{grid-area:1/1}
-.visual-story[data-story-static="false"] .story-captions [hidden]{display:flex!important;visibility:hidden;pointer-events:none}
 /* Generated cutouts carry the illustration; paths only explain connections. */
 .story-drawing image{image-rendering:auto}
 .story-object-label{paint-order:stroke;stroke:var(--story-paper);stroke-width:7px;stroke-linejoin:round}
