@@ -1,67 +1,57 @@
 import '../styles/hero-print.css';
 
-const clamp = (n: number) => Math.max(0, Math.min(1, n));
-type PrintBlock = { element: HTMLElement; lines: { top: number; bottom: number }[]; top: number; height: number };
+const clamp = (n: number, max = 1) => Math.max(0, Math.min(max, n));
+const starts = [.07, .38, .69];
+const duration = .24;
 
-/** A reversible print pass over the original semantic text; no cloned lettering. */
+/** One complete paragraph per print pass, with a reading pause between passes. */
 export function createHeroPrint(hero: HTMLElement | null) {
   const stage = hero?.querySelector<HTMLElement>('.hero-stage');
   if (!hero || !stage) return null;
-  const blocks: PrintBlock[] = Array.from(hero.querySelectorAll<HTMLElement>('.hero-lead,.hero-argument,.hero-method'))
-    .map(element => ({ element, lines: [], top: 0, height: 0 }));
-  let enabled = false, pinned = false, start = 0, run = 1, viewport = innerHeight;
-  function measure(active: boolean, height: number, width: number, mast: number) {
-    enabled = active; viewport = height;
+  const blocks = Array.from(hero.querySelectorAll<HTMLElement>('.hero-lead,.hero-argument,.hero-method'));
+  let enabled = false, start = 0, run = 1, anchor = 0;
+  let framing: number[] = [];
+  function measure(active: boolean, height: number, _width: number, mast: number) {
+    enabled = active;
     hero!.dataset.printPinned = 'false';
     const rect = stage!.getBoundingClientRect();
     const padding = parseFloat(getComputedStyle(hero!).paddingTop) + parseFloat(getComputedStyle(hero!).paddingBottom);
-    pinned = active && width >= 1100 && rect.height + mast + 24 <= height;
-    start = Math.max(0, rect.top + scrollY - mast - 12);
-    run = Math.round(Math.min(1100, height * 1.15));
+    anchor = mast + 12;
+    start = Math.max(0, hero!.getBoundingClientRect().top + scrollY + parseFloat(getComputedStyle(hero!).paddingTop) - anchor);
+    run = Math.round(Math.max(1800, Math.min(3400, height * 2.8)));
+    const room = height - anchor - 16;
+    const travel = Math.max(0, rect.height - room);
+    framing = blocks.map(block => {
+      const r = block.getBoundingClientRect();
+      return clamp(r.top - rect.top - Math.max(12,(room-r.height)/2),travel);
+    });
     hero!.dataset.printEnabled = String(active);
-    hero!.dataset.printPinned = String(pinned);
-    hero!.style.height = pinned ? `${rect.height + run + padding}px` : '';
-    for (const block of blocks) {
-      const bounds = block.element.getBoundingClientRect();
-      block.top = bounds.top + scrollY; block.height = bounds.height;
-      const lines: PrintBlock['lines'] = [];
-      const walker = document.createTreeWalker(block.element, NodeFilter.SHOW_TEXT);
-      const range = document.createRange();
-      while (walker.nextNode()) {
-        if (!walker.currentNode.textContent?.trim()) continue;
-        range.selectNodeContents(walker.currentNode);
-        for (const r of Array.from(range.getClientRects())) {
-          const top = Math.max(0, r.top - bounds.top - 3), bottom = Math.min(bounds.height, r.bottom - bounds.top + 3);
-          const line = lines.find(l => Math.abs(l.top - top) < 10);
-          if (line) { line.top = Math.min(line.top, top); line.bottom = Math.max(line.bottom, bottom); }
-          else lines.push({ top, bottom });
-        }
-      }
-      block.lines = lines.sort((a,b) => a.top-b.top);
-    }
+    hero!.dataset.printPinned = String(active);
+    hero!.dataset.printStart = String(start);
+    hero!.dataset.printRun = String(run);
+    hero!.style.height = active ? `${rect.height + run + padding}px` : '';
   }
   function render(y: number) {
     const progress = clamp((y-start)/run);
-    blocks.forEach((block,index) => {
-      const p = !enabled ? 1 : pinned
-        ? clamp((progress - [0,.22,.45][index]) / .36 + (index === 0 ? .12 : 0))
-        : clamp((viewport * .78 - (block.top-y)) / Math.min(block.height + viewport*.22, viewport*.6));
-      const {element,lines,height} = block;
+    let shift = 0;
+    blocks.forEach((element,index) => {
+      // Finish the previous block before the next even starts.
+      const p = enabled ? clamp((progress-starts[index])/duration) : 1;
       element.dataset.printProgress = p.toFixed(3);
-      if (p >= 1 || !lines.length) element.style.removeProperty('clip-path');
+      if (p >= 1) element.style.removeProperty('clip-path');
+      else if (p <= 0) element.style.clipPath = 'inset(0 100% 0 0)';
       else {
-        const cursor = p * lines.length;
-        const i = Math.min(lines.length-1,Math.floor(cursor));
-        const line = lines[i];
-        const top = i === 0 ? 0 : (lines[i-1].bottom+line.top)/2;
-        const bottom = i === lines.length-1 ? height : (line.bottom+lines[i+1].top)/2;
-        const x = (cursor-i)*108-4;
-        // Uneven ink edge advances across one complete line at a time.
-        element.style.clipPath = `polygon(0 0,100% 0,100% ${top}px,${x}% ${top}px,${x+1.4}% ${top+(bottom-top)*.3}px,${x-.8}% ${top+(bottom-top)*.65}px,${x+.6}% ${bottom}px,0 ${bottom}px)`;
+        const x=p*108-4;
+        element.style.clipPath=`polygon(0 0,${x}% 0,${x+1.5}% 28%,${x-.8}% 65%,${x+.6}% 100%,0 100%)`;
       }
       element.style.setProperty('--print-register',`${(1-p)*1.8}px`);
       element.style.setProperty('--print-highlight',`${clamp((p-.55)/.45)*100}%`);
+      // Tall compositions stay pinned too; frame each paragraph during the pause.
+      const previous=index===0?0:framing[index-1];
+      const t=clamp((progress-(starts[index]-.07))/.07);
+      shift+=(framing[index]-previous)*t*t*(3-2*t);
     });
+    hero!.style.setProperty('--print-anchor',`${anchor-(enabled?shift:0)}px`);
   }
   return { measure, render };
 }

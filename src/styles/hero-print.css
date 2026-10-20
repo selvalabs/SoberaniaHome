@@ -1,6 +1,6 @@
 /* Scroll is the printing press. Keep the headline and semantic text intact. */
 html.motion-edition #hero.hero-restored[data-print-pinned="true"]{overflow:visible;overflow-anchor:none}
-html.motion-edition #hero.hero-restored[data-print-pinned="true"] .hero-stage{position:sticky;top:calc(var(--mast-h) + 12px)}
+html.motion-edition #hero.hero-restored[data-print-pinned="true"] .hero-stage{position:sticky;top:var(--print-anchor,calc(var(--mast-h) + 12px))}
 #hero[data-print-enabled="true"] .hero-message p{ text-shadow:var(--print-register,0px) 0 #ba70434d,calc(-1 * var(--print-register,0px)) 0 #2c89733d }
 #hero[data-print-enabled="true"] .hero-mark,#hero[data-print-enabled="true"] .hero-future{background-image:linear-gradient(transparent 72%,#c58b5066 72%,#c58b5066 94%,transparent 94%);background-size:var(--print-highlight,0%) 100%;background-repeat:no-repeat;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 @media print{

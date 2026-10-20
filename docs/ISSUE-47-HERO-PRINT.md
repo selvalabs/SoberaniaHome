@@ -23,3 +23,10 @@ Recuperação: f08534d (antes da revelação). Sem merge na main, release/tag, p
 - Etiqueta: três viewports, cinco dobras, posição, colisão/recuperação, passagem de cliques e modos de leitura.
 - Galerias: dez viewports de 240x320 até 1440x900; toque em três formatos; mudança de orientação e largura. Retorno da folha também aprovado.
 - Inspeção de screenshots desktop e mobile, claro/escuro. Os testes estáticos usaram um servidor temporário em loopback, encerrado ao concluir. Uma primeira execução no dev foi interrompida pelo HMR durante edição; a versão compilada passou. A medição que temporariamente removia a altura foi corrigida para evitar saltos de ancoragem.
+
+## Ajuste de sequência solicitado em 20/10
+Substitui o comportamento inicial descrito acima: a hero agora permanece pinned em todos os viewports até terminar a revelação. Cada parágrafo recebe uma passagem de impressão sobre o bloco inteiro; não há mais revelação linha a linha nem sobreposição entre os intervalos dos três blocos. A duração de scroll passou de no máximo 1100 px para 1800–3400 px, conforme a altura da tela. Há pausas entre blocos e uma pausa final com tudo legível.
+
+Em composições mais altas que a viewport, a posição sticky acompanha o enquadramento do bloco ativo durante as pausas. Não há redução de fonte, recorte do bloco ativo ou necessidade de arrastar uma área interna. Modo leitura/reduced motion/no-JS continuam exibindo tudo sem pin. O teste cobre separação temporal dos três blocos, enquadramento em quatro viewports, permanência até a pausa final, reversão e medição sem salto.
+
+Rollback desta rodada: aacf6da. Mesma issue #47, branch e PR #48; sem merge/publicação/VPS. Servidor 4198 preservado.
