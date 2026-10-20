@@ -29,7 +29,15 @@ with sync_playwright() as pw:
    assert 0<states[active]<1,states
    assert states[:active]==[1]*active and states[active+1:]==[0]*(2-active),states
    r=page.locator('#hero [data-print-progress]').nth(active).bounding_box()
-   assert r['y']>=-2 and r['y']+r['height']<=h+2,(w,h,progress,r)
+   if page.locator('#hero').get_attribute('data-print-viewport')=='true':
+    # The paragraph is progressively printed inside a bounded reading window.
+    # Its unrevealed lines need not fit; every printed line is covered by the
+    # mobile viewport test, including paragraphs taller than that window.
+    window=page.locator('.hero-message').bounding_box()
+    assert r['y']<window['y']+window['height'] and r['y']+r['height']>window['y'],(w,h,progress,r,window)
+    assert window['y']>=0 and window['y']+window['height']<=h,(w,h,window)
+   else:
+    assert r['y']>=-2 and r['y']+r['height']<=h+2,(w,h,progress,r)
    if w==1440 and active==0: assert buttons.bounding_box()['y']>initial_button_y+15,'text did not push buttons'
    stage=page.locator('.hero-stage').bounding_box()
    assert stage['y']+stage['height']>=h-50,(w,h,stage)

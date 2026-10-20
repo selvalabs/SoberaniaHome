@@ -56,6 +56,7 @@ export function initMotion() {
   let leafPose:LeafPose|null=null, naturalLeafPose:LeafPose|null=null;
   let leafReturn:{sample:ReturnType<typeof createLeafReturn>;elapsed:number;last:number}|null=null;
   let sections: {element: HTMLElement; top: number; bottom: number}[] = [];
+  let readingAnchor: {element:HTMLElement; top:number; focused:boolean} | null = null;
   let origin = {x: innerWidth * .31, y: 240}, dock = {x: innerWidth * .65, y: 0};
   const leafFlight = createLeafFlight();
   const metrics = {frames: 0, measurements: 0, idle: true};
@@ -171,8 +172,8 @@ export function initMotion() {
     metrics.measurements++;
     width=document.documentElement.clientWidth;height=innerHeight;
     mastHeight=mast?.offsetHeight||64;
-    heroPrint?.measure(enabled,height,width,mastHeight);
-    choicesPrint?.measure(enabled,height,width,mastHeight);
+    heroPrint?.measure(enabled,height,width,mastHeight,layoutHeight);
+    choicesPrint?.measure(enabled,height,width,mastHeight,layoutHeight);
     root.style.setProperty('--motion-stage-height',`${Math.max(1,height-mastHeight)}px`);
     root.style.setProperty('--motion-mast-height',`${mastHeight}px`);
     for(const scene of scenes) {
@@ -276,9 +277,26 @@ export function initMotion() {
       if(Math.abs(y-(scene.start+scene.run*index/Math.max(1,scene.panels.length-1)))<2)pendingSceneJump=null;
     }
     if(leafEnabled){renderLeaf(y);renderHeroGlow(y);}
+    rememberReadingPosition();
     debug.scenes=scenes.map(s=>({id:s.id,start:s.start,end:s.start+s.run,raw:s.progress*(s.panels.length-1),visual:s.progress*(s.panels.length-1),lastIndex:s.index,static:!enabled||s.static,flow:s.flow}));
     metrics.idle=true;
     if(leafReturn&&leafEnabled)request();
+  }
+
+  function rememberReadingPosition() {
+    readingAnchor=null;
+    if(width>=760||activeId==='hero'||activeId==='folha'||scenes.some(scene=>scene.active&&!scene.flow&&!scene.static))return;
+    const chapter=sections.find(item=>item.element.id===activeId)?.element;
+    if(!chapter)return;
+    const focus=document.activeElement;
+    const field=focus instanceof HTMLElement&&chapter.contains(focus)&&focus.matches('input,textarea,select')?focus:null;
+    const candidates=field?[field]:all<HTMLElement>('h2,h3,p,summary,button,a,label',chapter);
+    for(const element of candidates){
+      const rect=element.getBoundingClientRect();
+      if(rect.width>0&&rect.bottom>mastHeight+8&&rect.top<height*.8){
+        readingAnchor={element,top:rect.top,focused:element===field};break;
+      }
+    }
   }
 
   function renderTrack(scene:Scene) {
@@ -631,16 +649,22 @@ export function initMotion() {
   }
   all<HTMLButtonElement>('[data-edition-reading]').forEach(button=>button.addEventListener('click',()=>window.SLMotion.setReading(leafEnabled)));
   addEventListener('scroll',request,{passive:true});
+  document.addEventListener('focusin',event=>{if(event.target instanceof HTMLElement&&event.target.matches('main input,main textarea,main select'))request();});
   // Direct input takes over from a requested card transition.
   for(const type of ['wheel','touchstart','pointerdown','keydown'])addEventListener(type,()=>{pendingSceneJump=null;navigationRevision++;},{passive:true,capture:true});
   addEventListener('resize',()=>{
     const revision=navigationRevision;
+    const reading=readingAnchor?{...readingAnchor}:null,resizeY=scrollY;
+    const print=all<HTMLElement>('#hero[data-print-pinned="true"],#folha[data-print-pinned="true"]').find(element=>scrollY>=Number(element.dataset.printStart)&&scrollY<=Number(element.dataset.printStart)+Number(element.dataset.printRun));
+    const printStart=Number(print?.dataset.printStart),printRun=Number(print?.dataset.printRun);
     const active=pendingSceneJump?.scene||scenes.find(scene=>scene.active&&!scene.flow&&!scene.static);
     const jump=pendingSceneJump?.scene===active?pendingSceneJump:null;
     // Capture the logical position before content/ResizeObserver measurements
     // change scene coordinates, rather than sampling a half-finished frame.
     const progress=jump?jump.index/Math.max(1,jump.scene.panels.length-1):active?.progress;
+    clearTimeout(layoutTimer);
     clearTimeout(resizeTimer);resizeTimer=window.setTimeout(()=>{
+    resizeTimer=0;
     // Mobile browsers also emit resize without a geometry change. Re-applying
     // an intermediate scroll position here aborts an in-flight smooth jump.
     if(document.documentElement.clientWidth===resizedWidth&&innerHeight===resizedHeight)return;
@@ -649,6 +673,8 @@ export function initMotion() {
     const currentJump=pendingSceneJump||(revision===navigationRevision?jump:null);
     const currentScene=currentJump?.scene||(revision===navigationRevision?active:null)||scenes.find(scene=>scene.active&&!scene.flow&&!scene.static);
     const currentProgress=currentJump?currentJump.index/Math.max(1,currentJump.scene.panels.length-1):currentScene===active?progress:currentScene?.progress;
+    const printProgress=print&&revision===navigationRevision?clamp((scrollY-printStart)/printRun):undefined;
+    const readingTop=reading?.top!==undefined?reading.top-(scrollY-resizeY):0;
     resizedWidth=document.documentElement.clientWidth;resizedHeight=innerHeight;
     const landscape=matchMedia('(orientation: landscape)').matches;
     if(innerWidth!==layoutWidth||landscape!==layoutLandscape||(innerWidth>=760&&innerHeight!==layoutHeight)){
@@ -658,6 +684,14 @@ export function initMotion() {
     if(currentScene&&currentProgress!==undefined&&!paused&&enabled&&!currentScene.static){
       if(currentJump){pendingSceneJump=currentJump;scrollToY(currentScene.start+currentScene.run*currentProgress);}
       else scrollTo({top:currentScene.start+currentScene.run*currentProgress,behavior:'instant'});
+    }else if(print&&printProgress!==undefined&&!paused&&enabled){
+      scrollTo({top:Number(print.dataset.printStart)+Number(print.dataset.printRun)*printProgress,behavior:'instant'});
+    }else if(reading&&revision===navigationRevision&&!paused&&reading.element.isConnected){
+      // Reflow the scenes above a chapter without taking away the paragraph
+      // being read. A focused field also stays above a resized keyboard area.
+      const rect=reading.element.getBoundingClientRect();
+      const top=reading.focused?clamp(readingTop,mastHeight+12,Math.max(mastHeight+12,height-Math.min(rect.height,height-mastHeight-24)-12)):readingTop;
+      scrollTo({top:scrollY+rect.top-top,behavior:'instant'});
     }
   },140);},{passive:true});
   addEventListener('load',measure,{once:true});
@@ -667,7 +701,7 @@ export function initMotion() {
   document.fonts?.ready.then(measure);
   document.addEventListener('sl:layout-change',()=>{clearTimeout(layoutTimer);layoutTimer=window.setTimeout(measure,90);});
   // Images/details may change reading flow; observe chapter dimensions, not transforms.
-  const resizeObserver=new ResizeObserver(()=>{if(!paused){clearTimeout(layoutTimer);layoutTimer=window.setTimeout(measure,80);}});
+  const resizeObserver=new ResizeObserver(()=>{if(!paused&&!resizeTimer){clearTimeout(layoutTimer);layoutTimer=window.setTimeout(measure,80);}});
   all<HTMLElement>('main > .section').forEach(section=>resizeObserver.observe(section));
   configure(false);render();debug.ready=true;
   if(document.querySelector('dialog[open]'))window.SLMotion.pause();
