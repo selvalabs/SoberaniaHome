@@ -22,6 +22,9 @@ Várias outras seções herdavam espaçamentos e alturas mínimas de desktop.
   em mudanças de tamanho. Não há novos handlers de wheel/touch nem loop contínuo.
 - O espaço reservado para a navbar inclui a área segura superior; chamadas e
   controles respeitam o recorte inferior de aparelhos com indicador de início.
+- Nos capítulos de leitura vertical, a mudança de altura preserva o trecho
+  visível. Campos em foco também permanecem enquadrados; a remedição por
+  ResizeObserver aguarda o resize para não refazer as cenas antes dessa ancoragem.
 - As linhas da grid mantêm a altura intrínseca, evitando sobreposição quando a
   janela de leitura é menor que o conjunto dos parágrafos. Há respiro para os
   ascendentes das fontes na borda da máscara.
@@ -45,6 +48,8 @@ progresso ao redimensionar, finais de capítulos alcançáveis, teclado das abas
 modo de leitura. Integra a suíte do build estático em CI.
 `test_mobile_safe_area.py` simula 35 px de área superior e 34 px inferiores para
 verificar as chamadas dos reveals e os controles das duas galerias.
+`test_mobile_reading_resize.py` verifica parágrafos nas colagens, sobre, caderno
+e rodapé, além do textarea em foco, ao reduzir e aumentar a altura do navegador.
 
 A inspeção visual local percorre as 16 dobras nos temas claro e escuro. As
 capturas e inventários intermediários ficam em `.playwright/` (ignorado pelo Git).

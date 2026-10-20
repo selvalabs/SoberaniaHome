@@ -55,7 +55,8 @@ with sync_playwright() as pw:
   # Check every chapter, not only the pinned opening. Long essays, forms and
   # accordion contents keep native vertical flow rather than being truncated.
   for sid in q.locator('main > section[data-number]').evaluate_all('es=>es.map(e=>e.id)')[2:]:
-   q.evaluate('(id)=>SLMotion.jumpSection(id)',sid);q.wait_for_timeout(450)
+   q.evaluate('(id)=>SLMotion.jumpSection(id)',sid)
+   q.wait_for_function('(id)=>__SL_DEBUG.activeId===id',arg=sid)
    section=q.locator('#'+sid)
    assert q.evaluate('document.documentElement.scrollWidth<=innerWidth'),(w,h,sid)
    # The intentionally moving work marquee is wider than the window.
@@ -63,7 +64,8 @@ with sync_playwright() as pw:
     title=section.locator('h2').first.bounding_box()
     assert title['x']>=-1 and title['x']+title['width']<=w+1,(w,h,sid,title)
    if sid in ['trabalho','laboratorio']:
-    q.evaluate('(id)=>SLMotion.jumpScene(id,0)',sid);q.wait_for_timeout(400)
+    q.evaluate('(id)=>SLMotion.jumpScene(id,0)',sid)
+    q.wait_for_function('(id)=>Math.abs(document.querySelector(`#${id} .scene-frame`).getBoundingClientRect().top)<1',arg=sid)
     frame=section.locator('.scene-frame').bounding_box()
     assert frame['y']>=-1 and frame['y']+frame['height']<=h+1,(w,h,sid,frame)
    elif sid not in ['processo','espiral']:
