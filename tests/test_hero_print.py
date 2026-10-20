@@ -16,12 +16,21 @@ with sync_playwright() as pw:
   def go(p):
    y=round(start+run*p);page.evaluate('(y)=>scrollTo({top:y,behavior:"instant"})',y)
    page.wait_for_function('(y)=>Math.abs(__SL_DEBUG.scroll-y)<2',arg=y);page.wait_for_timeout(120)
+  go(0)
+  buttons=page.locator('#hero .text-actions')
+  initial_button_y=buttons.bounding_box()['y']
+  title=page.locator('#cover-title').bounding_box()
+  assert 0<=initial_button_y-(title['y']+title['height'])<70,'buttons are not below headline'
+  assert page.locator('#hero .text-actions a').all_text_contents()==['Ver o que fazemos','Ler o manifesto']
+  for link in page.locator('#hero .text-actions a').all():
+   assert link.evaluate('(e)=>parseFloat(getComputedStyle(e).fontSize)')>=15
   for progress,active in [(.19,0),(.50,1),(.81,2)]:
    go(progress);states=values()
    assert 0<states[active]<1,states
    assert states[:active]==[1]*active and states[active+1:]==[0]*(2-active),states
    r=page.locator('[data-print-progress]').nth(active).bounding_box()
    assert r['y']>=-2 and r['y']+r['height']<=h+2,(w,h,progress,r)
+   if w==1440 and active==0: assert buttons.bounding_box()['y']>initial_button_y+15,'text did not push buttons'
    stage=page.locator('.hero-stage').bounding_box()
    assert stage['y']+stage['height']>=h-50,(w,h,stage)
   go(.96);assert values()==[1,1,1]

@@ -30,3 +30,10 @@ Substitui o comportamento inicial descrito acima: a hero agora permanece pinned 
 Em composições mais altas que a viewport, a posição sticky acompanha o enquadramento do bloco ativo durante as pausas. Não há redução de fonte, recorte do bloco ativo ou necessidade de arrastar uma área interna. Modo leitura/reduced motion/no-JS continuam exibindo tudo sem pin. O teste cobre separação temporal dos três blocos, enquadramento em quatro viewports, permanência até a pausa final, reversão e medição sem salto.
 
 Rollback desta rodada: aacf6da. Mesma issue #47, branch e PR #48; sem merge/publicação/VPS. Servidor 4198 preservado.
+
+## Botões empurrados pela impressão — 20/10
+As duas chamadas da hero perderam as setas, ganharam fontes de 16 px (desktop) e 15 px (mobile), área mínima de 54–56 px, espaçamento e foco visível. Até 420 px, ficam empilhadas para caber com folga.
+
+A área editorial começa recolhida e expande sua altura real conforme as linhas são impressas. Por isso os botões começam abaixo da headline e são deslocados pelo texto no fluxo do documento. Uma leve inclinação e sombra acompanham o impulso de cada linha, com patamares entre avanços. Continua um parágrafo por vez. A composição mantém sua altura reservada para preservar o pin; leitura/reduced motion/print restauram a altura natural e removem o impulso.
+
+Validação: typecheck, 38 testes Node, build, verificador estático, npm audit (zero reportadas); teste de sequência nos quatro viewports ampliado para posição inicial, deslocamento real dos botões e fontes. Texto e destinos preservados. Rollback desta rodada: 71ddf7d. Mesma issue/branch/PR e servidor 4198; sem merge, release/tag ou VPS.

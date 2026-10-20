@@ -13,3 +13,14 @@ html.motion-edition #hero.hero-restored[data-print-pinned="true"] .hero-stage{po
  #hero.hero-restored .hero-stage{position:relative!important;top:auto!important}
  #hero .hero-message p{clip-path:none!important;text-shadow:none!important}
 }
+
+#hero[data-print-enabled="true"] .hero-stage{height:var(--print-stage-height)!important;min-height:0!important;justify-content:flex-start}
+#hero[data-print-enabled="true"] .hero-message{overflow:clip;grid-template-rows:auto;align-content:start}
+#hero[data-print-enabled="true"] .hero-thesis,#hero[data-print-enabled="true"] .hero-method{min-height:0}
+@media print{#hero .hero-message{height:auto!important;overflow:visible!important}#hero .hero-stage{height:auto!important}}
+@media(prefers-reduced-motion:reduce){#hero .hero-message{height:auto!important;overflow:visible!important}#hero .hero-stage{height:auto!important}}
+
+#hero[data-print-enabled="true"] .text-actions{transform-origin:12% 0;transform:translateY(calc(var(--print-pressure,0) * 3px)) rotate(calc(var(--print-pressure,0) * -.28deg))}
+#hero[data-print-enabled="true"] .text-actions a{box-shadow:0 calc(var(--print-pressure,0) * 3px) 0 color-mix(in srgb,var(--ink) 16%,transparent)}
+@media print{#hero .text-actions{transform:none!important}}
+@media(prefers-reduced-motion:reduce){#hero .text-actions{transform:none!important}}
