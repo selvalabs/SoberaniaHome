@@ -1,0 +1,46 @@
+#trabalho .work-intro.work-intro-marquee{padding-top:24px;padding-bottom:20px}
+#trabalho .work-intro-marquee .section-label{margin-bottom:14px}
+#trabalho .work-marquee{position:relative;margin-bottom:14px}
+#trabalho .work-marquee-window{overflow:clip;width:calc(100% + var(--pad) * 2);margin-inline:calc(var(--pad) * -1);mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent)}
+#trabalho .work-marquee-track{display:flex;width:max-content}
+#trabalho .work-marquee-group{display:flex;align-items:center;flex:none;gap:clamp(24px,3vw,48px);padding-right:clamp(24px,3vw,48px)}
+#trabalho .work-marquee-group h2,#trabalho .work-marquee-copy{max-width:none;white-space:nowrap;margin:0;padding-block:.12em;font:400 clamp(32px,4.8vw,72px)/1.12 var(--sans);letter-spacing:-.055em;color:var(--ink)}
+#trabalho .work-marquee-group em{font:italic 1.05em/1.12 var(--serif)}
+#trabalho .work-marquee-mark{font:400 clamp(24px,3vw,40px)/1 var(--serif);color:var(--rust)}
+#trabalho .work-marquee-toggle{display:none;position:absolute;right:0;top:-56px;margin:0;padding:8px 12px;min-height:44px;border:1px solid var(--rule);font:12px/1.3 var(--mono);color:var(--muted);background:var(--paper)}
+#trabalho .work-marquee-toggle:focus-visible{outline:3px solid var(--rust);outline-offset:3px}
+#trabalho .work-marquee[data-marquee-ready="true"] .work-marquee-toggle{display:block}
+#trabalho .work-marquee[data-marquee-ready="true"] .work-marquee-track{animation:work-marquee-loop 14s linear infinite;animation-play-state:paused}
+#trabalho .work-marquee[data-marquee-visible="true"][data-marquee-paused="false"] .work-marquee-track{animation-play-state:running}
+#trabalho .work-marquee:focus-within .work-marquee-track,html[data-reading="true"] #trabalho .work-marquee .work-marquee-track{animation-play-state:paused}
+#trabalho .work-intro-marquee .lead{font-size:clamp(16px,1.25vw,18px);margin:0;max-width:820px}
+#trabalho .work-intro-marquee .work-intro-note{margin-top:10px}
+@keyframes work-marquee-loop{to{transform:translateX(-25%)}}
+/* Static fallbacks expose the whole original heading without duplicates. */
+#trabalho .work-marquee:not([data-marquee-ready="true"]) .work-marquee-group[aria-hidden="true"]{display:none}
+#trabalho .work-marquee:not([data-marquee-ready="true"]) .work-marquee-window{width:100%;margin:0;mask-image:none}
+#trabalho .work-marquee:not([data-marquee-ready="true"]) .work-marquee-group{min-width:0}
+#trabalho .work-marquee:not([data-marquee-ready="true"]) h2{white-space:normal}
+@media(prefers-reduced-motion:reduce){
+ #trabalho .work-marquee .work-marquee-track{animation:none!important;transform:none!important}
+ #trabalho .work-marquee .work-marquee-group[aria-hidden="true"],#trabalho .work-marquee .work-marquee-toggle{display:none!important}
+ #trabalho .work-marquee-window{width:100%;margin:0;mask-image:none}
+ #trabalho .work-marquee-group{min-width:0;gap:16px;padding:0}
+ #trabalho .work-marquee-group h2{white-space:normal}
+}
+@media print{
+ #trabalho .work-marquee .work-marquee-track{animation:none!important;transform:none!important}
+ #trabalho .work-marquee .work-marquee-group[aria-hidden="true"],#trabalho .work-marquee .work-marquee-toggle{display:none!important}
+ #trabalho .work-marquee-window{width:100%;margin:0;mask-image:none}
+ #trabalho .work-marquee-group{min-width:0;gap:16px;padding:0}
+ #trabalho .work-marquee-group h2{white-space:normal}
+}
+@media(max-width:759px){#trabalho .work-intro.work-intro-marquee{padding-top:24px;padding-bottom:20px}}
+/* Reading mode uses a complete, wrapping title rather than a frozen crop. */
+html[data-reading="true"] #trabalho .work-marquee .work-marquee-track{animation:none!important;transform:none!important}
+html[data-reading="true"] #trabalho .work-marquee .work-marquee-group[aria-hidden="true"],html[data-reading="true"] #trabalho .work-marquee .work-marquee-toggle{display:none!important}
+html[data-reading="true"] #trabalho .work-marquee-window{width:100%;margin:0;mask-image:none}
+html[data-reading="true"] #trabalho .work-marquee-group{min-width:0;gap:16px;padding:0}
+html[data-reading="true"] #trabalho .work-marquee-group h2{white-space:normal;font-size:clamp(32px,6.5vw,96px);min-width:0}
+#trabalho .work-marquee:not([data-marquee-ready="true"]) h2{font-size:clamp(32px,6.5vw,96px);min-width:0}
+@media(prefers-reduced-motion:reduce){#trabalho .work-marquee-group h2{font-size:clamp(32px,6.5vw,96px);min-width:0}}
