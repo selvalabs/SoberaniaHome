@@ -10,7 +10,7 @@ with sync_playwright() as pw:
   q.goto(args.url,wait_until='networkidle');q.wait_for_function('window.__SL_DEBUG?.ready')
   section=q.locator('#folha');blocks=q.locator('#folha [data-print-progress]');closing=q.locator('.choices-closing')
   text=q.locator('.choices-print-body').inner_text()
-  assert 'O trabalhador é que não' in text and 'menos desgaste' in text
+  assert 'o salário não acompanha' in text and 'menos desgaste' in text
   def go(p):
    start,run=section.evaluate('(e)=>[+e.dataset.printStart,+e.dataset.printRun]')
    y=round(start+run*p);q.evaluate('(y)=>scrollTo({top:y,behavior:"instant"})',y)
