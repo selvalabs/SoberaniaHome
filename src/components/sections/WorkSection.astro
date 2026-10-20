@@ -1,12 +1,21 @@
 ---
+import '../../styles/work-marquee.css';
 ---
 
 <section id="trabalho" class="section work-section" data-number="3">
-  <div class="prose-section section-intro work-intro">
+  <div class="prose-section section-intro work-intro work-intro-marquee">
     <div class="section-label"><span>03</span><span>Trabalho</span></div>
-    <h2>Do conhecimento<br /><em>à construção.</em></h2>
-    <p class="lead">Organizar uma operação, compartilhar conhecimento, editar uma página ou receber um aviso. Quatro situações que já orientam o que construímos.</p>
-    <span class="work-intro-note">Explore as interfaces e o estágio de cada projeto</span>
+    <div class="work-marquee" data-work-marquee>
+      <div class="work-marquee-window">
+        <div class="work-marquee-track">
+          <div class="work-marquee-group"><h2>Do conhecimento <em>à construção.</em></h2><span class="work-marquee-mark" aria-hidden="true">✳</span></div>
+          <div class="work-marquee-group" aria-hidden="true"><span class="work-marquee-copy">Do conhecimento <em>à construção.</em></span><span class="work-marquee-mark">✳</span></div>
+          <div class="work-marquee-group" aria-hidden="true"><span class="work-marquee-copy">Do conhecimento <em>à construção.</em></span><span class="work-marquee-mark">✳</span></div>
+          <div class="work-marquee-group" aria-hidden="true"><span class="work-marquee-copy">Do conhecimento <em>à construção.</em></span><span class="work-marquee-mark">✳</span></div>
+        </div>
+      </div>
+      <button type="button" class="work-marquee-toggle" aria-pressed="false" aria-label="Pausar faixa de Trabalho">Pausar faixa</button>
+    </div>
   </div>
   <div class="sequence portfolio-sequence" data-kind="horizontal" data-states="4" data-direction="forward">
     <div class="scene-frame">
@@ -59,3 +68,8 @@
     </div>
   </div>
 </section>
+
+<script>
+  import { initWorkMarquee } from '../../scripts/work-marquee';
+  initWorkMarquee();
+</script>

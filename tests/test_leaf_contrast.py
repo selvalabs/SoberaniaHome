@@ -43,7 +43,7 @@ with sync_playwright() as pw:
             samples.append(page.evaluate(signature))
         assert samples[0]!=samples[1]!=samples[2], 'signature glow must follow scroll'
         assert samples[1]==samples[3], 'signature glow must reverse with scroll'
-        assert page.locator('.eyebrow-tech').evaluate('e=>parseFloat(getComputedStyle(e).fontSize)') >= (11 if width<760 else 13)
+        assert page.locator('.brand-signature .eyebrow-tech').evaluate('e=>parseFloat(getComputedStyle(e).fontSize)') >= (11 if width<760 else 13)
         if width==1440:
             box=page.locator('#wind-leaf').bounding_box()
             page.mouse.move(box['x']+box['width']/2,box['y']+box['height']/2);page.mouse.down()

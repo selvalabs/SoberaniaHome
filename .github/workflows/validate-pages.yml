@@ -41,14 +41,33 @@ jobs:
           node scripts/check-static.mjs .edition-builds/ci
       - name: Navegação, animações, privacidade e rolagem interna
         run: |
-          python -m http.server 4361 --bind 127.0.0.1 --directory .edition-builds/ci > /tmp/soberania-preview.log 2>&1 &
-          python tests/test_motion_edition.py --url http://127.0.0.1:4361/
-          python tests/test_leaf_flow.py --url http://127.0.0.1:4361/
-          python tests/test_leaf_return.py --url http://127.0.0.1:4361/
-          python tests/test_theme_orbit.py --url http://127.0.0.1:4361/
-          python tests/test_leaf_contrast.py --url http://127.0.0.1:4361/
-          python tests/test_horizontal_viewports.py --url http://127.0.0.1:4361/
-          python tests/test_project_galleries.py --url http://127.0.0.1:4361/
-          python tests/test_site_edition.py --url http://127.0.0.1:4361/
-          python tests/test_landing_touch.py --url http://127.0.0.1:4361/
-          python tests/test_atelier_edge_ui.py --url http://127.0.0.1:4361/
+          python scripts/run-browser-tests.py --directory .edition-builds/ci
+  pages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Dependências
+        run: |
+          npm ci
+          python -m pip install -r requirements-pages.txt
+          python -m playwright install --with-deps chromium
+      - name: Build pública e pacote no prefixo real
+        env:
+          BUILD_DIR: .edition-builds/pages-source
+          PUBLIC_SITE_URL: https://selvalabs.github.io/
+          PUBLIC_BASE_PATH: /SoberaniaHome/
+          PUBLIC_INDEXABLE: 'true'
+          PUBLIC_EDGE_AI: 'false'
+          RELEASE_TAG: v0.2.0
+        run: |
+          npm run build
+          node scripts/package-pages.mjs .edition-builds/pages-source .edition-builds/pages-artifact
+          node scripts/check-pages.mjs .edition-builds/pages-artifact
+          python scripts/run-browser-tests.py --directory .edition-builds/pages-artifact --base /SoberaniaHome/ --suite pages

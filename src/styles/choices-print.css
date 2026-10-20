@@ -1,0 +1,30 @@
+/* The closing statement is physically displaced by the printed argument. */
+#folha.choices .choices-print-stage{position:relative;padding:32px var(--pad) 40px;max-width:1440px;margin-inline:auto}
+#folha.choices .choices-editorial{display:block}
+#folha.choices .choices-editorial h2{margin:24px 0}
+#folha.choices .choices-print-body{display:grid;grid-template-columns:minmax(0,1fr);gap:24px;align-content:start}
+#folha.choices .choices-print-body > *{grid-column:auto;grid-row:auto;min-width:0}
+#folha.choices .choices-benefit{font-size:clamp(16px,1.55vw,21px);line-height:1.4;max-width:750px;margin:0}
+#folha.choices .choices-resolution{display:block;margin-top:24px;padding:0;border:0}
+#folha.choices .choices-resolution .choices-closing{margin:0;font-size:clamp(20px,2.1vw,29px);max-width:none}
+#folha.choices .choices-reference{max-width:900px}
+#folha.choices[data-print-pinned="true"]{overflow:visible;overflow-anchor:none}
+#folha.choices[data-print-pinned="true"] .choices-print-stage{position:sticky;top:var(--print-anchor);height:var(--print-stage-height)}
+#folha.choices[data-print-enabled="true"] .choices-print-body{overflow:clip}
+#folha.choices[data-print-enabled="true"] [data-print-progress]{text-shadow:var(--print-register,0px) 0 #ba70434d,calc(-1 * var(--print-register,0px)) 0 #2c89733d}
+#folha.choices[data-print-enabled="true"] .choices-resolution{transform-origin:12% 0;transform:translateY(calc(var(--print-pressure,0) * 3px)) rotate(calc(var(--print-pressure,0) * -.28deg))}
+@media(max-width:759px){#folha.choices .choices-print-stage{padding:24px 20px 32px}#folha.choices .choices-print-body{gap:20px}}
+@media print{
+ #folha.choices{height:auto!important}
+ #folha.choices .choices-print-stage{position:relative!important;top:auto!important;height:auto!important}
+ #folha.choices .choices-print-body{height:auto!important;overflow:visible!important}
+ #folha.choices [data-print-progress]{clip-path:none!important;text-shadow:none!important}
+ #folha.choices .choices-resolution{transform:none!important}
+}
+@media(prefers-reduced-motion:reduce){
+ #folha.choices{height:auto!important}
+ #folha.choices .choices-print-stage{position:relative!important;top:auto!important;height:auto!important}
+ #folha.choices .choices-print-body{height:auto!important;overflow:visible!important}
+ #folha.choices [data-print-progress]{clip-path:none!important;text-shadow:none!important}
+ #folha.choices .choices-resolution{transform:none!important}
+}

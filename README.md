@@ -1,6 +1,6 @@
-# Soberania Labs — edição experimental
+# Soberania Labs — edição completa
 
-Versão completa para avaliação na issue [#34](https://github.com/selvalabs/SoberaniaHome/issues/34), branch `feat/34-immersive-edition`. A publicação atual e a `main` permanecem independentes. Este código não publica automaticamente no GitHub Pages nem na Cloudflare.
+Página completa do laboratório, desenvolvida a partir da issue [#34](https://github.com/selvalabs/SoberaniaHome/issues/34). A publicação no [GitHub Pages](https://selvalabs.github.io/SoberaniaHome/) é manual, por tag anotada integrada à main e homologada. A issue [#61](https://github.com/selvalabs/SoberaniaHome/issues/61) registra a migração da edição pública de quatro dobras. Não há publicação automática por push nem implantação na Cloudflare.
 
 ## Executar
 
@@ -60,9 +60,9 @@ Não há credencial no repositório. Um token de DNS não é tratado como autori
 
 ## Publicação e descoberta
 
-[Política SEO/GEO](docs/SEO-GEO.md): a prévia é `noindex`; o sitemap fica vazio. Só uma origem HTTPS confirmada com `PUBLIC_SITE_URL` e `PUBLIC_INDEXABLE=true` habilita os metadados de produção. Esta edição usa caminhos a partir da raiz do domínio e precisa de adaptação específica antes de ser publicada em um subdiretório do GitHub Pages.
+[Política SEO/GEO](docs/SEO-GEO.md): a prévia é `noindex`; o sitemap fica vazio. Uma origem HTTPS confirmada com `PUBLIC_SITE_URL` e `PUBLIC_INDEXABLE=true` habilita os metadados de produção. No Pages, `PUBLIC_BASE_PATH=/SoberaniaHome/` configura a base do Astro e os metadados; `scripts/package-pages.mjs` adapta os recursos públicos legados em uma pasta nova, sem modificar fontes ou apagar builds anteriores. O pacote contém apenas a build estática, `.nojekyll` e `release.json` com SHA/tag. IA externa fica desligada.
 
-Produção segue issue → branch → PR → revisão/homologação → merge no GitHub → tag anotada e SHA imutável → preflight → publicação e verificação. Não usar o workflow legado `pages.yml` para publicar esta edição experimental.
+Produção segue issue → branch → PR → revisão/homologação → merge no GitHub → tag anotada e SHA imutável → preflight → publicação e verificação. Disparar `pages.yml` a partir da main com `release_tag` igual à tag aprovada. O workflow valida e publica a edição Astro completa; também reconhece o formato anterior para rollback à `v0.1.3`. [Procedimento e registro da publicação](docs/ISSUE-61-PAGES-RELEASE.md).
 
 ## Arquivos e ativos
 

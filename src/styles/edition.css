@@ -142,6 +142,12 @@ html.motion-edition .leaf-depth{width:72px}@media(max-width:759px){html.motion-e
  .atelier-heading h2{font-size:43px}
 }
 
+/* Keep the collage together when the adjacent editorial copy grows on tablets. */
+@media(min-width:760px) and (max-width:1100px){
+ #deslocamento-2 .knowledge-collage{height:auto;min-height:0;aspect-ratio:1.08}
+ #deslocamento-2 .note-research{top:calc(100% + 8px);bottom:auto;max-width:54%;transform:rotate(2deg)}
+}
+
 /* Keep the mobile controls as usable as the reading surface. */
 html.motion-edition:not(.motion) #laboratorio .landing-project [data-landing-gallery]{height:clamp(320px,68svh,560px);min-height:0}
 @media(max-width:759px){

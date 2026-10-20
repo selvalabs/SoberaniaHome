@@ -1,4 +1,4 @@
-import { resolveSitePolicy } from './site-policy.mjs';
+import { localPath, resolveSitePolicy } from './site-policy.mjs';
 
 export const publication = resolveSitePolicy(import.meta.env, import.meta.env.PROD);
 
@@ -14,12 +14,13 @@ export const siteIdentity = {
 export const publicPages = ['/', '/perguntas/'];
 
 export function publicUrl(path: string) {
-  return publication.indexable ? new URL(path, publication.siteUrl).href : path;
+  const local = localPath(path, publication.basePath);
+  return publication.indexable ? new URL(local, publication.siteUrl).href : local;
 }
 
 export function canonicalUrl(path: string) {
   if (!publication.indexable) return undefined;
-  const result = new URL(path, publication.siteUrl);
+  const result = new URL(localPath(path, publication.basePath), publication.siteUrl);
   result.search = '';
   result.hash = '';
   return result.href;
@@ -27,7 +28,7 @@ export function canonicalUrl(path: string) {
 
 export function pageStructuredData(path: string, title: string, description: string) {
   const canonical = canonicalUrl(path);
-  const home = publication.indexable ? publication.siteUrl : undefined;
+  const home = publication.indexable ? publicUrl('/') : undefined;
   const organizationId = `${home || '/'}#organization`;
   const websiteId = `${home || '/'}#website`;
   return {
