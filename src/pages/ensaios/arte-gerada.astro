@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ThemeToggle from '../../components/ThemeToggle.astro';
+import GeneratedWorkbench from '../../components/GeneratedWorkbench.astro';
+import { generatedActs } from '../../scripts/generated-ink-model';
+import '../../styles/generated-ink.css';
+const notebook = `${import.meta.env.BASE_URL}ensaios/animacoes/`;
+---
+<BaseLayout title="Do traço ao gesto — Soberania Labs" description="Primeiro estudo de ilustração gerada com revelação dos contornos, grafite e luz. Uma bancada, uma ferramenta e a experiência de quem trabalha." interactive={false} noindex>
+  <header class="generated-mast">
+    <a href={notebook}>SOBERANIA <b>LABS</b><span>caderno de movimento / estudo 01</span></a>
+    <div><button type="button" data-generated-reading aria-pressed="false">Ver arte completa</button><ThemeToggle/></div>
+  </header>
+  <main id="conteudo" class="generated-notebook">
+    <section class="generated-scene" data-generated-scene aria-labelledby="generated-title">
+      <div class="generated-stage">
+        <div class="generated-top"><span>01 / matéria, gesto e ferramenta</span><span class="generated-scroll-hint">Role para desenhar. Volte para apagar.</span></div>
+        <div class="generated-composition">
+          <div class="generated-editorial">
+            <p class="generated-eyebrow">Um desenho começa a ganhar vida.</p>
+            <h1 id="generated-title"><span>A ferramenta</span>{' '}<em>amplia.</em>{' '}<span>A experiência</span>{' '}<em>conduz.</em></h1>
+            <ol class="generated-copy">{generatedActs.map((act,i)=><li data-generated-copy={i}><span>0{i+1} / {act.title}</span><p>{act.copy}</p></li>)}</ol>
+          </div>
+          <figure class="generated-figure"><GeneratedWorkbench/><figcaption>O saber de quem faz encontra a força da ferramenta.</figcaption></figure>
+        </div>
+        <div class="generated-controls" data-generated-controls>
+          <div class="generated-transport"><button type="button" data-generated-play aria-pressed="false">Reproduzir</button><button type="button" data-generated-restart>Recomeçar</button></div>
+          <label class="generated-seek"><span>Traço <output data-generated-percent>0%</output></span><input type="range" min="0" max="1000" step="1" value="0" aria-label="Progresso da ilustração"/></label>
+          <div class="generated-steps" aria-label="Momentos do desenho">{generatedActs.map((act,i)=><button type="button" data-generated-step={i} aria-label={`Ver ${act.title}`}>0{i+1}</button>)}</div>
+        </div>
+      </div>
+    </section>
+    <section class="generated-note" aria-labelledby="generated-note-title">
+      <span class="generated-eyebrow">Primeiro estudo / arte em avaliação</span>
+      <h2 id="generated-note-title">O detalhe vem<br/><em>do desenho.</em></h2>
+      <div><p>A ilustração foi gerada como uma arte completa. O lápis acompanha percursos extraídos das suas linhas; os detalhes mais finos completam a imagem no final.</p><p>Este ensaio testa a qualidade do traço e da revelação. Movimentos independentes das mãos e da ferramenta pedem uma próxima etapa, com a arte em camadas.</p><a href={notebook}>Comparar com os estudos anteriores</a></div>
+    </section>
+  </main>
+  <script>import { initGeneratedInk } from '../../scripts/generated-ink'; initGeneratedInk();</script>
+</BaseLayout>

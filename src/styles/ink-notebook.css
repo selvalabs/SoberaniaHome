@@ -17,4 +17,6 @@ html[data-theme=dark] :is(.ink-notebook,.notebook-mast){--sketch-bg:#111713;--sk
 
 html:not([data-ink-notebook-ready]) [data-ink-reading]{display:none}
 
+.notebook-generated-study{display:block;border:1px solid var(--sketch-line);padding:26px 28px;margin-bottom:32px;max-width:760px}.notebook-generated-study>span{display:block;font:11px/1.6 var(--mono);color:var(--sketch-accent)}.notebook-generated-study strong{display:block;font-size:clamp(27px,3vw,42px);line-height:1.12;font-weight:400;margin:16px 0 20px;letter-spacing:-.03em}.notebook-generated-study:hover{border-color:var(--sketch-accent);text-decoration:none}
+
 @media(max-width:760px){.ink-scene[data-ink-animated=true] .ink-figure svg{max-height:none;overflow:hidden}.ink-scene[data-ink-animated=true] .ink-art .ink-small{display:none}}

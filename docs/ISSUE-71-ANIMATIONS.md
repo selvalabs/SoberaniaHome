@@ -10,6 +10,10 @@ O texto da referência histórica e sua fonte permanecem acessíveis. O primeiro
 
 A landing mantém seus conteúdos e cenas. A única mudança no desenho anterior é a extração do mecanismo de traços, com os mesmos tempos e resultado visual.
 
+### Primeiro estudo com arte gerada
+
+Após a avaliação visual das três cenas, foi acrescentado `/ensaios/arte-gerada/`: uma bancada com mãos, ferramenta e morsa, desenhada a partir de uma ilustração gerada, com percursos extraídos do próprio asset. Os estudos anteriores foram preservados. [Método, prompt, limites e procedência](GENERATED-INK-WORKBENCH.md).
+
 ## Contrato e módulos
 
 - `src/data/ink-scenes.ts`: identidade, versão, semente, mensagem, etapas e intervalos contíguos de cada cena.

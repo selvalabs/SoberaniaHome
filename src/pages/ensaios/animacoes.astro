@@ -16,6 +16,7 @@ const home = import.meta.env.BASE_URL;
       <p class="notebook-kicker">Ensaio 71 · desenho, matéria e movimento</p>
       <h1>Uma ideia começa<br />com <em>um traço.</em></h1>
       <div class="notebook-intro-bottom"><p>O desenho ganha corpo. O movimento revela relações.<br />A luz marca o que transforma.</p><p class="notebook-instruction">Role para desenhar.<br />Volte para olhar de novo.</p></div>
+      <a class="notebook-generated-study" href={`${home}ensaios/arte-gerada/`}><span>Novo estudo / arte gerada</span><strong>A ferramenta amplia.<br/><em>A experiência conduz.</em></strong><span>Ver a bancada sendo desenhada</span></a>
       <nav aria-label="Ensaios">{inkScenes.map((scene,i)=><a href={`#ensaio-${scene.id}`}><span>0{i+1}</span>{scene.id==='tempo'?'Tempo e trabalho':scene.id==='saberes'?'Saberes em conversa':'Autonomia na entrega'}</a>)}</nav>
     </section>
     {inkScenes.map((scene,i)=><>

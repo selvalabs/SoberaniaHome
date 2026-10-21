@@ -1,0 +1,44 @@
+---
+import traces from '../data/workbench-traces.json';
+const art = `${import.meta.env.BASE_URL}assets/ink/workbench-generated-v1.png`;
+---
+<svg class="generated-art" viewBox="-22 -32 1580 1090" role="img" aria-labelledby="workbench-title workbench-description" data-generated-art>
+  <title id="workbench-title">O instrumento amplia. A experiência conduz.</title>
+  <desc id="workbench-description">Ilustração de duas mãos trabalhando juntas: uma gira uma chave sobre uma peça, a outra sustenta a peça presa a uma morsa, sobre uma bancada de madeira.</desc>
+  <defs>
+    <filter id="workbench-invert" color-interpolation-filters="sRGB">
+      <feColorMatrix type="matrix" values="-1 0 0 0 1  0 -1 0 0 1  0 0 -1 0 1  0 0 0 1 0" />
+      <feComponentTransfer><feFuncR type="linear" slope="1.07" intercept="-.07"/><feFuncG type="linear" slope="1.07" intercept="-.07"/><feFuncB type="linear" slope="1.07" intercept="-.07"/></feComponentTransfer>
+    </filter>
+    <mask id="workbench-ink" maskUnits="userSpaceOnUse" x="0" y="0" width="1536" height="1024" style="mask-type:luminance">
+      <image href={art} x="0" y="0" width="1536" height="1024" filter="url(#workbench-invert)" />
+    </mask>
+    <mask id="workbench-reveal" maskUnits="userSpaceOnUse" x="0" y="0" width="1536" height="1024" style="mask-type:luminance">
+      <g fill="none" stroke="white" stroke-width="11" stroke-linecap="round" stroke-linejoin="round">
+        {traces.paths.map(path=><path d={path.d} pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" data-generated-guide data-length={path.length} data-phase={path.phase}/>)}
+      </g>
+      <rect width="1536" height="1024" fill="white" data-generated-complete />
+    </mask>
+    <linearGradient id="workbench-light" x1=".1" y1="1" x2=".9" y2="0">
+      <stop stop-color="#7bae93"/><stop offset=".5" stop-color="#e9c586"/><stop offset="1" stop-color="#b9c8ed"/>
+    </linearGradient>
+    <filter id="workbench-glow" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="2.5"/></filter>
+  </defs>
+  <g mask="url(#workbench-reveal)">
+    <g filter="url(#workbench-glow)" opacity="0" data-generated-glow><rect width="1536" height="1024" fill="url(#workbench-light)" mask="url(#workbench-ink)"/></g>
+    <g mask="url(#workbench-ink)">
+      <rect width="1536" height="1024" fill="currentColor" />
+      <rect width="1536" height="1024" fill="url(#workbench-light)" opacity="0" data-generated-tint/>
+    </g>
+  </g>
+  <g class="generated-pencil" hidden data-generated-pencil aria-hidden="true">
+    <ellipse cx="30" cy="7" rx="30" ry="5" fill="currentColor" opacity=".12" transform="rotate(-45)"/>
+    <path d="M0 0 L8 -31 L24 -19 Z" fill="#cfac7f" stroke="#5e4a35" stroke-width="1.2"/>
+    <path d="M0 0 L3 -11 L9 -7 Z" fill="currentColor"/>
+    <path d="M8 -31 L97 -120 L113 -104 L24 -19 Z" fill="#8c5140" stroke="#563a32" stroke-width="1.2"/>
+    <path d="M13 -26 L102 -115 L107 -110 L18 -21 Z" fill="#d59872"/>
+    <path d="M97 -120 L104 -127 Q108 -131 112 -127 L120 -119 Q124 -115 120 -111 L113 -104 Z" fill="#b4b7ac" stroke="#656c60" stroke-width="1.2"/>
+    <path d="M100 -122 L115 -107 M104 -126 L119 -111" fill="none" stroke="#e1e2d6" stroke-width="1.5"/>
+  </g>
+  <g class="generated-dust" hidden data-generated-dust fill="currentColor" aria-hidden="true"><circle r="1.6"/><circle r="1.1"/><circle r=".8"/></g>
+</svg>
