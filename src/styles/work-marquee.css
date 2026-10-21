@@ -5,7 +5,12 @@
 #trabalho .work-marquee-track{display:flex;width:max-content}
 #trabalho .work-marquee-group{display:flex;align-items:center;flex:none;gap:clamp(24px,3vw,48px);padding-right:clamp(24px,3vw,48px)}
 #trabalho .work-marquee-group h2,#trabalho .work-marquee-copy{max-width:none;white-space:nowrap;margin:0;padding-block:.12em;font:400 clamp(32px,4.8vw,72px)/1.12 var(--sans);letter-spacing:-.055em;color:var(--ink)}
-#trabalho .work-marquee-group em{font:italic 1.05em/1.12 var(--serif)}
+#trabalho .work-marquee-token.is-serif{font:italic 1.05em/1.12 var(--serif)}
+#trabalho .work-marquee-token{transition:color .16s ease,text-shadow .16s ease}
+#trabalho .work-marquee-token[data-marquee-lit="true"]{color:color-mix(in srgb,var(--ink),var(--marquee-glow-color) calc(var(--marquee-leaf-glow) * 100%));text-shadow:0 0 14px rgb(var(--marquee-halo) / calc(var(--marquee-leaf-glow) * .3))}
+@media(hover:hover) and (pointer:fine){
+ #trabalho .work-marquee-token:hover{color:var(--marquee-glow-color,var(--rust));text-shadow:0 0 8px rgb(var(--marquee-halo,180 100 90) / .5),0 0 22px rgb(var(--marquee-halo,180 100 90) / .3)}
+}
 #trabalho .work-marquee-mark{font:400 clamp(24px,3vw,40px)/1 var(--serif);color:var(--rust)}
 #trabalho .work-marquee-toggle{display:none;position:absolute;right:0;top:-56px;margin:0;padding:8px 12px;min-height:44px;border:1px solid var(--rule);font:12px/1.3 var(--mono);color:var(--muted);background:var(--paper)}
 #trabalho .work-marquee-toggle:focus-visible{outline:3px solid var(--rust);outline-offset:3px}
@@ -22,6 +27,7 @@
 #trabalho .work-marquee:not([data-marquee-ready="true"]) .work-marquee-group{min-width:0}
 #trabalho .work-marquee:not([data-marquee-ready="true"]) h2{white-space:normal}
 @media(prefers-reduced-motion:reduce){
+ #trabalho .work-marquee-token{transition:none}
  #trabalho .work-marquee .work-marquee-track{animation:none!important;transform:none!important}
  #trabalho .work-marquee .work-marquee-group[aria-hidden="true"],#trabalho .work-marquee .work-marquee-toggle{display:none!important}
  #trabalho .work-marquee-window{width:100%;margin:0;mask-image:none}
@@ -29,6 +35,7 @@
  #trabalho .work-marquee-group h2{white-space:normal}
 }
 @media print{
+ #trabalho .work-marquee-token{color:var(--ink)!important;text-shadow:none!important}
  #trabalho .work-marquee .work-marquee-track{animation:none!important;transform:none!important}
  #trabalho .work-marquee .work-marquee-group[aria-hidden="true"],#trabalho .work-marquee .work-marquee-toggle{display:none!important}
  #trabalho .work-marquee-window{width:100%;margin:0;mask-image:none}

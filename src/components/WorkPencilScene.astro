@@ -1,0 +1,73 @@
+---
+// Deterministic graphite hatching: the same drawing at every scroll position.
+const hatch = Array.from({length: 22}, (_, i) => {
+  const x = 84 + i * 5.8;
+  return `M${x} 191 l${11 + i % 4} -${22 + i % 3 * 3}`;
+});
+const coins = Array.from({length: 6}, (_, i) => {
+  const y = 171 - i * 12;
+  return `M414 ${y} C413 ${y-7} 463 ${y-10} 471 ${y-3} C479 ${y+5} 424 ${y+9} 414 ${y} M414 ${y} l1 9 C430 ${y+15} 458 ${y+13} 473 ${y+5} l-2 -8`;
+});
+---
+<figure class="choices-sketch choices-reference" data-work-sketch aria-labelledby="work-sketch-caption">
+  <svg class="work-sketch-drawing" viewBox="0 0 560 420" role="img" aria-labelledby="work-sketch-title work-sketch-desc">
+    <title id="work-sketch-title">O tempo poupado não se distribui sozinho.</title>
+    <desc id="work-sketch-desc">Uma mão monta uma peça na bancada. Um relógio marca um quarto do tempo. O lucro cresce, mas o salário não acompanha e o trabalho se intensifica. Esquema do exemplo histórico de Lenin, não dados atuais.</desc>
+    <defs>
+      <filter id="work-graphite" x="-6%" y="-6%" width="112%" height="112%">
+        <feTurbulence type="fractalNoise" baseFrequency=".58" numOctaves="2" seed="19" result="grain" />
+        <feDisplacementMap in="SourceGraphic" in2="grain" scale=".7" xChannelSelector="R" yChannelSelector="G" result="rough" />
+        <feColorMatrix in="grain" type="luminanceToAlpha" result="grain-alpha" />
+        <feComponentTransfer in="grain-alpha" result="graphite"><feFuncA type="linear" slope="1.4" intercept=".15" /></feComponentTransfer>
+        <feComposite in="rough" in2="graphite" operator="in" />
+      </filter>
+      <pattern id="work-hatching" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(-12)">
+        <path d="M0 7 L7 0 M-2 2 L2 -2 M5 9 L9 5" class="sketch-hatch" />
+        <rect x="1" y="3" width="1" height="1" fill="currentColor" stroke="none" opacity=".3" />
+      </pattern>
+    </defs>
+    <g class="sketch-pencil-lines" filter="url(#work-graphite)">
+      <g data-sketch-phase="0">
+        <!-- Bench, casting and the hand operating an ordinary spanner. -->
+        <path data-pencil pathLength="1" d="M24 204 Q148 199 305 205 L318 221 Q165 217 29 223 Z M44 223 L40 242 M286 222 l5 19" />
+        <path data-pencil pathLength="1" d="M67 163 L156 148 L216 168 L131 186 Z M67 163 L70 198 L132 214 L131 186 M132 214 L217 196 L216 168" fill="url(#work-hatching)" />
+        <path data-pencil pathLength="1" d="M79 166 Q116 171 130 177 M144 188 L206 175 M145 199 L208 186" class="sketch-faint" />
+        <path data-pencil pathLength="1" d="M157 150 L154 126 L168 119 L181 123 L183 146 M154 126 L168 132 L181 123 M168 132 L169 149" />
+        <path data-pencil pathLength="1" d="M168 122 L206 96 C198 87 204 73 214 69 L212 83 L221 87 L230 78 C234 90 224 102 215 101 L178 135" />
+        <path data-pencil pathLength="1" d="M315 101 Q290 93 273 103 L252 112 Q241 114 229 111 C220 108 218 117 225 122 L245 130 M245 130 Q229 132 213 126 C203 124 202 134 211 138 L238 146 Q248 151 261 144 L290 135 L318 144" />
+        <path data-pencil pathLength="1" d="M248 113 C253 121 255 133 248 142 M258 111 Q270 120 266 133 M274 106 Q283 118 280 129 M290 103 Q300 113 299 122 M307 100 L316 144" />
+        <path data-pencil pathLength="1" d="M218 126 Q216 119 220 112 M230 129 Q229 123 233 118 M241 131 Q242 125 245 123" class="sketch-faint" />
+        {hatch.map(d => <path data-pencil pathLength="1" d={d} class="sketch-hatch" />)}
+        <path data-pencil pathLength="1" d="M42 231 Q142 225 266 232 M62 237 Q167 231 249 236" class="sketch-faint" />
+        <g data-sketch-label><text x="51" y="56" class="sketch-hand">a mesma peça.</text><path d="M126 65 Q125 83 142 106 M136 102 l7 6 l1 -10" /></g>
+      </g>
+      <g data-sketch-phase="1">
+        <path data-pencil pathLength="1" d="M103 268 C160 267 163 354 107 359 C48 364 45 273 103 268 Z M103 275 C151 272 154 348 107 351 C57 358 54 282 103 275" />
+        <path data-pencil pathLength="1" d="M102 260 L101 250 L114 249 L115 259 M87 262 L86 255 M130 266 L135 260" />
+        <path data-pencil pathLength="1" d="M105 283 L105 313 L135 312 M105 313 L91 329" />
+        <path data-pencil pathLength="1" d="M106 280 Q136 280 139 311 L106 313 Z" fill="url(#work-hatching)" class="sketch-accent" />
+        <path data-pencil pathLength="1" d="M75 289 l5 5 M69 314 l7 0 M80 339 l5 -5 M107 343 l0 -5 M128 334 l-4 -4 M138 294 l-6 4" />
+        <path data-pencil pathLength="1" d="M30 289 l14 -1 M21 306 l20 -1 M27 325 l15 -2 M155 298 Q218 266 268 296 M258 290 l12 7 l-11 4" class="sketch-faint" />
+        <g data-sketch-label><text x="161" y="340" class="sketch-fraction">¼</text><text x="215" y="339" class="sketch-hand sketch-small">do tempo</text><text x="163" y="362" class="sketch-caption">para fazer o mesmo trabalho</text></g>
+      </g>
+      <g data-sketch-phase="2">
+        <path data-pencil pathLength="1" d="M319 268 Q360 265 380 230 T415 185 M403 190 l14 -9 l1 16" class="sketch-accent" />
+        {coins.map(d => <path data-pencil pathLength="1" d={d} class="sketch-accent" />)}
+        <path data-pencil pathLength="1" d="M428 91 l0 10 M437 87 l0 12 M446 86 l0 13 M456 86 l0 12 M465 87 l-1 9" class="sketch-hatch" />
+        <path data-pencil pathLength="1" d="M315 317 Q390 314 474 318 M464 311 l13 7 l-12 6" />
+        <path data-pencil pathLength="1" d="M420 342 C420 329 462 328 469 339 C469 353 429 356 420 342 Z M420 342 l1 8 C434 358 457 357 469 347 l0 -8 M433 337 Q445 333 455 337" />
+        <path data-pencil pathLength="1" d="M265 153 l-9 10 M281 150 l-7 14 M297 150 l-5 14 M245 160 l-7 8 M309 151 l-4 12" class="sketch-wear" />
+        <g data-sketch-label><text x="361" y="59" class="sketch-hand sketch-accent">o lucro cresce</text><text x="313" y="290" class="sketch-caption">o salário não acompanha</text><text x="266" y="395" class="sketch-hand sketch-small sketch-wear">e o desgaste aumenta.</text><path d="M288 372 Q276 349 283 327" class="sketch-wear" /></g>
+      </g>
+    </g>
+    <g class="sketch-pencil-tip" aria-hidden="true" hidden>
+      <path d="M0 0 L9 -5 L47 -5 L51 -2 L47 2 L9 2 Z" fill="var(--paper)" stroke="var(--ink)" stroke-width="1" />
+      <path d="M9 -5 L10 2 M14 -4 L14 1 M0 0 L5 -1" stroke="var(--rust)" stroke-width="1.3" />
+    </g>
+    <g class="sketch-dust" aria-hidden="true" hidden>{Array.from({length: 9}, (_, i) => <rect x={-8 + i % 3 * 6} y={-9 + Math.floor(i / 3) * 7} width={i % 2 ? 1 : 2} height={i % 2 ? 2 : 1} opacity={.16 + i % 3 * .12} />)}</g>
+  </svg>
+  <blockquote cite="https://www.marxists.org/archive/lenin/works/1914/mar/13.htm" data-paraphrase="Adaptação editorial a partir do texto de Lenin.">
+    <p>O mesmo trabalho, em ¼ do tempo.<br />O salário não acompanha.</p>
+  </blockquote>
+  <figcaption id="work-sketch-caption">Paráfrase de V. I. Lenin, 1914.<br /><a href="https://www.marxists.org/archive/lenin/works/1914/mar/13.htm" target="_blank" rel="noopener noreferrer"><cite>O sistema Taylor — a escravização do homem pela máquina</cite></a></figcaption>
+</figure>
