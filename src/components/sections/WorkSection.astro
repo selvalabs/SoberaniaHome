@@ -1,5 +1,6 @@
 ---
 import '../../styles/work-marquee.css';
+const words = ['Do', 'conhecimento', 'à', 'construção.'];
 ---
 
 <section id="trabalho" class="section work-section" data-number="3">
@@ -8,10 +9,15 @@ import '../../styles/work-marquee.css';
     <div class="work-marquee" data-work-marquee>
       <div class="work-marquee-window">
         <div class="work-marquee-track">
-          <div class="work-marquee-group"><h2>Do conhecimento <em>à construção.</em></h2><span class="work-marquee-mark" aria-hidden="true">✳</span></div>
-          <div class="work-marquee-group" aria-hidden="true"><span class="work-marquee-copy">Do conhecimento <em>à construção.</em></span><span class="work-marquee-mark">✳</span></div>
-          <div class="work-marquee-group" aria-hidden="true"><span class="work-marquee-copy">Do conhecimento <em>à construção.</em></span><span class="work-marquee-mark">✳</span></div>
-          <div class="work-marquee-group" aria-hidden="true"><span class="work-marquee-copy">Do conhecimento <em>à construção.</em></span><span class="work-marquee-mark">✳</span></div>
+          {[0, 1, 2, 3].map(copy => {
+            const Heading = copy === 0 ? 'h2' : 'span';
+            return <div class="work-marquee-group" aria-hidden={copy > 0 ? 'true' : undefined}>
+              <Heading class:list={{ 'work-marquee-copy': copy > 0 }}>
+                {words.map((word, index) => <>{index > 0 && ' '}<span class:list={['work-marquee-token', { 'is-serif': index > 1 }]} data-marquee-token>{word}</span></>)}
+              </Heading>
+              <span class="work-marquee-mark" aria-hidden="true">✳</span>
+            </div>;
+          })}
         </div>
       </div>
       <button type="button" class="work-marquee-toggle" aria-pressed="false" aria-label="Pausar faixa de Trabalho">Pausar faixa</button>
@@ -68,8 +74,3 @@ import '../../styles/work-marquee.css';
     </div>
   </div>
 </section>
-
-<script>
-  import { initWorkMarquee } from '../../scripts/work-marquee';
-  initWorkMarquee();
-</script>

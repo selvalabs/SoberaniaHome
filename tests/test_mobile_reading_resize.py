@@ -7,8 +7,20 @@ with sync_playwright() as pw:
  for w,h,next_height in [(390,844,600),(360,640,740)]:
   q=browser.new_page(viewport={'width':w,'height':h},is_mobile=True,has_touch=True)
   q.goto(args.url,wait_until='networkidle');q.wait_for_function('window.__SL_DEBUG?.ready')
+  q.wait_for_timeout(300)
   for selector in ['.knowledge-cover-copy>p','#sobre .about-copy p','.field-note-body p','#footer .footer-details p']:
    target=q.locator(selector).first
+   if selector=='.knowledge-cover-copy>p':
+    section=q.locator('#deslocamento-2')
+    section.evaluate('(e)=>scrollTo({top:+e.dataset.printStart + +e.dataset.printRun*.3,behavior:"instant"})');q.wait_for_timeout(200)
+    before=section.locator('[data-print-progress]').evaluate_all('es=>es.map(e=>Number(e.dataset.printProgress))')
+    q.set_viewport_size({'width':w,'height':next_height});q.wait_for_timeout(500)
+    after=section.locator('[data-print-progress]').evaluate_all('es=>es.map(e=>Number(e.dataset.printProgress))')
+    assert all(abs(a-b)<.015 for a,b in zip(before,after)),('knowledge reveal moved on resize',before,after)
+    box=section.locator('.knowledge-cover-copy').bounding_box()
+    assert box['y']>=60 and box['y']+box['height']<=next_height+1
+    q.set_viewport_size({'width':w,'height':h});q.wait_for_timeout(450)
+    continue
    target.evaluate('(e)=>scrollTo({top:scrollY+e.getBoundingClientRect().top-innerHeight*.3,behavior:"instant"})')
    q.wait_for_timeout(250);before=target.bounding_box()['y']
    q.set_viewport_size({'width':w,'height':next_height});q.wait_for_timeout(500)

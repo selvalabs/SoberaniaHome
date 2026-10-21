@@ -28,7 +28,7 @@ with sync_playwright() as pw:
   q.goto(args.url,wait_until='networkidle');q.wait_for_function('window.__SL_DEBUG?.ready')
   q.wait_for_timeout(300)
   assert q.locator('main > section[data-number]').count()==16
-  for sid,body_sel,stage_sel,closing_sel in [('hero','.hero-message','.hero-stage','.text-actions'),('folha','.choices-print-body','.choices-print-stage','.choices-closing')]:
+  for sid,body_sel,stage_sel,closing_sel in [('hero','.hero-message','.hero-stage','.text-actions'),('folha','.choices-print-body','.choices-print-stage','.choices-closing'),('deslocamento-2','.knowledge-cover-copy','.knowledge-cover-stage','.knowledge-cover-closing')]:
    section=q.locator('#'+sid);body=section.locator(body_sel);seen=set();expected=set()
    for step in range(71):
     progress=step/70
@@ -38,6 +38,7 @@ with sync_playwright() as pw:
      expected.add(line['id'])
      if line['visible']:seen.add(line['id'])
     for selector in [stage_sel,'h1,h2',closing_sel]:
+     if sid=='deslocamento-2' and selector==closing_sel and progress<.94:continue
      r=section.locator(selector).bounding_box()
      assert r['y']>=-1 and r['y']+r['height']<=h+1,(w,h,sid,progress,selector,r)
    assert expected<=seen,('unreadable lines',w,h,sid,sorted(expected-seen))
@@ -68,7 +69,7 @@ with sync_playwright() as pw:
     q.wait_for_function('(id)=>Math.abs(document.querySelector(`#${id} .scene-frame`).getBoundingClientRect().top)<1',arg=sid)
     frame=section.locator('.scene-frame').bounding_box()
     assert frame['y']>=-1 and frame['y']+frame['height']<=h+1,(w,h,sid,frame)
-   elif sid not in ['processo','espiral']:
+   elif sid not in ['processo','espiral','deslocamento-2']:
     # A real paragraph or control at the end of each long chapter is reachable.
     tail=section.locator('p,a,button,summary').filter(visible=True).last
     tail.scroll_into_view_if_needed();r=tail.bounding_box()
@@ -79,8 +80,8 @@ with sync_playwright() as pw:
   assert tabs.locator('a').nth(1).get_attribute('aria-selected')=='true'
   assert q.locator('#entrega-conhecimento').is_visible()
   q.evaluate('SLMotion.setReading(true)');q.wait_for_timeout(300)
-  for selector in ['.hero-message','.choices-print-body']:
-   assert q.locator(selector).evaluate('e=>e.scrollHeight<=e.clientHeight+1'),('reading content clipped',w,h,selector)
+  for selector in ['.hero-message','.choices-print-body','.knowledge-cover-copy']:
+   assert q.locator(selector).evaluate('e=>getComputedStyle(e).overflowY==="visible"||e.scrollHeight<=e.clientHeight+1'),('reading content clipped',w,h,selector)
   assert not errors,errors
   print('PASS mobile reading, 16 chapters and resize',w,h,flush=True);q.close()
  browser.close()
