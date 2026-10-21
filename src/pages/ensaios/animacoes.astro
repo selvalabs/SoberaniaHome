@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ThemeToggle from '../../components/ThemeToggle.astro';
+import InkSceneDrawing from '../../components/InkSceneDrawing.astro';
+import { inkScenes } from '../../data/ink-scenes';
+import '../../styles/ink-notebook.css';
+const home = import.meta.env.BASE_URL;
+---
+<BaseLayout title="Caderno de movimento — Soberania Labs" description="Ensaios de desenho, matéria e movimento. Um laboratório de animações explicativas sobre trabalho, conhecimento e autonomia." interactive={false} noindex>
+  <header class="notebook-mast">
+    <a class="notebook-brand" href={home}>SOBERANIA <b>LABS</b><span>caderno de movimento</span></a>
+    <div class="notebook-actions"><button data-ink-reading aria-pressed="false" type="button">Modo de leitura</button><ThemeToggle /></div>
+  </header>
+  <main id="conteudo" class="ink-notebook">
+    <section class="notebook-intro">
+      <p class="notebook-kicker">Ensaio 71 · desenho, matéria e movimento</p>
+      <h1>Uma ideia começa<br />com <em>um traço.</em></h1>
+      <div class="notebook-intro-bottom"><p>O desenho ganha corpo. O movimento revela relações.<br />A luz marca o que transforma.</p><p class="notebook-instruction">Role para desenhar.<br />Volte para olhar de novo.</p></div>
+      <nav aria-label="Ensaios">{inkScenes.map((scene,i)=><a href={`#ensaio-${scene.id}`}><span>0{i+1}</span>{scene.id==='tempo'?'Tempo e trabalho':scene.id==='saberes'?'Saberes em conversa':'Autonomia na entrega'}</a>)}</nav>
+    </section>
+    {inkScenes.map((scene,i)=><>
+      <section class="ink-scene" id={`ensaio-${scene.id}`} data-ink-scene={scene.id} aria-labelledby={`title-${scene.id}`}>
+        <div class="ink-stage">
+          <div class="ink-scene-top"><span>0{i+1} / {scene.id==='tempo'?'Primeiro piloto':'Estudo de movimento'}</span><span class="ink-polarity">grafite / giz</span></div>
+          <div class="ink-composition">
+            <div class="ink-editorial">
+              <h2 id={`title-${scene.id}`}>{scene.title}</h2>
+              <p class="ink-context" data-ink-context>{scene.deck}</p>
+              <ol class="ink-script">{scene.stages.map((stage,n)=><li data-ink-copy={n}><span class="ink-stage-name">0{n+1} · {stage.title}</span><p>{stage.copy}</p></li>)}</ol>
+              <p class="ink-closing" data-ink-closing>{scene.closing}</p>
+            </div>
+            <figure class="ink-figure"><InkSceneDrawing scene={scene}/><figcaption>{scene.id==='tempo'?'O tempo poupado não se distribui sozinho.':scene.deck}</figcaption></figure>
+          </div>
+          <div class="ink-controls" data-ink-controls>
+            <div class="ink-steps" aria-label={`Etapas: ${scene.title}`}>{scene.stages.map((stage,n)=><button type="button" data-ink-step={n} aria-label={`Ver ${stage.title}`}><span>0{n+1}</span><span class="ink-step-label">{stage.title}</span></button>)}</div>
+            <label class="ink-seek"><span>Desenho <output data-ink-percent>0%</output></span><input type="range" min="0" max="1000" value="0" step="1" aria-label={`Progresso do desenho: ${scene.title}`} /></label>
+          </div>
+        </div>
+      </section>
+      <div class="ink-afterword">
+        {scene.id==='tempo' && <aside class="ink-source"><span>Referência do terceiro momento</span><p>O mesmo trabalho, em um quarto do tempo. O lucro cresce; o salário não acompanha, e quem trabalha se desgasta ainda mais.</p><a href="https://www.marxists.org/archive/lenin/works/1914/mar/13.htm" target="_blank" rel="noopener noreferrer">Paráfrase de V. I. Lenin, 1914 · O sistema Taylor</a><small>Ilustração do exemplo histórico, sem dados atuais ou promessa de desempenho. A decisão e o desfecho apresentam a proposta da Soberania Labs.</small></aside>}
+        <details class="ink-storyboard" data-ink-storyboard={scene.id}>
+          <summary>Ver o roteiro completo<span>{scene.stages.length} momentos</span></summary>
+          <ol>{scene.stages.map((stage,n)=><li><div class="ink-snapshot" aria-hidden="true" data-ink-snapshot={(stage.start+(stage.end-stage.start)*.85).toFixed(3)}><InkSceneDrawing scene={scene} instance={`story-${n}`} /></div><span>0{n+1} / {stage.title}</span><p>{stage.copy}</p></li>)}</ol>
+        </details>
+      </div>
+    </>)}
+    <footer class="notebook-footer"><p>Desenhar para compreender.<br /><em>Construir para compartilhar.</em></p><a href={home}>Voltar à Soberania Labs</a><span>Um caderno de ensaios. As cenas estão em avaliação.</span></footer>
+  </main>
+  <script>import { initInkNotebook } from '../../scripts/ink-notebook'; initInkNotebook();</script>
+</BaseLayout>

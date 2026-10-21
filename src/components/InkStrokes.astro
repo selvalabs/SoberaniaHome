@@ -1,0 +1,5 @@
+---
+interface Props { paths: readonly string[]; class?: string }
+const { paths, class: className } = Astro.props;
+---
+{paths.map(d => <path data-pencil pathLength="1" d={d} class={className} />)}
