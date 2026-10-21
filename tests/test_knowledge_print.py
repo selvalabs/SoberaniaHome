@@ -52,7 +52,7 @@ with sync_playwright() as pw:
    assert expected<=seen,('unreadable knowledge lines',w,h,expected-seen)
   go(.96);assert values()==[1]*3
   closing=blocks.last.bounding_box();assert closing['y']>=0 and closing['y']+closing['height']<=h+1,(w,h,closing)
-  assert section.locator('.knowledge-collage img').count()==3
+  assert section.locator('.knowledge-collage [data-landing-ink=knowledge]').count()==1
   q.wait_for_timeout(100);frames=q.evaluate('__SL_DEBUG.metrics.frames');q.wait_for_timeout(120)
   assert q.evaluate('__SL_DEBUG.metrics.frames')==frames,'reveal runs without scroll'
   for theme in ['dark','light']:

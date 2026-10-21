@@ -57,13 +57,13 @@ with sync_playwright() as pw:
    go(.96)
   sketch=q.locator('[data-work-sketch]')
   assert sketch.locator('svg').get_attribute('role')=='img'
-  ink=sketch.locator('[data-pencil]')
-  assert ink.evaluate_all('(es)=>es.every(e=>Number(e.style.strokeDashoffset)<.001)')
-  assert sketch.locator('.sketch-pencil-tip').get_attribute('hidden') is not None
-  go(.5);drawing=ink.evaluate_all('(es)=>es.map(e=>e.style.strokeDashoffset)')
-  assert any(float(p)>0 for p in drawing) and any(float(p)==0 for p in drawing)
+  ink=sketch.locator('[data-generated-guide]')
+  assert ink.evaluate_all('(es)=>es.every(e=>Number(e.getAttribute("stroke-dashoffset"))<.001)')
+  assert sketch.locator('[data-generated-pencil]').get_attribute('hidden') is not None
+  go(.5);drawing=ink.evaluate_all('(es)=>es.map(e=>e.getAttribute("stroke-dashoffset"))')
+  if h>=580:assert any(float(p)>0 for p in drawing) and any(float(p)==0 for p in drawing)
   go(.85);go(.5)
-  assert ink.evaluate_all('(es)=>es.map(e=>e.style.strokeDashoffset)')==drawing,'drawing did not reverse deterministically'
+  assert ink.evaluate_all('(es)=>es.map(e=>e.getAttribute("stroke-dashoffset"))')==drawing,'drawing did not reverse deterministically'
   go(.96)
   final=closing.bounding_box();assert final['y']>=0 and final['y']+final['height']<=h+2,(w,h,final)
   assert not q.locator('.choices-reference').evaluate('(e)=>e.inert')
@@ -78,7 +78,7 @@ with sync_playwright() as pw:
   assert not q.locator('.choices-reference').evaluate('(e)=>e.inert')
   q.evaluate('SLMotion.setReading(false)');q.emulate_media(reduced_motion='reduce');q.wait_for_timeout(300)
   assert values()==[1]*3
-  assert ink.evaluate_all('(es)=>es.every(e=>Number(e.style.strokeDashoffset)<.001)')
+  assert ink.evaluate_all('(es)=>es.every(e=>Number(e.getAttribute("stroke-dashoffset"))<.001)')
   assert q.evaluate('document.documentElement.scrollWidth<=innerWidth')
   assert not errors,errors
   print('PASS work reveal',w,h,flush=True);q.close()

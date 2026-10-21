@@ -4,7 +4,7 @@ Issue [71](https://github.com/selvalabs/SoberaniaHome/issues/71) · branch `feat
 
 ## O que avaliar
 
-`/ensaios/arte-gerada/` apresenta o primeiro estudo com ilustração gerada. Há uma chamada no início do caderno `/ensaios/animacoes/`; as três cenas anteriores permanecem disponíveis para comparação. A landing não usa este renderizador. A nova rota é `noindex,follow`, sem canonical e fora do sitemap.
+`/ensaios/arte-gerada/` apresenta o primeiro estudo com ilustração gerada. Há uma chamada no início do caderno `/ensaios/animacoes/`; as três cenas anteriores permanecem disponíveis para comparação. O estudo nasceu isolado da landing. A integração posterior da issue #73 compartilha seu painter, sem reutilizar o controlador de scroll do ensaio; ver [GENERATED-INK-LANDING.md](GENERATED-INK-LANDING.md). A rota de estudo é `noindex,follow`, sem canonical e fora do sitemap.
 
 O roteiro começa na bancada e na morsa, passa pela ferramenta e pela peça, e chega às mãos. A mensagem é: **a ferramenta amplia; a experiência conduz**. Scroll e slider percorrem o mesmo estado; voltar desfaz o desenho. Reproduzir percorre a cena em 52 segundos, a partir do ponto atual. Wheel, gesto de navegação, pausa ou mudança de aba interrompem a reprodução.
 

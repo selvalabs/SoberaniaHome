@@ -1,12 +1,25 @@
 ---
 import '../../styles/edition-interactions.css';
+import GeneratedInkArtwork from '../GeneratedInkArtwork.astro';
 ---
 
 <section id="editor" class="section autonomy-section handover-section" data-number="8" aria-labelledby="handover-title">
-  <div class="handover-heading">
-    <div class="section-label"><span>08</span><span>O que fica</span></div>
-    <h2 id="handover-title">A entrega também<br />é <em>autonomia.</em></h2>
-    <p>Quem recebe um sistema precisa conseguir operá-lo amanhã. Por isso, combinamos desde o início quais acessos, registros e conhecimentos vão acompanhar a entrega.</p>
+  <div id="handover-drawing" class="handover-ink-intro">
+    <div class="handover-ink-stage">
+      <div class="section-label"><span>08</span><span>O que fica</span></div>
+      <div class="handover-ink-copy">
+        <h2 id="handover-title">A entrega também<br />é <em>autonomia.</em></h2>
+        <div class="handover-ink-message">
+          <p>Quem recebe um sistema precisa conseguir operá-lo amanhã. Por isso, combinamos desde o início quais acessos, registros e conhecimentos vão acompanhar a entrega.</p>
+          <p><strong>As chaves ficam com você.</strong> O caminho fica registrado. Seus dados podem seguir com você.</p>
+          <p><em>Um sistema entregue.<br />Capacidade compartilhada.</em></p>
+        </div>
+      </div>
+      <figure class="handover-ink-art landing-ink-figure">
+        <GeneratedInkArtwork scene="handover" />
+        <figcaption>Acesso, conhecimento e capacidade de continuar.<br /><span class="ink-art-note">Ilustração editorial; interface conceitual.</span></figcaption>
+      </figure>
+    </div>
   </div>
 
   <div class="handover-bench" data-edition-tabs data-active="acesso">

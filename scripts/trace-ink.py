@@ -88,7 +88,19 @@ def simplify(points, tolerance=.65):
     return simplify(points[:index+1], tolerance)[:-1] + simplify(points[index:], tolerance)
 
 
-def region(x, y):
+def region(x, y, scene='workbench'):
+    if scene == 'knowledge':
+        if x < 480 and y > 300:
+            return 0  # field notebook, observation and leaves
+        if 420 < x < 1100 and y > 450:
+            return 1  # common plan, material and drawing gesture
+        return 2  # colleagues, joinery and technical instrument
+    if scene == 'handover':
+        if y > 710 and x < 900:
+            return 0  # keys and exportable data
+        if x < 710 and y > 260:
+            return 1  # manual and the gesture of sharing it
+        return 2  # the receiver already operating the system
     # Editorial sequencing for this specific commissioned composition.
     if y > 700 or (x < 930 and y > 525):
         return 0  # bench and vise
@@ -107,14 +119,18 @@ def direction(points, end=False):
     return dx/length*sign, dy/length*sign
 
 
-def order_locally(paths):
+def order_locally(paths, scene='workbench'):
     """Follow adjacent endpoints, continuing a contour before lifting elsewhere.
 
     Reversing an existing polyline does not change its shape. Only coincident
     endpoints with compatible tangents are joined; no connecting line is invented.
     """
     ordered = []
-    seeds = [(620, 630), (810, 450), (510, 400)]
+    seeds = {
+        'workbench': [(620, 630), (810, 450), (510, 400)],
+        'knowledge': [(160, 670), (650, 680), (1120, 460)],
+        'handover': [(690, 790), (330, 600), (1020, 550)],
+    }[scene]
     for phase, seed in enumerate(seeds):
         remaining = [p['points'] for p in paths if p['phase'] == phase]
         tip, heading = seed, None
@@ -146,6 +162,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('image', type=Path)
     parser.add_argument('output', type=Path)
+    parser.add_argument('--scene', choices=['workbench', 'knowledge', 'handover'], default='workbench')
     args = parser.parse_args()
     source = args.image.read_bytes()
     with Image.open(args.image) as image:
@@ -163,8 +180,8 @@ def main():
         x, y = points[len(points)//2]
         simplified = simplify(points)
         length = sum(math.dist(a, b) for a, b in zip(simplified, simplified[1:]))
-        paths.append({'phase': region(x, y), 'points': simplified})
-    paths = order_locally(paths)
+        paths.append({'phase': region(x, y, args.scene), 'points': simplified})
+    paths = order_locally(paths, args.scene)
     previous = None
     for path in paths:
         points = path.pop('points')

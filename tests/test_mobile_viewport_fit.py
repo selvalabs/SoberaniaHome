@@ -28,7 +28,7 @@ with sync_playwright() as pw:
   q.goto(args.url,wait_until='networkidle');q.wait_for_function('window.__SL_DEBUG?.ready')
   q.wait_for_timeout(300)
   assert q.locator('main > section[data-number]').count()==16
-  for sid,body_sel,stage_sel,closing_sel in [('hero','.hero-message','.hero-stage','.text-actions'),('folha','.choices-print-body','.choices-print-stage','.choices-closing'),('deslocamento-2','.knowledge-cover-copy','.knowledge-cover-stage','.knowledge-cover-closing')]:
+  for sid,body_sel,stage_sel,closing_sel in [('hero','.hero-message','.hero-stage','.text-actions'),('folha','.choices-print-body','.choices-print-stage','.choices-closing'),('deslocamento-2','.knowledge-cover-copy','.knowledge-cover-stage','.knowledge-cover-closing'),('handover-drawing','.handover-ink-message','.handover-ink-stage','.handover-ink-message>p:last-child')]:
    section=q.locator('#'+sid);body=section.locator(body_sel);seen=set();expected=set()
    for step in range(71):
     progress=step/70
@@ -38,7 +38,7 @@ with sync_playwright() as pw:
      expected.add(line['id'])
      if line['visible']:seen.add(line['id'])
     for selector in [stage_sel,'h1,h2',closing_sel]:
-     if sid=='deslocamento-2' and selector==closing_sel and progress<.94:continue
+     if sid in ['deslocamento-2','handover-drawing'] and selector==closing_sel and progress<.94:continue
      r=section.locator(selector).bounding_box()
      assert r['y']>=-1 and r['y']+r['height']<=h+1,(w,h,sid,progress,selector,r)
    assert expected<=seen,('unreadable lines',w,h,sid,sorted(expected-seen))

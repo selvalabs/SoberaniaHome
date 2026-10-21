@@ -6,7 +6,7 @@ import { createLeafFlight, leafGust, lifeOrbit, LEAF_SCROLL_PACE } from './leaf-
 import { createLeafReturn, LEAF_RETURN_SECONDS, type LeafPose } from './leaf-return';
 import { glowColor, textSurface } from './leaf-contrast';
 import { initWorkMarquee } from './work-marquee';
-import { createWorkPencil } from './work-pencil';
+import { createLandingInk } from './landing-ink';
 
 /** One source of movement: the document's native scroll position.
  * Scenes use CSS sticky, never JS pin spacers. All rendering sleeps at rest. */
@@ -43,11 +43,17 @@ export function initMotion() {
     stage: '.choices-print-stage', message: '.choices-print-body', finishAtBottom: true,
     blocks: '.choices-opening > p,.choices-benefit', keepHeading: true, sidecar: '.choices-sketch'
   });
-  const workPencil = createWorkPencil();
+  const landingInk = createLandingInk();
   const knowledgePrint = createHeroPrint(document.getElementById('deslocamento-2'), {
     stage: '.knowledge-cover-stage', message: '.knowledge-cover-copy',
     blocks: '.knowledge-cover-copy > p', keepHeading: true
   });
+  const handoverPrint = createHeroPrint(document.getElementById('handover-drawing'), {
+    stage: '.handover-ink-stage', message: '.handover-ink-message',
+    blocks: '.handover-ink-message > p', keepHeading: true
+  });
+  addEventListener('beforeprint',()=>landingInk.print());
+  addEventListener('afterprint',()=>landingInk.restore());
   const flight = document.getElementById('leaf-flight');
   const depth = document.getElementById('leaf-depth');
   const leaf = document.getElementById('wind-leaf');
@@ -112,7 +118,7 @@ export function initMotion() {
   let orbitSelection: number | null = null, orbitSelectionAt = 0;
   const orbitNodes = all<HTMLButtonElement>('#espiral [data-orbit-node]');
   const processOrigins = [[20,88],[518,88],[1016,88],[20,507],[518,507],[1016,507]];
-  const debug: any = window.__SL_DEBUG = {ready:false,enabled:false,activeId:'hero',scenes:[],leaf:{},metrics,scroll:scrollY,maxScroll:1};
+  const debug: any = window.__SL_DEBUG = {ready:false,enabled:false,activeId:'hero',scenes:[],leaf:{},metrics,scroll:scrollY,maxScroll:1,ink:landingInk.debug};
 
   for (const [id,kind] of [['trabalho','horizontal'],['processo','process'],['laboratorio','horizontal'],['espiral','spiral']] as const) {
     const section = document.getElementById(id);
@@ -212,6 +218,7 @@ export function initMotion() {
     // The work gallery precedes this reveal. Its resized height must settle
     // before the knowledge section captures its document-space pin anchor.
     knowledgePrint?.measure(enabled,height,width,mastHeight,layoutHeight);
+    handoverPrint?.measure(enabled,height,width,mastHeight,layoutHeight);
     const y=scrollY;
     scenes.forEach(scene=>{
       scene.start=scene.sequence.getBoundingClientRect().top+y-(scene.kind==='horizontal'&&(width<760||height<620)?0:mastHeight);
@@ -258,8 +265,9 @@ export function initMotion() {
     previousY=y;
     heroPrint?.render(y);
     const choicesProgress = choicesPrint?.render(y) ?? 0;
-    workPencil?.render(choicesProgress, enabled);
-    knowledgePrint?.render(y);
+    const knowledgeProgress=knowledgePrint?.render(y) ?? 0;
+    const handoverProgress=handoverPrint?.render(y) ?? 0;
+    landingInk.render({workbench:choicesProgress,knowledge:knowledgeProgress,handover:handoverProgress},enabled);
     renderBrandSignature(brandSignature, mast, y, height, width);
     for(const scene of scenes) {
       const animated=enabled&&!scene.static;
@@ -374,7 +382,7 @@ export function initMotion() {
     if(!flight||!leaf||!depth)return;
     const hero=sections[0];
     // Reveal runway is reading time, not extra distance from the branch.
-    const runways=[heroPrint?.runway(),choicesPrint?.runway(),knowledgePrint?.runway()].filter((item):item is NonNullable<typeof item>=>!!item);
+    const runways=[heroPrint?.runway(),choicesPrint?.runway(),knowledgePrint?.runway(),handoverPrint?.runway()].filter((item):item is NonNullable<typeof item>=>!!item);
     const leafScroll=(position:number)=>leafScrollClock(position,runways);
     const clockY=leafScroll(y);
     const launchBottom=heroPrint?.naturalGeometry().bottom||hero?.bottom||height;
@@ -670,7 +678,7 @@ export function initMotion() {
   addEventListener('resize',()=>{
     const revision=navigationRevision;
     const reading=readingAnchor?{...readingAnchor}:null,resizeY=scrollY;
-    const print=all<HTMLElement>('main > [data-print-pinned="true"]').find(element=>scrollY>=Number(element.dataset.printStart)&&scrollY<=Number(element.dataset.printStart)+Number(element.dataset.printRun));
+    const print=all<HTMLElement>('main [data-print-pinned="true"]').find(element=>scrollY>=Number(element.dataset.printStart)&&scrollY<=Number(element.dataset.printStart)+Number(element.dataset.printRun));
     const printStart=Number(print?.dataset.printStart),printRun=Number(print?.dataset.printRun);
     const active=pendingSceneJump?.scene||scenes.find(scene=>scene.active&&!scene.flow&&!scene.static);
     const jump=pendingSceneJump?.scene===active?pendingSceneJump:null;

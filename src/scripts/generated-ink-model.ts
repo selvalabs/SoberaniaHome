@@ -33,7 +33,7 @@ export function scheduleGeneratedGuides(guides: Guide[]): ScheduledGuide[] {
   });
 }
 
-export function sampleGeneratedInk(schedule: ScheduledGuide[], value: number) {
+export function sampleGeneratedInk(schedule: ScheduledGuide[], value: number, highlights = generatedHighlights) {
   const progress = clamp(value);
   let low = 0, high = schedule.length;
   while (low < high) {
@@ -56,7 +56,7 @@ export function sampleGeneratedInk(schedule: ScheduledGuide[], value: number) {
     if(!to)continue;
     lights.push({index:i,from:Math.max(0,to-115/line.length),to,strength:1-smooth(age/.024)});
   }
-  const keyLights = generatedHighlights.map(point=>{
+  const keyLights = highlights.map(point=>{
     const enter=smooth((progress-point.at)/.028);
     const pulse=Math.sin(Math.PI*clamp((progress-point.at)/.13))**2;
     return enter*(.38+.36*pulse);
