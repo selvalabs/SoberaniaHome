@@ -44,6 +44,10 @@ export function initMotion() {
     blocks: '.choices-opening > p,.choices-benefit', keepHeading: true, sidecar: '.choices-sketch'
   });
   const workPencil = createWorkPencil();
+  const knowledgePrint = createHeroPrint(document.getElementById('deslocamento-2'), {
+    stage: '.knowledge-cover-stage', message: '.knowledge-cover-copy',
+    blocks: '.knowledge-cover-copy > p', keepHeading: true
+  });
   const flight = document.getElementById('leaf-flight');
   const depth = document.getElementById('leaf-depth');
   const leaf = document.getElementById('wind-leaf');
@@ -205,6 +209,9 @@ export function initMotion() {
       }
       scene.stageWidth=scene.stage?.clientWidth||0;scene.stageHeight=scene.stage?.clientHeight||0;
     }
+    // The work gallery precedes this reveal. Its resized height must settle
+    // before the knowledge section captures its document-space pin anchor.
+    knowledgePrint?.measure(enabled,height,width,mastHeight,layoutHeight);
     const y=scrollY;
     scenes.forEach(scene=>{
       scene.start=scene.sequence.getBoundingClientRect().top+y-(scene.kind==='horizontal'&&(width<760||height<620)?0:mastHeight);
@@ -252,6 +259,7 @@ export function initMotion() {
     heroPrint?.render(y);
     const choicesProgress = choicesPrint?.render(y) ?? 0;
     workPencil?.render(choicesProgress, enabled);
+    knowledgePrint?.render(y);
     renderBrandSignature(brandSignature, mast, y, height, width);
     for(const scene of scenes) {
       const animated=enabled&&!scene.static;
@@ -290,7 +298,7 @@ export function initMotion() {
 
   function rememberReadingPosition() {
     readingAnchor=null;
-    if(width>=760||activeId==='hero'||activeId==='folha'||scenes.some(scene=>scene.active&&!scene.flow&&!scene.static))return;
+    if(width>=760||sections.find(item=>item.element.id===activeId)?.element.dataset.printPinned==='true'||scenes.some(scene=>scene.active&&!scene.flow&&!scene.static))return;
     const chapter=sections.find(item=>item.element.id===activeId)?.element;
     if(!chapter)return;
     const focus=document.activeElement;
@@ -366,7 +374,7 @@ export function initMotion() {
     if(!flight||!leaf||!depth)return;
     const hero=sections[0];
     // Reveal runway is reading time, not extra distance from the branch.
-    const runways=[heroPrint?.runway(),choicesPrint?.runway()].filter((item):item is NonNullable<typeof item>=>!!item);
+    const runways=[heroPrint?.runway(),choicesPrint?.runway(),knowledgePrint?.runway()].filter((item):item is NonNullable<typeof item>=>!!item);
     const leafScroll=(position:number)=>leafScrollClock(position,runways);
     const clockY=leafScroll(y);
     const launchBottom=heroPrint?.naturalGeometry().bottom||hero?.bottom||height;
@@ -662,7 +670,7 @@ export function initMotion() {
   addEventListener('resize',()=>{
     const revision=navigationRevision;
     const reading=readingAnchor?{...readingAnchor}:null,resizeY=scrollY;
-    const print=all<HTMLElement>('#hero[data-print-pinned="true"],#folha[data-print-pinned="true"]').find(element=>scrollY>=Number(element.dataset.printStart)&&scrollY<=Number(element.dataset.printStart)+Number(element.dataset.printRun));
+    const print=all<HTMLElement>('main > [data-print-pinned="true"]').find(element=>scrollY>=Number(element.dataset.printStart)&&scrollY<=Number(element.dataset.printStart)+Number(element.dataset.printRun));
     const printStart=Number(print?.dataset.printStart),printRun=Number(print?.dataset.printRun);
     const active=pendingSceneJump?.scene||scenes.find(scene=>scene.active&&!scene.flow&&!scene.static);
     const jump=pendingSceneJump?.scene===active?pendingSceneJump:null;
