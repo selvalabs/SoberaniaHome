@@ -25,9 +25,12 @@ with sync_playwright() as pw:
   animated=q.evaluate('__GENERATED_INK.enabled')
   def go(p):
    q.evaluate('(p)=>scrollTo({top:__GENERATED_INK.start+__GENERATED_INK.run*p,behavior:"instant"})',p)
-   q.wait_for_function('(p)=>Math.abs(__GENERATED_INK.progress-p)<.002',arg=p)
+   try:q.wait_for_function('(p)=>Math.abs(__GENERATED_INK.progress-p)<.002',arg=p)
+   except Exception:
+    print('Seek failure',w,h,p,q.evaluate('JSON.stringify({state:__GENERATED_INK,y:scrollY})'),errors,flush=True)
+    raise
   if animated:
-   for p in [.015,.16,.29,.43,.65,.78,.95,1]:
+   for p in [.015,.16,.29,.43,.65,.78,.84,.93,1]:
     go(p)
     stage=q.locator('.generated-stage').bounding_box();mast=q.locator('.generated-mast').bounding_box()
     assert stage['y']>=mast['height']-1 and stage['y']+stage['height']<=h+1,(w,h,p,stage)
@@ -57,6 +60,11 @@ with sync_playwright() as pw:
    assert q.locator('[data-generated-complete]').get_attribute('opacity')=='1'
    assert q.locator('[data-generated-pencil]').get_attribute('hidden') is not None
    assert q.locator('[data-generated-guide]').evaluate_all('es=>es.every(e=>+e.getAttribute("stroke-dashoffset")===0)')
+   assert q.locator('[data-generated-highlight]').evaluate_all('es=>es.every(e=>+e.getAttribute("opacity")>=.3)')
+   go(.20)
+   assert q.locator('[data-generated-light-guide]').evaluate_all('es=>es.some(e=>+e.getAttribute("opacity")>0)')
+   assert q.locator('[data-generated-highlight]').evaluate_all('es=>es.every(e=>+e.getAttribute("opacity")===0)')
+   go(1)
    # Keyboard and touch must be able to pause, rather than restart, playback.
    play=q.locator('[data-generated-play]');play.focus();play.press('Space')
    q.wait_for_timeout(500);assert q.evaluate('__GENERATED_INK.playing')
@@ -66,6 +74,14 @@ with sync_playwright() as pw:
    if w<761:play.tap()
    else:q.mouse.wheel(0,60)
    q.wait_for_function('!__GENERATED_INK.playing',timeout=1500)
+   # Wheel is passive: its native compositor scroll may finish after the pause
+   # handler. Wait for that real movement before seeking somewhere unrelated.
+   q.evaluate('''async()=>new Promise(resolve=>{
+    let last=scrollY,stable=0;
+    const frame=()=>{stable=Math.abs(scrollY-last)<.5?stable+1:0;last=scrollY;
+     if(stable>=4)resolve();else requestAnimationFrame(frame);
+    };requestAnimationFrame(frame);
+   })''')
    go(.72)
    if w==1440:
     q.set_viewport_size({'width':390,'height':844});q.wait_for_timeout(150)

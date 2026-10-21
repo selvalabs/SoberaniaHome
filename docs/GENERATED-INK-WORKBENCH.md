@@ -6,9 +6,9 @@ Issue [71](https://github.com/selvalabs/SoberaniaHome/issues/71) · branch `feat
 
 `/ensaios/arte-gerada/` apresenta o primeiro estudo com ilustração gerada. Há uma chamada no início do caderno `/ensaios/animacoes/`; as três cenas anteriores permanecem disponíveis para comparação. A landing não usa este renderizador. A nova rota é `noindex,follow`, sem canonical e fora do sitemap.
 
-O roteiro começa na bancada e na morsa, passa pela ferramenta e pela peça, e chega às mãos. A mensagem é: **a ferramenta amplia; a experiência conduz**. Scroll e slider percorrem o mesmo estado; voltar desfaz o desenho. Reproduzir percorre a cena em 44 segundos, a partir do ponto atual. Wheel, gesto de navegação, pausa ou mudança de aba interrompem a reprodução.
+O roteiro começa na bancada e na morsa, passa pela ferramenta e pela peça, e chega às mãos. A mensagem é: **a ferramenta amplia; a experiência conduz**. Scroll e slider percorrem o mesmo estado; voltar desfaz o desenho. Reproduzir percorre a cena em 52 segundos, a partir do ponto atual. Wheel, gesto de navegação, pausa ou mudança de aba interrompem a reprodução.
 
-Os contornos acompanham o lápis. A hachura fina que não entra nos percursos selecionados completa a arte no último momento, seguida de um pulso de luz. Não há alegação de recuperar a ordem original de desenho da IA. Também não há animação independente de mão, chave ou morsa neste piloto: isso requer geração/separação de camadas e direção dos pontos de contato.
+Os contornos acompanham o lápis e o desenho cresce por vizinhança: uma região ganha corpo antes de o instrumento mudar de lugar. A hachura fina que não entra nos percursos selecionados completa a arte antes do trecho final. A luz acompanha a tinta recém-revelada e depois acentua o gesto da mão, a chave e o apoio sobre a peça. Não há alegação de recuperar a ordem original de desenho da IA. Também não há animação independente de mão, chave ou morsa neste piloto: isso requer geração/separação de camadas e direção dos pontos de contato.
 
 ## Arte original e procedência
 
@@ -26,7 +26,7 @@ O resultado ainda contém hachura e pequenos recortes da bancada na borda. Isso 
 
 ## Método reproduzível
 
-`scripts/trace-ink.py` lê a imagem, analisa os pixels de tinta e extrai eixos centrais com thinning de duas passagens. Em seguida, separa cadeias em interseções e simplifica os percursos com tolerância de 0.65 pixel. Não salva ou modifica a imagem. O resultado são **685 percursos**, com hash da origem em `src/data/workbench-traces.json`.
+`scripts/trace-ink.py` lê a imagem, analisa os pixels de tinta e extrai eixos centrais com thinning de duas passagens. Em seguida, separa cadeias em interseções e simplifica os percursos com tolerância de 0.65 pixel. Não salva ou modifica a imagem. A versão 2 ordena pelas extremidades próximas, favorece a continuidade da direção e une somente pontas coincidentes com tangentes compatíveis. Reverter uma linha ou uni-la a outra no mesmo ponto não modifica sua geometria. O resultado são **559 percursos**, com hash da origem em `src/data/workbench-traces.json`.
 
 O script é uma ferramenta de autoria, não uma dependência de execução, CI ou build. Foi executado com Python 3.13, Pillow 12.0.0 e NumPy 2.3.5:
 
@@ -34,7 +34,11 @@ O script é uma ferramenta de autoria, não uma dependência de execução, CI o
 python scripts/trace-ink.py public/assets/ink/workbench-generated-v1.png src/data/workbench-traces.json
 ```
 
-As regiões e a ordem são dirigidas para esta composição; não são um classificador universal de objetos. Percursos maiores recebem mais tempo. As pausas entre assuntos permitem levantar o lápis em vez de desenhar linhas de ligação inexistentes.
+As regiões e a ordem são dirigidas para esta composição; não são um classificador universal de objetos. Percursos maiores recebem mais tempo. A sequência anterior, ordenada por tamanho, exigia 292290 unidades de deslocamento entre traços dentro das etapas. A ordenação local reduz esse total a 14909 (94.9%): mediana de 14.9 e percentil 90 de 47.6 unidades, na imagem de 1536 × 1024. Saltos acima de 150 unidades caíram de 544 para 13. A comparação exclui as transições entre as três etapas editoriais e conserva o PNG original.
+
+O intervalo de cada traço inclui um levantamento proporcional à distância até a próxima ponta. Em deslocamentos próximos, o lápis sobe e percorre a transição sem riscar; nos saltos grandes e nas mudanças de assunto, ele sai da cena brevemente. Seu corpo facetado, madeira, grafite e sombra são vetores com gradientes, sem textura ou imagem externa. A inclinação responde à tangente local, e a sombra acompanha a elevação.
+
+A iluminação usa até 16 trechos recentes, cada um limitado às últimas 115 unidades de linha. Uma máscara aplica cor e bloom somente à tinta já revelada; não desenha uma trilha nova sobre a arte. A luz recente decai pelo progresso, de forma reversível. O quarto final da sequência reserva cerca de 11 segundos, na reprodução completa, para acentos nos três pontos de contato. No fim, fica uma luz discreta e estável nesses pontos, sem loop de animação em repouso. No modo de leitura, sem JavaScript, com movimento reduzido ou em telas baixas, a arte aparece sem esses glows.
 
 `GeneratedWorkbench.astro` conserva a imagem como fonte de todos os detalhes. Uma máscara SVG de luminância extrai a tinta, e outra máscara abre os percursos pelo progresso. Uma transferência linear remove o quase branco do fundo somente na composição do navegador. A tinta assume a cor do tema, sem retângulo branco no modo escuro. O PNG permanece intacto.
 
@@ -50,9 +54,9 @@ Para não filtrar 1.5 milhão de pixels em cada repaint, o navegador prepara uma
 - Mudança de viewport conserva o progresso. Ocultar a aba pausa. Teclado e toque permitem pausar e buscar sem reiniciar involuntariamente.
 - Impressão revela a arte inteira; ao sair, o estado da navegação volta a ser amostrado.
 
-Os testes Node verificam vínculo com o PNG original, limites dos percursos, sequência, determinismo, reversão e conclusão. `tests/test_generated_ink.py` verifica oito viewports, carregamento do PNG, pin, encaixe do texto/figura, alinhamento da ponta, controle por teclado/toque, resize, temas, repouso, impressão e alternativas. O teste anterior do caderno permanece registrado.
+Os testes Node verificam vínculo com o PNG original, limites dos percursos, continuidade espacial, iluminação somente em traços já revelados, acentos finais, sequência, determinismo, reversão e conclusão. `tests/test_generated_ink.py` verifica oito viewports, carregamento do PNG, pin, encaixe do texto/figura, alinhamento da ponta, controle por teclado/toque, resize, temas, repouso, impressão e alternativas. O teste anterior do caderno permanece registrado.
 
-Builds de validação são gravados em diretórios novos, ignorados pelo Git; nenhum artefato de build integra o commit. Não houve alteração na main, release, publicação, banco, VPS ou espelho remoto. A reversão deste piloto é o commit anterior `083c672ba5c7e623096d34524fb5589c4361eedc`.
+Builds de validação são gravados em diretórios novos, ignorados pelo Git; nenhum artefato de build integra o commit. Não houve alteração na main, release, publicação, banco, VPS ou espelho remoto. A reversão do refinamento de continuidade, luz e lápis é `e8eebd8dd50f331a7db6cd00e9473ed6a5ee2591`; o estado anterior ao piloto completo permanece em `083c672ba5c7e623096d34524fb5589c4361eedc`.
 
 ## Referências técnicas
 

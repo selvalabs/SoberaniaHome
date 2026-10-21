@@ -1,4 +1,4 @@
-import { generatedActs, sampleGeneratedInk, scheduleGeneratedGuides } from './generated-ink-model';
+import { generatedActs, generatedPlaybackSeconds, sampleGeneratedInk, scheduleGeneratedGuides } from './generated-ink-model';
 
 /** Cache the display mask once, rather than filtering 1.5 million source pixels
  * on every SVG repaint. This never changes the source PNG or writes an asset. */
@@ -41,11 +41,13 @@ export function initGeneratedInk() {
   const stage=host.querySelector<HTMLElement>('.generated-stage')!;
   const svg=host.querySelector<SVGSVGElement>('[data-generated-art]')!;
   const paths=Array.from(svg.querySelectorAll<SVGPathElement>('[data-generated-guide]'));
-  const schedule=scheduleGeneratedGuides(paths.map(path=>({length:Number(path.dataset.length),phase:Number(path.dataset.phase)})));
+  const schedule=scheduleGeneratedGuides(paths.map(path=>({length:Number(path.dataset.length),phase:Number(path.dataset.phase),gap:Number(path.dataset.gap)})));
   const full=svg.querySelector<SVGRectElement>('[data-generated-complete]')!;
-  const glow=svg.querySelector<SVGGElement>('[data-generated-glow]')!;
-  const tint=svg.querySelector<SVGRectElement>('[data-generated-tint]')!;
+  const lightGuides=Array.from(svg.querySelectorAll<SVGPathElement>('[data-generated-light-guide]'));
+  const highlights=Array.from(svg.querySelectorAll<SVGEllipseElement>('[data-generated-highlight]'));
   const pencil=svg.querySelector<SVGGElement>('[data-generated-pencil]')!;
+  const pencilBody=pencil.querySelector<SVGGElement>('[data-pencil-body]')!;
+  const pencilShadow=pencil.querySelector<SVGGElement>('[data-pencil-shadow]')!;
   const dust=svg.querySelector<SVGGElement>('[data-generated-dust]')!;
   const slider=host.querySelector<HTMLInputElement>('input[type=range]')!;
   const percent=host.querySelector<HTMLOutputElement>('[data-generated-percent]')!;
@@ -104,14 +106,37 @@ export function initGeneratedInk() {
     if(paths[state.index]) paths[state.index].setAttribute('stroke-dashoffset',String(1-state.draw));
     oldIndex=state.index;
     full.setAttribute('opacity',String(state.complete));
-    glow.setAttribute('opacity',String(enabled?state.glow*.9:0));
-    tint.setAttribute('opacity',String(enabled?state.glow*.45:0));
+    lightGuides.forEach((path,i)=>{
+      const light=enabled?state.lights[i]:undefined;
+      if(!light){path.setAttribute('opacity','0');return;}
+      if(path.dataset.source!==String(light.index)){
+        path.setAttribute('d',paths[light.index].getAttribute('d')!);
+        path.dataset.source=String(light.index);
+      }
+      path.setAttribute('stroke-dasharray',`${light.to-light.from} 2`);
+      path.setAttribute('stroke-dashoffset',String(-light.from));
+      path.setAttribute('opacity',String(light.strength));
+    });
+    highlights.forEach((point,i)=>point.setAttribute('opacity',String(enabled?state.keyLights[i]:0)));
     pencil.toggleAttribute('hidden',!enabled || !state.pencil);
     dust.toggleAttribute('hidden',!enabled || !state.pencil);
     if(enabled && state.pencil) {
       const path=paths[state.index];
-      const point=path.getPointAtLength(path.getTotalLength()*state.draw);
-      pencil.setAttribute('transform',`translate(${point.x} ${point.y}) rotate(${-8+Math.sin(state.draw*Math.PI)*5})`);
+      const length=path.getTotalLength();
+      const at=length*state.draw;
+      let point=path.getPointAtLength(at);
+      const before=path.getPointAtLength(Math.max(0,at-12)),after=path.getPointAtLength(Math.min(length,at+12));
+      const tangent=Math.atan2(after.y-before.y,after.x-before.x);
+      if(state.travelling){
+        const previous=paths[state.index-1];
+        const origin=previous.getPointAtLength(previous.getTotalLength());
+        point=new DOMPoint(origin.x+(point.x-origin.x)*state.travel,origin.y+(point.y-origin.y)*state.travel);
+      }
+      const angle=31+Math.sin(tangent*2)*6+Math.sin(state.progress*33)*1.5+state.elevation*4;
+      pencil.setAttribute('transform',`translate(${point.x} ${point.y}) rotate(${angle})`);
+      pencilBody.setAttribute('transform',`translate(0 ${-state.elevation*9})`);
+      pencilShadow.setAttribute('transform',`translate(${6+state.elevation*8} ${6+state.elevation*5})`);
+      pencilShadow.setAttribute('opacity',String(.2-state.elevation*.09));
       dust.setAttribute('transform',`translate(${point.x} ${point.y})`);
       dust.querySelectorAll('circle').forEach((grain,i)=>{
         const age=state.draw*(i+1);
@@ -119,7 +144,7 @@ export function initGeneratedInk() {
         grain.setAttribute('cy',String(-3-age*7+age*age*9));
         grain.setAttribute('opacity',String(.4*state.pressure));
       });
-      debug.tip={x:point.x,y:point.y,index:state.index,draw:state.draw};
+      debug.tip=state.travelling?null:{x:point.x,y:point.y,index:state.index,draw:state.draw};
     } else debug.tip=null;
     copies.forEach((copy,i)=>{
       copy.dataset.current=String(i===state.act);
@@ -140,7 +165,7 @@ export function initGeneratedInk() {
     if(width!==innerWidth||height!==innerHeight)layoutPending=true;
     if(layoutPending)measure();
     if(playing && enabled) {
-      progress=Math.min(1,playProgress+(now-playTime)/44000);
+      progress=Math.min(1,playProgress+(now-playTime)/(generatedPlaybackSeconds*1000));
       ownScroll=Math.round(start+run*progress);
       scrollTo({top:ownScroll,behavior:'instant'});
       if(progress>=1)stop();

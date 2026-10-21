@@ -1,5 +1,6 @@
 ---
 import traces from '../data/workbench-traces.json';
+import { generatedHighlights } from '../scripts/generated-ink-model';
 const art = `${import.meta.env.BASE_URL}assets/ink/workbench-generated-v1.png`;
 ---
 <svg class="generated-art" viewBox="-22 -32 1580 1090" role="img" aria-labelledby="workbench-title workbench-description" data-generated-art>
@@ -15,30 +16,46 @@ const art = `${import.meta.env.BASE_URL}assets/ink/workbench-generated-v1.png`;
     </mask>
     <mask id="workbench-reveal" maskUnits="userSpaceOnUse" x="0" y="0" width="1536" height="1024" style="mask-type:luminance">
       <g fill="none" stroke="white" stroke-width="11" stroke-linecap="round" stroke-linejoin="round">
-        {traces.paths.map(path=><path d={path.d} pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" data-generated-guide data-length={path.length} data-phase={path.phase}/>)}
+        {traces.paths.map(path=><path d={path.d} pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" data-generated-guide data-length={path.length} data-phase={path.phase} data-gap={path.gap}/>)}
       </g>
       <rect width="1536" height="1024" fill="white" data-generated-complete />
     </mask>
-    <linearGradient id="workbench-light" x1=".1" y1="1" x2=".9" y2="0">
-      <stop stop-color="#7bae93"/><stop offset=".5" stop-color="#e9c586"/><stop offset="1" stop-color="#b9c8ed"/>
+    <linearGradient id="workbench-light" gradientUnits="userSpaceOnUse" x1="300" y1="800" x2="1200" y2="230">
+      <stop stop-color="var(--trace-green,#377258)"/><stop offset=".5" stop-color="var(--trace-gold,#96622e)"/><stop offset="1" stop-color="var(--trace-blue,#615f98)"/>
     </linearGradient>
-    <filter id="workbench-glow" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="2.5"/></filter>
+    <radialGradient id="workbench-focus"><stop stop-color="white"/><stop offset=".5" stop-color="white" stop-opacity=".75"/><stop offset="1" stop-color="black"/></radialGradient>
+    <mask id="workbench-illumination" maskUnits="userSpaceOnUse" x="0" y="0" width="1536" height="1024" style="mask-type:luminance">
+      <g fill="none" stroke="white" stroke-width="28" stroke-linecap="round" stroke-linejoin="round">
+        {Array.from({length:16},()=> <path pathLength="1" opacity="0" data-generated-light-guide/>)}
+      </g>
+      {generatedHighlights.map(point=><ellipse cx={point.x} cy={point.y} rx={point.rx} ry={point.ry} fill="url(#workbench-focus)" opacity="0" data-generated-highlight={point.name}/>)}
+    </mask>
+    <filter id="workbench-glow" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="5"/></filter>
+    <linearGradient id="pencil-barrel" gradientUnits="userSpaceOnUse" x1="-6" x2="6"><stop stop-color="#0c241c"/><stop offset=".28" stop-color="#345d47"/><stop offset=".48" stop-color="#52715a"/><stop offset=".51" stop-color="#274e38"/><stop offset="1" stop-color="#102b20"/></linearGradient>
+    <linearGradient id="pencil-wood" gradientUnits="userSpaceOnUse" x1="-6" x2="6"><stop stop-color="#986c43"/><stop offset=".38" stop-color="#e8c79b"/><stop offset=".63" stop-color="#d1a472"/><stop offset="1" stop-color="#a77a4a"/></linearGradient>
+    <linearGradient id="pencil-core" x2="1" y2="0"><stop stop-color="#252922"/><stop offset=".45" stop-color="#6f7368"/><stop offset="1" stop-color="#141b15"/></linearGradient>
+    <filter id="pencil-shadow" x="-100%" y="-10%" width="400%" height="130%"><feGaussianBlur stdDeviation="2.3"/></filter>
   </defs>
   <g mask="url(#workbench-reveal)">
-    <g filter="url(#workbench-glow)" opacity="0" data-generated-glow><rect width="1536" height="1024" fill="url(#workbench-light)" mask="url(#workbench-ink)"/></g>
+    <g filter="url(#workbench-glow)" opacity=".9"><g mask="url(#workbench-illumination)"><rect width="1536" height="1024" fill="url(#workbench-light)" mask="url(#workbench-ink)"/></g></g>
     <g mask="url(#workbench-ink)">
       <rect width="1536" height="1024" fill="currentColor" />
-      <rect width="1536" height="1024" fill="url(#workbench-light)" opacity="0" data-generated-tint/>
+      <rect width="1536" height="1024" fill="url(#workbench-light)" opacity=".86" mask="url(#workbench-illumination)"/>
     </g>
   </g>
   <g class="generated-pencil" hidden data-generated-pencil aria-hidden="true">
-    <ellipse cx="30" cy="7" rx="30" ry="5" fill="currentColor" opacity=".12" transform="rotate(-45)"/>
-    <path d="M0 0 L8 -31 L24 -19 Z" fill="#cfac7f" stroke="#5e4a35" stroke-width="1.2"/>
-    <path d="M0 0 L3 -11 L9 -7 Z" fill="currentColor"/>
-    <path d="M8 -31 L97 -120 L113 -104 L24 -19 Z" fill="#8c5140" stroke="#563a32" stroke-width="1.2"/>
-    <path d="M13 -26 L102 -115 L107 -110 L18 -21 Z" fill="#d59872"/>
-    <path d="M97 -120 L104 -127 Q108 -131 112 -127 L120 -119 Q124 -115 120 -111 L113 -104 Z" fill="#b4b7ac" stroke="#656c60" stroke-width="1.2"/>
-    <path d="M100 -122 L115 -107 M104 -126 L119 -111" fill="none" stroke="#e1e2d6" stroke-width="1.5"/>
+    <g transform="translate(6 6)" opacity=".2" data-pencil-shadow filter="url(#pencil-shadow)"><path d="M0 0 L-6 -36 L-6 -207 Q0 -212 6 -207 L6 -36 Z" fill="#030c07"/></g>
+    <g data-pencil-body>
+      <path d="M-6 -38 L-6 -205 Q0 -210 6 -205 L6 -38 L3.8 -41 L0 -36 L-3.4 -42 Z" fill="url(#pencil-barrel)" stroke="#12281b" stroke-width=".65"/>
+      <path d="M-3.7 -201 L-3.7 -47" fill="none" stroke="#9bb58a" stroke-opacity=".48" stroke-width=".55"/>
+      <path d="M-6 -38 L-3.4 -42 L0 -36 L3.8 -41 L6 -38 L1.7 -10 L0 0 L-1.8 -10 Z" fill="url(#pencil-wood)"/>
+      <path d="M-3.4 -40 Q-2.3 -28 -.9 -13 M3.8 -39 Q2.2 -26 1 -12 M-.4 -34 L.2 -17" fill="none" stroke="#83542f" stroke-width=".45" stroke-opacity=".5"/>
+      <path d="M0 0 L-1.8 -10 Q0 -12 1.7 -10 Z" fill="url(#pencil-core)"/>
+      <path d="M.1 -2 L.6 -9" fill="none" stroke="#b0b4a4" stroke-width=".35"/>
+      <path d="M-5.9 -192 L5.9 -192 M-5.9 -189.7 L5.9 -189.7" stroke="#d6b76b" stroke-width=".7"/>
+      <path d="M-4 -204 Q0 -207 4 -204" fill="none" stroke="#9ab17a" stroke-width=".6"/>
+      <text x="0" y="-174" fill="#e5d69b" font-size="4.1" font-family="ui-monospace,monospace" text-anchor="middle" transform="rotate(180 0 -176)">2B</text>
+    </g>
   </g>
   <g class="generated-dust" hidden data-generated-dust fill="currentColor" aria-hidden="true"><circle r="1.6"/><circle r="1.1"/><circle r=".8"/></g>
 </svg>

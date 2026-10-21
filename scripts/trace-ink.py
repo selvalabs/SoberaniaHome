@@ -97,6 +97,51 @@ def region(x, y):
     return 1  # wrench and workpiece
 
 
+def direction(points, end=False):
+    ordered = list(reversed(points)) if end else points
+    a = ordered[0]
+    b = next((p for p in ordered[1:] if math.dist(a, p) >= 8), ordered[-1])
+    dx, dy = b[0]-a[0], b[1]-a[1]
+    length = max(.001, math.hypot(dx, dy))
+    sign = -1 if end else 1
+    return dx/length*sign, dy/length*sign
+
+
+def order_locally(paths):
+    """Follow adjacent endpoints, continuing a contour before lifting elsewhere.
+
+    Reversing an existing polyline does not change its shape. Only coincident
+    endpoints with compatible tangents are joined; no connecting line is invented.
+    """
+    ordered = []
+    seeds = [(620, 630), (810, 450), (510, 400)]
+    for phase, seed in enumerate(seeds):
+        remaining = [p['points'] for p in paths if p['phase'] == phase]
+        tip, heading = seed, None
+        while remaining:
+            candidates = []
+            for index, points in enumerate(remaining):
+                for reverse in [False, True]:
+                    candidate = list(reversed(points)) if reverse else points
+                    distance = math.dist(tip, candidate[0])
+                    incoming = direction(candidate)
+                    alignment = sum(a*b for a, b in zip(heading, incoming)) if heading else 1
+                    # Keep the pencil on the current contour at junctions. Outside
+                    # the neighborhood, distance dominates instead of line length.
+                    cost = distance + (1-alignment)*12 if distance < 24 else distance+24
+                    candidates.append((cost, distance, -alignment, index, reverse))
+            _, gap, negative_alignment, index, reverse = min(candidates)
+            points = remaining.pop(index)
+            if reverse:
+                points = list(reversed(points))
+            if ordered and ordered[-1]['phase'] == phase and gap == 0 and negative_alignment < -.25:
+                ordered[-1]['points'].extend(points[1:])
+            else:
+                ordered.append({'phase': phase, 'points': list(points)})
+            tip, heading = points[-1], direction(points, end=True)
+    return ordered
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('image', type=Path)
@@ -118,11 +163,16 @@ def main():
         x, y = points[len(points)//2]
         simplified = simplify(points)
         length = sum(math.dist(a, b) for a, b in zip(simplified, simplified[1:]))
-        paths.append({'phase': region(x, y), 'length': round(length, 2),
-                      'd': 'M'+' L'.join(f'{x} {y}' for x, y in simplified)})
-    # Strong long contours first; nearby short hatch groups complete each subject.
-    paths.sort(key=lambda p: (p['phase'], -int(p['length'] >= 65), -p['length'], p['d']))
-    result = {'version': 1, 'sourceSha256': hashlib.sha256(source).hexdigest(),
+        paths.append({'phase': region(x, y), 'points': simplified})
+    paths = order_locally(paths)
+    previous = None
+    for path in paths:
+        points = path.pop('points')
+        path['length'] = round(sum(math.dist(a, b) for a, b in zip(points, points[1:])), 2)
+        path['gap'] = round(math.dist(previous[1], points[0]), 2) if previous and previous[0] == path['phase'] else 0
+        path['d'] = 'M'+' L'.join(f'{x} {y}' for x, y in points)
+        previous = path['phase'], points[-1]
+    result = {'version': 2, 'sourceSha256': hashlib.sha256(source).hexdigest(),
               'width': width, 'height': height, 'threshold': 180, 'paths': paths}
     args.output.write_text(json.dumps(result, ensure_ascii=False, separators=(',', ':'))+'\n', encoding='utf-8')
     print(json.dumps({'paths': len(paths), 'bytes': args.output.stat().st_size,
