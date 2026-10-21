@@ -1,0 +1,41 @@
+/* A third reading runway: the existing collage stays alongside the ink. */
+.knowledge-cover-left{display:contents}
+#deslocamento-2 .knowledge-cover-copy{display:grid;gap:18px;align-content:start;min-height:0}
+#deslocamento-2 .knowledge-cover-copy>p{margin:0}
+html.motion-edition.motion #deslocamento-2 .knowledge-cover-stage{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);grid-template-rows:auto minmax(0,1fr);align-content:start;align-items:start;gap:18px 5vw;padding:26px var(--pad) max(26px,var(--mobile-safe-bottom,0px))!important;box-sizing:border-box;min-height:0!important}
+html.motion-edition.motion #deslocamento-2 .knowledge-cover-left{display:block;grid-column:1;grid-row:2;min-width:0}
+html.motion-edition.motion #deslocamento-2 h2{align-self:start;margin:0 0 24px;font-size:clamp(38px,4.6vw,72px)}
+html.motion-edition.motion #deslocamento-2 .knowledge-collage{grid-column:2;grid-row:2;align-self:start;min-height:0;max-height:none;height:min(520px,calc(100svh - var(--mast-h) - 170px));width:100%;margin:28px 0 0;aspect-ratio:auto}
+html.motion-edition.motion #deslocamento-2 .knowledge-cover-copy{overflow:hidden;overscroll-behavior:auto;scroll-behavior:auto;overflow-anchor:none}
+html.motion-edition #deslocamento-2[data-print-pinned="true"]{overflow:visible;overflow-anchor:none}
+html.motion-edition #deslocamento-2[data-print-pinned="true"] .knowledge-cover-stage{position:sticky;top:var(--print-anchor);height:var(--print-stage-height)!important;min-height:0!important}
+html.motion-edition #deslocamento-2[data-print-enabled="true"] [data-print-progress]{text-shadow:var(--print-register,0px) 0 #ba70434d,calc(-1 * var(--print-register,0px)) 0 #2c89733d}
+@media(max-width:999px), (max-height:619px){
+ html.motion-edition.motion #deslocamento-2 .knowledge-cover-stage{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto minmax(0,1fr);gap:12px;padding:12px var(--pad) max(18px,var(--mobile-safe-bottom,0px))!important}
+ html.motion-edition.motion #deslocamento-2 .knowledge-cover-left{display:contents}
+ html.motion-edition.motion #deslocamento-2 h2{grid-column:1;grid-row:2;margin:0;font-size:clamp(27px,min(8vw,5svh),40px);line-height:1.04}
+ html.motion-edition.motion #deslocamento-2 .knowledge-collage{grid-column:1;grid-row:3;width:min(100%,220px);height:auto;margin:10px auto 40px;aspect-ratio:1.08;justify-self:center}
+ html.motion-edition.motion #deslocamento-2 .knowledge-cover-copy{grid-column:1;grid-row:4;gap:16px}
+ html.motion-edition.motion #deslocamento-2 .knowledge-cover-copy>p{font-size:16px;line-height:1.4}
+ html.motion-edition.motion #deslocamento-2 .knowledge-cover-copy .knowledge-cover-closing{font-size:21px;line-height:1.15}
+ html.motion-edition.motion #deslocamento-2 .knowledge-notes{position:absolute;top:calc(100% + 8px);left:50%;width:min(310px,calc(100vw - var(--pad) * 2));transform:translateX(-50%);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+ html.motion-edition.motion #deslocamento-2 .knowledge-note{position:static;transform:none;max-width:none;font-size:11px;line-height:1.1}
+ html.motion-edition.motion #deslocamento-2 .knowledge-note::after{display:none}
+ html.motion-edition.motion #deslocamento-2 .knowledge-code{font-size:5px;line-height:1.5;padding:5px 4px}
+ html.motion-edition.motion #deslocamento-2 .section-label{margin:0;font-size:10px;line-height:1.3}
+}
+@media(max-height:619px){
+ html.motion-edition.motion #deslocamento-2 .knowledge-cover-stage{gap:8px;padding-block:8px max(12px,var(--mobile-safe-bottom,0px))!important}
+ html.motion-edition.motion #deslocamento-2 h2{font-size:25px;line-height:1.02}
+ html.motion-edition.motion #deslocamento-2 .knowledge-collage{width:110px;height:auto;margin:6px auto 28px}
+ html.motion-edition.motion #deslocamento-2 .knowledge-note{font-size:9px}
+ html.motion-edition.motion #deslocamento-2 .knowledge-code{font-size:2.5px;padding:3px 2px}
+ html.motion-edition.motion #deslocamento-2 .knowledge-cover-copy{gap:12px}
+ html.motion-edition.motion #deslocamento-2 .knowledge-cover-copy .knowledge-cover-closing{font-size:19px}
+}
+@media print{
+ #deslocamento-2[data-print-pinned]{height:auto!important}
+ #deslocamento-2 .knowledge-cover-stage{position:relative!important;top:auto!important;height:auto!important}
+ #deslocamento-2 .knowledge-cover-copy{height:auto!important;overflow:visible!important}
+ #deslocamento-2 [data-print-progress]{clip-path:none!important;text-shadow:none!important}
+}
