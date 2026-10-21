@@ -6,6 +6,7 @@ import { createLeafFlight, leafGust, lifeOrbit, LEAF_SCROLL_PACE } from './leaf-
 import { createLeafReturn, LEAF_RETURN_SECONDS, type LeafPose } from './leaf-return';
 import { glowColor, textSurface } from './leaf-contrast';
 import { initWorkMarquee } from './work-marquee';
+import { createWorkPencil } from './work-pencil';
 
 /** One source of movement: the document's native scroll position.
  * Scenes use CSS sticky, never JS pin spacers. All rendering sleeps at rest. */
@@ -40,8 +41,9 @@ export function initMotion() {
   const heroPrint = createHeroPrint(hero);
   const choicesPrint = createHeroPrint(document.getElementById('folha'), {
     stage: '.choices-print-stage', message: '.choices-print-body', finishAtBottom: true,
-    blocks: '.choices-opening > p,.choices-reference,.choices-benefit'
+    blocks: '.choices-opening > p,.choices-benefit', keepHeading: true, sidecar: '.choices-sketch'
   });
+  const workPencil = createWorkPencil();
   const flight = document.getElementById('leaf-flight');
   const depth = document.getElementById('leaf-depth');
   const leaf = document.getElementById('wind-leaf');
@@ -248,7 +250,8 @@ export function initMotion() {
     else if(directionTravel>36&&!document.querySelector('dialog[open]'))root.dataset.mastHidden='true';
     previousY=y;
     heroPrint?.render(y);
-    choicesPrint?.render(y);
+    const choicesProgress = choicesPrint?.render(y) ?? 0;
+    workPencil?.render(choicesProgress, enabled);
     renderBrandSignature(brandSignature, mast, y, height, width);
     for(const scene of scenes) {
       const animated=enabled&&!scene.static;

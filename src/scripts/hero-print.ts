@@ -1,7 +1,7 @@
 import '../styles/hero-print.css';
 
 const clamp = (n: number, max = 1) => Math.max(0, Math.min(max, n));
-type PrintOptions = { stage: string; message: string; blocks: string; finishAtBottom?: boolean };
+type PrintOptions = { stage: string; message: string; blocks: string; finishAtBottom?: boolean; keepHeading?: boolean; sidecar?: string };
 const heroOptions: PrintOptions = {stage: '.hero-stage', message: '.hero-message', blocks: '.hero-lead,.hero-argument,.hero-method'};
 
 /** One complete paragraph per print pass, with a reading pause between passes. */
@@ -32,12 +32,16 @@ export function createHeroPrint(hero: HTMLElement | null, options: PrintOptions 
     messageHeight = messageRect.height;
     blockGeometry.length = 0;
     blocks.forEach(block => { const r=block.getBoundingClientRect(); blockGeometry.push({top:r.top-messageRect.top,height:r.height,lines:Math.max(1,Math.round(r.height/(parseFloat(getComputedStyle(block).lineHeight)||parseFloat(getComputedStyle(block.querySelector("p")||block).lineHeight)||24)))}); });
-    viewport = active && (width < 760 || height < 620);
+    viewport = active && (options.keepHeading === true || width < 760 || height < 620);
     anchor = mast + (viewport ? 8 : 12);
     const frameHeight = viewport ? Math.max(120, height - anchor - 12) : rect.height;
     const closing = hero!.querySelector<HTMLElement>('.text-actions,.choices-resolution');
     const tail = closing ? closing.getBoundingClientRect().height + parseFloat(getComputedStyle(closing).marginTop) : 0;
-    readingRoom = Math.max(48, frameHeight - (messageRect.top - rect.top) - tail - parseFloat(getComputedStyle(stage!).paddingBottom) - 5);
+    const sidecar = options.sidecar ? hero!.querySelector<HTMLElement>(options.sidecar) : null;
+    const sidecarRect = sidecar?.getBoundingClientRect();
+    const reserved = sidecar && sidecarRect && sidecarRect.left < messageRect.right - 1
+      ? sidecarRect.height + parseFloat(getComputedStyle(sidecar).marginTop) : 0;
+    readingRoom = Math.max(48, frameHeight - (messageRect.top - rect.top) - tail - reserved - parseFloat(getComputedStyle(stage!).paddingBottom) - 5);
     hero!.style.setProperty('--print-stage-height', `${frameHeight}px`);
     hero!.style.setProperty('--print-reading-room', `${readingRoom}px`);
     const padding = parseFloat(getComputedStyle(hero!).paddingTop) + parseFloat(getComputedStyle(hero!).paddingBottom);
@@ -48,7 +52,11 @@ export function createHeroPrint(hero: HTMLElement | null, options: PrintOptions 
       bottom: hero!.getBoundingClientRect().top + scrollY + frameHeight + padding,
       origin: launchRect ? {x:launchRect.left+launchRect.width/2,y:launchRect.top+scrollY} : null
     };
-    start = Math.max(0, hero!.getBoundingClientRect().top + scrollY + parseFloat(getComputedStyle(hero!).paddingTop) - anchor);
+    // The fixed-heading composition starts at the actual stage edge,
+    // including the section's border; it must not settle one pixel later.
+    const pinTop = options.keepHeading ? rect.top + scrollY
+      : hero!.getBoundingClientRect().top + scrollY + parseFloat(getComputedStyle(hero!).paddingTop);
+    start = Math.max(0, pinTop - anchor);
     // Browser toolbars can resize a phone's visible area during a swipe.
     // Reframe the page, but keep the same reading time and scroll progress.
     run = Math.round(Math.max(1800, Math.min(3400, paceHeight * 2.8 * blocks.length/3)));
@@ -104,6 +112,7 @@ export function createHeroPrint(hero: HTMLElement | null, options: PrintOptions 
       message.scrollTop = viewport ? Math.max(0,occupied-readingRoom) : 0;
     }
     hero!.style.setProperty('--print-anchor',`${anchor-(enabled&&!viewport?shift:0)}px`);
+    return progress;
   }
   return { measure, render, naturalGeometry: () => natural, runway: () => runway };
 }
