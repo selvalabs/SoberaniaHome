@@ -73,4 +73,3 @@ O CI completo do novo PR é uma verificação separada; seus resultados devem se
 ## Histórico e publicação
 
 A branch nasceu no GitHub de `057cf68630c899401cad6284833eb53b67b86a82` e recebeu por fast-forward a dependência aprovada `a307088471073e5a66617a15e6632b4fc49a38f4` (PR #72, com a cadeia #66/#68/#70). Nenhuma história foi reescrita. Main, v0.2.1 e produção permanecem preservadas; sem banco, migração, release ou VPS. Rollback local de comparação: `a307088`. Builds e capturas são ignorados, não integram o commit.
-
