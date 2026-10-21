@@ -5,6 +5,7 @@ import { galleryLeafSpiral } from './leaf-gallery-spiral';
 import { createLeafFlight, leafGust, lifeOrbit, LEAF_SCROLL_PACE } from './leaf-physics';
 import { createLeafReturn, LEAF_RETURN_SECONDS, type LeafPose } from './leaf-return';
 import { glowColor, textSurface } from './leaf-contrast';
+import { initWorkMarquee } from './work-marquee';
 
 /** One source of movement: the document's native scroll position.
  * Scenes use CSS sticky, never JS pin spacers. All rendering sleeps at rest. */
@@ -35,6 +36,7 @@ export function initMotion() {
   const mast = document.getElementById('mast');
   const hero = document.getElementById('hero');
   const brandSignature = initBrandSignature(hero);
+  const workMarquee = initWorkMarquee();
   const heroPrint = createHeroPrint(hero);
   const choicesPrint = createHeroPrint(document.getElementById('folha'), {
     stage: '.choices-print-stage', message: '.choices-print-body', finishAtBottom: true,
@@ -65,7 +67,7 @@ export function initMotion() {
   let navigationRevision=0;
   // Cache editorial targets once. Product interfaces and controls keep their own colors.
   const glowTargets = all<HTMLElement>('main h1,main h2,main h3,main p,main figcaption,main .technology-note,main .knowledge-note,main .eyebrow-lab,.brand-signature .eyebrow-tech-label')
-    .filter(el => !el.closest('button,a,.work-evidence,.cooperative-screen,.process-panels,.orbit-view,#referencias,dialog'))
+    .filter(el => !el.closest('button,a,.work-marquee,.work-evidence,.cooperative-screen,.process-panels,.orbit-view,#referencias,dialog'))
     .flatMap(el => {
       const marks=all<HTMLElement>('strong,em,.hero-future,.choices-pencil,.choices-paper,.choices-ink',el);
       return marks.length ? marks : [el];
@@ -468,6 +470,7 @@ export function initMotion() {
     const dy=bounds.top<edge?edge-bounds.top:bounds.bottom>height-edge?height-edge-bounds.bottom:0;
     if(dx||dy){x+=dx;ly+=dy;flight.style.transform=`translate3d(${x}px,${ly}px,0)`;}
     const lightX=bounds.left+dx+bounds.width/2,lightY=bounds.top+dy+bounds.height/2;
+    workMarquee?.setLeafLight({x:lightX,y:lightY,hue:y*.16,radius:clamp(height*.17,95,170)});
     const current=sections.find(s=>s.element.id===activeId)?.element;
     // Keep the leaf present in every fold. Only soften it over interfaces;
     // pointer pass-through protects controls instead of hiding the animation.
@@ -513,6 +516,7 @@ export function initMotion() {
     for(const property of ['--leaf-glow','--leaf-hue','--leaf-light-y'])mark.style.removeProperty(property);
   }
   function clearLeafGlow() {
+    workMarquee?.setLeafLight(null);
     litMarks.forEach(resetLeafMark);litMarks.clear();
     heroGlowTargets.forEach(mark=>delete mark.dataset.scrollGlow);
   }
