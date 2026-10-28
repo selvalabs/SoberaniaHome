@@ -7,6 +7,8 @@ import { createLeafReturn, LEAF_RETURN_SECONDS, type LeafPose } from './leaf-ret
 import { glowColor, textSurface } from './leaf-contrast';
 import { initWorkMarquee } from './work-marquee';
 import { createLandingInk } from './landing-ink';
+import { createNetworkFlow } from './network-flow';
+import { sampleNetwork, networkPasses } from './network-flow-model';
 
 /** One source of movement: the document's native scroll position.
  * Scenes use CSS sticky, never JS pin spacers. All rendering sleeps at rest. */
@@ -44,6 +46,11 @@ export function initMotion() {
     blocks: '.choices-opening > p,.choices-benefit', keepHeading: true, sidecar: '.choices-sketch'
   });
   const landingInk = createLandingInk();
+  const networkPrint = createHeroPrint(document.getElementById('meios-digitais'), {
+    stage: '.network-stage', message: '.network-message', blocks: '.network-act',
+    keepHeading: true, footer: '.network-footer', isolateBlocks: true, runMultiplier: 1.8, passes: networkPasses
+  });
+  const networkFlow = createNetworkFlow();
   const knowledgePrint = createHeroPrint(document.getElementById('deslocamento-2'), {
     stage: '.knowledge-cover-stage', message: '.knowledge-cover-copy',
     blocks: '.knowledge-cover-copy > p', keepHeading: true
@@ -53,7 +60,9 @@ export function initMotion() {
     blocks: '.handover-ink-message > p', keepHeading: true
   });
   addEventListener('beforeprint',()=>landingInk.print());
+  addEventListener('beforeprint',()=>networkFlow.render(1,false));
   addEventListener('afterprint',()=>landingInk.restore());
+  addEventListener('afterprint',()=>networkFlow.render(networkPrint?.render(scrollY) ?? 0,enabled));
   const flight = document.getElementById('leaf-flight');
   const depth = document.getElementById('leaf-depth');
   const leaf = document.getElementById('wind-leaf');
@@ -188,6 +197,7 @@ export function initMotion() {
     mastHeight=mast?.offsetHeight||64;
     heroPrint?.measure(enabled,height,width,mastHeight,layoutHeight);
     choicesPrint?.measure(enabled,height,width,mastHeight,layoutHeight);
+    networkPrint?.measure(enabled,height,width,mastHeight,layoutHeight);
     root.style.setProperty('--motion-stage-height',`${Math.max(1,height-mastHeight)}px`);
     root.style.setProperty('--motion-mast-height',`${mastHeight}px`);
     for(const scene of scenes) {
@@ -266,9 +276,15 @@ export function initMotion() {
     previousY=y;
     heroPrint?.render(y);
     const choicesProgress = choicesPrint?.render(y) ?? 0;
+    const networkProgress = networkPrint?.render(y) ?? 0;
     const knowledgeProgress=knowledgePrint?.render(y) ?? 0;
     const handoverProgress=handoverPrint?.render(y) ?? 0;
-    landingInk.render({workbench:choicesProgress,knowledge:knowledgeProgress,handover:handoverProgress},enabled);
+    const networkState=sampleNetwork(networkProgress,enabled);
+    landingInk.render({workbench:choicesProgress,knowledge:knowledgeProgress,handover:handoverProgress,network:networkState.ink,'network-solution':networkState.responseInk},enabled);
+    networkFlow.render(networkProgress,enabled);
+    debug.network=networkFlow.debug;
+    const networkMeter=document.querySelector<HTMLElement>('[data-network-meter]');
+    if(networkMeter)networkMeter.style.transform=`scaleX(${enabled?networkProgress:1})`;
     renderBrandSignature(brandSignature, mast, y, height, width);
     for(const scene of scenes) {
       const animated=enabled&&!scene.static;
@@ -387,7 +403,7 @@ export function initMotion() {
     if(!flight||!leaf||!depth)return;
     const hero=sections[0];
     // Reveal runway is reading time, not extra distance from the branch.
-    const runways=[heroPrint?.runway(),choicesPrint?.runway(),knowledgePrint?.runway(),handoverPrint?.runway()].filter((item):item is NonNullable<typeof item>=>!!item);
+    const runways=[heroPrint?.runway(),choicesPrint?.runway(),networkPrint?.runway(),knowledgePrint?.runway(),handoverPrint?.runway()].filter((item):item is NonNullable<typeof item>=>!!item);
     const leafScroll=(position:number)=>leafScrollClock(position,runways);
     const clockY=leafScroll(y);
     const launchBottom=heroPrint?.naturalGeometry().bottom||hero?.bottom||height;
@@ -436,7 +452,7 @@ export function initMotion() {
       galleryEnvelope=local.envelope;
       // Recenter the helical flight so each loop can open without edge clamping.
       x=mix(x,width*(.5+lateral*.18+drift*.06),local.envelope*.85);
-      const dx=local.x*Math.min(104,width*.12),dy=local.y*Math.min(58,height*.065);
+      const dx=local.x*Math.min(104,width*.15),dy=local.y*Math.min(58,height*.065);
       gallerySpiralX=dx;gallerySpiralY=dy;
       x+=dx;ly+=dy;
       rx+=local.pitch;ry+=local.yaw;rz+=local.bank;

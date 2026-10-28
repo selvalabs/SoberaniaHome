@@ -11,7 +11,7 @@ with sync_playwright() as pw:
   section=q.locator('#folha');blocks=q.locator('#folha [data-print-progress]');closing=q.locator('.choices-closing')
   text=q.locator('.choices-print-body').inner_text()
   assert 'menos desgaste' in text
-  assert 'O salário não acompanha.' in q.locator('.choices-reference').inner_text()
+  assert all(line in q.locator('.choices-reference blockquote').text_content() for line in ['O mesmo trabalho, em ¼ do tempo.', 'E a jornada de trabalho?', 'E o salário? Não acompanham...'])
   def go(p):
    start,run=section.evaluate('(e)=>[+e.dataset.printStart,+e.dataset.printRun]')
    y=round(start+run*p);q.evaluate('(y)=>scrollTo({top:y,behavior:"instant"})',y)

@@ -31,6 +31,10 @@ As telas identificadas como demonstrativas usam dados de demonstração. Captura
 
 A Mesa de possibilidades apresenta um de quatro roteiros preparados no modo local. O texto anotado acompanha o esboço, mas não altera o roteiro e não é interpretado por IA. Uma integração opcional com Cloudflare Workers AI depende de configuração; a interface informa a disponibilidade e só envia texto e campo escolhido ao clicar em “Explorar com IA”. A exportação preserva a origem e o contexto do último resultado, sem incluir edições ainda não incorporadas.
 
+## Meios digitais e poder popular
+
+A dobra Meios digitais apresenta uma posição editorial sobre apropriação de tecnologia pelo campo popular, concentração de dados e construção de meios próprios. A gravura é uma metáfora, não um diagrama literal nem uma medição. As referências sobre monetização de dados e práticas manipulativas são relatórios da FTC de 2024 e 2022, vinculados no texto visível.
+
 ## Leitura e acessibilidade
 
 O conteúdo principal está em português brasileiro. A navegação oferece modo de leitura e respeita a preferência por movimento reduzido. Este índice é documentação complementar; não substitui o texto visível das páginas.

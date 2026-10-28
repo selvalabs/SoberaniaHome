@@ -7,12 +7,12 @@ const release = JSON.parse(fs.readFileSync(path.join(dir, 'release.json'), 'utf8
 assert.match(release.commit, /^[a-f0-9]{40}$/);
 assert.match(release.tag, /^v\d+\.\d+\.\d+$/);
 assert.equal(release.url, 'https://selvalabs.github.io/SoberaniaHome/');
-assert.equal(release.sections, 16);
+assert.equal(release.sections, 17);
 assert.equal(release.externalAI, false);
 const html = fs.readFileSync(path.join(dir, 'index.html'), 'utf8');
-assert.match(html, /Mais.*automação/s);
+assert.match(html, /precisa chegar a/);
 assert.match(html, /Saberes diferentes/);
-assert.equal((html.match(/data-number="\d+"/g) || []).length, 16);
+assert.equal((html.match(/data-number="\d+"/g) || []).length, 17);
 assert.match(html, /name="robots" content="index,follow,max-image-preview:large"/);
 assert.ok(html.includes(`rel="canonical" href="${release.url}"`));
 assert.ok(html.includes(`${release.url}assets/social/edition-og.png`));
