@@ -3,6 +3,16 @@ import { generatedHighlights } from './generated-ink-model';
 /** Art direction is specific to each composition. Timing, pencil and light stay
  * identical to the approved study; these are not universal object detectors. */
 export const landingInkScenes = {
+  'network-solution': {
+    section: 'meios-digitais', title: 'Meios próprios, capacidade compartilhada.',
+    description: 'Gravura-resposta: o mesmo coletivo publica num site, organiza seu acervo e compartilha ferramentas. Conexões laterais aproximam comércio cooperativo, aprendizagem e produção agroecológica. Pessoas aprendem a operar os meios que constroem; a cena representa um caminho em construção.',
+    highlights: [
+      {name:'own-publication',x:760,y:800,rx:190,ry:140,at:.775},
+      {name:'cooperative-work',x:650,y:240,rx:220,ry:150,at:.815},
+      {name:'shared-knowledge',x:1240,y:220,rx:220,ry:150,at:.855},
+      {name:'territory',x:1230,y:530,rx:220,ry:150,at:.89},
+    ],
+  },
   network: {
     section: 'meios-digitais', title: 'O mundo digital também é território de luta.',
     description: 'Gravura política e popular: um coletivo trabalha com impressão, comunicação e ferramentas digitais. Perfis e publicações alimentam uma plataforma representada como funil e uma engrenagem financeira. Na mesa, pessoas constroem seu próprio plano de rede. Os fluxos luminosos são uma metáfora editorial de concentração e organização coletiva.',

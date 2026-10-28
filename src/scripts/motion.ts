@@ -8,7 +8,7 @@ import { glowColor, textSurface } from './leaf-contrast';
 import { initWorkMarquee } from './work-marquee';
 import { createLandingInk } from './landing-ink';
 import { createNetworkFlow } from './network-flow';
-import { sampleNetwork } from './network-flow-model';
+import { sampleNetwork, networkPasses } from './network-flow-model';
 
 /** One source of movement: the document's native scroll position.
  * Scenes use CSS sticky, never JS pin spacers. All rendering sleeps at rest. */
@@ -48,7 +48,7 @@ export function initMotion() {
   const landingInk = createLandingInk();
   const networkPrint = createHeroPrint(document.getElementById('meios-digitais'), {
     stage: '.network-stage', message: '.network-message', blocks: '.network-act',
-    keepHeading: true, footer: '.network-footer', isolateBlocks: true
+    keepHeading: true, footer: '.network-footer', isolateBlocks: true, runMultiplier: 1.8, passes: networkPasses
   });
   const networkFlow = createNetworkFlow();
   const knowledgePrint = createHeroPrint(document.getElementById('deslocamento-2'), {
@@ -279,7 +279,8 @@ export function initMotion() {
     const networkProgress = networkPrint?.render(y) ?? 0;
     const knowledgeProgress=knowledgePrint?.render(y) ?? 0;
     const handoverProgress=handoverPrint?.render(y) ?? 0;
-    landingInk.render({workbench:choicesProgress,knowledge:knowledgeProgress,handover:handoverProgress,network:sampleNetwork(networkProgress,enabled).ink},enabled);
+    const networkState=sampleNetwork(networkProgress,enabled);
+    landingInk.render({workbench:choicesProgress,knowledge:knowledgeProgress,handover:handoverProgress,network:networkState.ink,'network-solution':networkState.responseInk},enabled);
     networkFlow.render(networkProgress,enabled);
     debug.network=networkFlow.debug;
     const networkMeter=document.querySelector<HTMLElement>('[data-network-meter]');

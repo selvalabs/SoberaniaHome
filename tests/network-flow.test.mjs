@@ -30,7 +30,9 @@ test('drawing and collective routes advance monotonically and reverse exactly',(
   networkWires.forEach(w=>networkParticles(w,.94));
   assert.deepEqual(networkWires.map(w=>[cableGeometry(w,.73),networkParticles(w,.73)]),middle);
   assert.equal(sampleNetwork(1).ink,1);
-  assert.ok(sampleNetwork(1).platformLight>0,'the platform should remain present');
+  assert.equal(sampleNetwork(1).responseInk,1);
+  assert.equal(sampleNetwork(1).primaryOpacity,0);
+  assert.equal(sampleNetwork(1).responseOpacity,1);
 });
 test('particles remain on their cable, fade at endpoints and stop in reading mode',()=>{
   for(const wire of networkWires)for(let i=0;i<=100;i++){
@@ -41,12 +43,26 @@ test('particles remain on their cable, fade at endpoints and stop in reading mod
   assert.equal(sampleNetwork(.2,false).ink,1);
   assert.equal(sampleNetwork(.2,false).collective,1);
 });
-test('network guides reveal the exact commissioned raster artwork',()=>{
-  const traces=JSON.parse(readFileSync(new URL('../src/data/network-traces.json',import.meta.url),'utf8'));
-  const image=readFileSync(new URL('../public/assets/ink/network-generated-v1.png',import.meta.url));
+for(const scene of ['network','network-solution'])test(`${scene} guides reveal the exact commissioned raster artwork`,()=>{
+  const traces=JSON.parse(readFileSync(new URL(`../src/data/${scene}-traces.json`,import.meta.url),'utf8'));
+  const image=readFileSync(new URL(`../public/assets/ink/${scene}-generated-v1.png`,import.meta.url));
   assert.equal(createHash('sha256').update(image).digest('hex'),traces.sourceSha256);
   assert.equal(traces.width,1536);assert.equal(traces.height,1024);
   const gaps=traces.paths.map(p=>p.gap).sort((a,b)=>a-b);
   assert.ok(gaps[Math.floor(gaps.length*.9)]<65,'pencil lifts should stay local');
   assert.ok(gaps.filter(g=>g>150).length<30,'large jumps must remain exceptional');
+});
+
+test('the answer starts after a complete first drawing and a reversible reading pause',()=>{
+  assert.equal(sampleNetwork(.42).ink,1);
+  assert.equal(sampleNetwork(.54).primaryOpacity,1);
+  assert.equal(sampleNetwork(.56).responseInk,0);
+  const cross=sampleNetwork(.61);
+  assert.ok(cross.responseInk>0&&cross.primaryOpacity>0&&cross.responseOpacity>0);
+  assert.ok(Math.abs(cross.primaryOpacity+cross.responseOpacity-1)<1e-10);
+  assert.equal(sampleNetwork(.95).responseInk,1);
+  assert.equal(sampleNetwork(.95).collective,1);
+  assert.equal(sampleNetwork(1).act,3);
+  assert.equal(sampleNetwork(.2,false).primaryOpacity,1);
+  assert.equal(sampleNetwork(.2,false).responseOpacity,1);
 });

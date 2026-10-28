@@ -5,7 +5,8 @@ export function createNetworkFlow(){
   const section=document.getElementById('meios-digitais');
   const groups=networkWires.map(wire=>({wire,group:section?.querySelector<SVGGElement>(`[data-network-wire="${wire.id}"]`)}));
   const local=section?.querySelector<SVGGElement>('[data-network-local-light]');
-  const debug={progress:1,act:2,collective:1,enabled:false};
+  const plates=Array.from(section?.querySelectorAll<HTMLElement>('[data-network-plate]')||[]);
+  const debug={progress:1,act:3,collective:1,transition:1,enabled:false};
   let old=-1,wasActive=false;
   function render(progress:number,active:boolean){
     if(!section||old===progress&&wasActive===active)return;
@@ -14,7 +15,12 @@ export function createNetworkFlow(){
     section.dataset.networkAct=String(state.act);
     section.dataset.networkProgress=state.progress.toFixed(6);
     const counter=section.querySelector('[data-network-counter]');
-    if(counter)counter.textContent=`0${state.act+1} / 03`;
+    if(counter)counter.textContent=`0${state.act+1} / 04`;
+    for(const plate of plates){
+      const opacity=plate.dataset.networkPlate==='response'?state.responseOpacity:state.primaryOpacity;
+      plate.style.opacity=String(opacity);
+      plate.setAttribute('aria-hidden',String(active&&opacity<.001));
+    }
     for(const {wire,group} of groups){
       if(!group)continue;
       const common=wire.kind==='common';
@@ -30,7 +36,7 @@ export function createNetworkFlow(){
       });
     }
     if(local)local.style.opacity=String(state.commonLight*state.collective);
-    Object.assign(debug,{progress:state.progress,act:state.act,collective:state.collective,enabled:active});
+    Object.assign(debug,{progress:state.progress,act:state.act,collective:state.collective,transition:state.transition,enabled:active});
     return state;
   }
   return {render,debug};
