@@ -15,7 +15,7 @@ Construir capacidade tecnológica brasileira faz parte desse compromisso.
 
 | Dobra | Papel na narrativa | Mudança |
 | --- | --- | --- |
-| Hero | Apresentar o que fazemos, para quem e com qual posição | Software e automações para quem trabalha, produz e se organiza; ferramentas e conhecimento ao alcance das pessoas. |
+| Hero | Apresentar o que fazemos, para quem e com qual posição | Sites, software e automações para quem trabalha, produz e se organiza; presença digital, sistemas e infraestrutura desenvolvidos no Brasil; ferramentas e conhecimento ao alcance das pessoas. |
 | Automação | Perguntar quem recebe os ganhos de produtividade | O tempo poupado precisa melhorar a vida de quem sustenta a operação; encerramento “Automatizar para viver melhor”. |
 | Soberania | Explicitar a dimensão brasileira e suas condições práticas | Desenvolver software, conhecimento e infraestrutura no país; saber operar, preservar dados e conectar ferramentas. |
 
