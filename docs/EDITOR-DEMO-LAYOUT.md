@@ -39,3 +39,11 @@ O empacotamento inicial falhou com ENOSPC (C: com 0 bytes livres). Não houve ex
 A branch nasceu no GitHub de main `057cf68630c899401cad6284833eb53b67b86a82`. Recebeu explicitamente por fast-forward a prévia `1575d493688f7ccfdac6180ffbb33c92737de3e7` (#74) antes da alteração. Essa é também a referência de rollback deste ajuste. Nenhuma história foi reescrita.
 
 Prévia local reutiliza a porta 4198 no Wi-Fi. Sem merge, release, publicação, banco, migração ou VPS. Main e espelho VPS preservados. O CI do novo PR e a homologação permanecem verificações separadas.
+
+## Integração da candidata 1.7.0 — 2026-10-28
+
+A prévia passou a usar o commit b97229234e5263142860fb15b36385722ab295f8 do repositório canônico (PR #4, issue #2), com os fragmentos exatos e identificação em public/demos/editor-version.json. A configuração declarativa mapeia a folha da intro como camada. Preserva o painel expandido e o botão junto à folha. Nenhuma dependência do SHALA foi copiada.
+
+A candidata inclui controles contextuais, fotos em camadas, cores independentes e fontes sob demanda. Salvar HTML continua sem alterar fontes do framework. Merge, tag e publicação aguardam revisão/homologação. O estado anterior do demo permanece em b166215ee6450a7925a00c03dafad0ec5f376ada para rollback. O levantamento anterior acima registra o estado antes da implementação efetiva.
+
+Validação desta atualização: typecheck e 58 testes Node passaram; build em .edition-builds/editor17-candidate-20261028 e check-static passaram; demo idêntico entre fonte/build. Teste Chromium em 8 viewports, edição/undo/redo, serialização/reabertura e sem JavaScript passou. A auditoria npm não concluiu por falha DNS ENOTFOUND no sandbox; sem dependências novas. Prévia do demo em http://192.168.1.4:4199/demos/editor-editavel.html. A 4198 segue ocupada pelo Astro sem resposta; o processo foi preservado.
