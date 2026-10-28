@@ -56,9 +56,10 @@ with sync_playwright() as pw:
     page.wait_for_timeout(350)
     rail=page.locator('.landing-phone-rail')
     phone=page.locator('.landing-phone-screen').first
-    assert 'Soberania Labs' in page.locator('.landing-phone-heading').first.inner_text()
-    assert page.locator('.landing-phone-card').count()==8
-    assert page.locator('.landing-phone-card').nth(1).inner_text().startswith('Rotina da Empreendedora Selvagem')
+    assert 'ELARA' in page.locator('.landing-phone-heading').first.inner_text()
+    assert page.locator('.landing-phone-card').count()==9
+    assert page.locator('.landing-phone-card').nth(1).inner_text().startswith('Soberania Labs')
+    assert page.locator('.landing-phone-card').nth(2).inner_text().startswith('Rotina da Empreendedora Selvagem')
     box=phone.bounding_box();page.mouse.move(box['x']+box['width']/2,box['y']+box['height']/2)
     y=page.evaluate('scrollY')
     page.mouse.wheel(0,420);page.wait_for_timeout(200)
