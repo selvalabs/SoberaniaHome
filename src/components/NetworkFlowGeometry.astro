@@ -1,0 +1,14 @@
+---
+import {networkWires,cableGeometry,cablePath} from '../scripts/network-flow-model';
+---
+<g class="network-flows" data-network-flow aria-hidden="true">
+  <defs><filter id="network-wire-glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="5" /></filter></defs>
+  {networkWires.map(wire=><g data-network-wire={wire.id} data-network-kind={wire.kind}>
+    <path class="network-wire-halo" d={cablePath(cableGeometry(wire,1))} filter="url(#network-wire-glow)" />
+    <path class="network-wire" d={cablePath(cableGeometry(wire,1))} pathLength="1" />
+    {Array.from({length:5},()=> <circle class="network-packet" r="4.5" opacity="0" />)}
+  </g>)}
+  <g class="network-local-light" data-network-local-light>
+    <ellipse cx="700" cy="870" rx="54" ry="23"/><ellipse cx="1045" cy="885" rx="28" ry="14"/><ellipse cx="230" cy="850" rx="32" ry="20"/>
+  </g>
+</g>

@@ -3,14 +3,14 @@ import argparse
 from playwright.sync_api import sync_playwright
 
 parser=argparse.ArgumentParser();parser.add_argument('--url',default='http://127.0.0.1:4198/');args=parser.parse_args()
-SCENES=[('workbench','folha','.choices-print-stage'),('knowledge','deslocamento-2','.knowledge-cover-stage'),('handover','handover-drawing','.handover-ink-stage')]
+SCENES=[('workbench','folha','.choices-print-stage'),('knowledge','deslocamento-2','.knowledge-cover-stage'),('handover','handover-drawing','.handover-ink-stage'),('network','meios-digitais','.network-stage')]
 with sync_playwright() as pw:
  b=pw.chromium.launch()
  for w,h in [(1440,900),(1280,680),(1024,768),(390,844),(360,640),(320,480),(844,390)]:
   q=b.new_page(viewport={'width':w,'height':h},has_touch=w<760);errors=[]
   q.on('pageerror',lambda e:errors.append(str(e)))
   q.goto(args.url,wait_until='networkidle');q.wait_for_function('window.__SL_DEBUG?.ready')
-  assert q.locator('[data-landing-ink]').count()==3
+  assert q.locator('[data-landing-ink]').count()==4
   ids=q.locator('[id]').evaluate_all('es=>es.map(e=>e.id)');assert len(ids)==len(set(ids)),'duplicate SVG/HTML IDs'
   for name,sid,stage_sel in SCENES:
    section=q.locator('#'+sid);svg=q.locator(f'[data-landing-ink={name}]')
@@ -62,7 +62,7 @@ with sync_playwright() as pw:
   assert not errors,errors
   print('PASS integrated ink',w,h,flush=True);q.close()
  q=b.new_page(java_script_enabled=False,viewport={'width':390,'height':844});q.goto(args.url)
- assert q.locator('[data-landing-ink]').count()==3
+ assert q.locator('[data-landing-ink]').count()==4
  assert q.locator('[data-landing-ink]').evaluate_all('es=>es.every(e=>e.querySelector("[data-generated-complete]").getAttribute("opacity")!=="0")')
  assert q.locator('.handover-document:visible').count()==3
  assert q.evaluate('document.documentElement.scrollWidth<=innerWidth')

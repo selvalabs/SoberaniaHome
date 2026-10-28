@@ -1,7 +1,7 @@
 import '../styles/hero-print.css';
 
 const clamp = (n: number, max = 1) => Math.max(0, Math.min(max, n));
-type PrintOptions = { stage: string; message: string; blocks: string; finishAtBottom?: boolean; keepHeading?: boolean; sidecar?: string };
+type PrintOptions = { stage: string; message: string; blocks: string; finishAtBottom?: boolean; keepHeading?: boolean; sidecar?: string; footer?: string; isolateBlocks?: boolean };
 const heroOptions: PrintOptions = {stage: '.hero-stage', message: '.hero-message', blocks: '.hero-lead,.hero-argument,.hero-method'};
 
 /** One complete paragraph per print pass, with a reading pause between passes. */
@@ -35,7 +35,7 @@ export function createHeroPrint(hero: HTMLElement | null, options: PrintOptions 
     viewport = active && (options.keepHeading === true || width < 760 || height < 620);
     anchor = mast + (viewport ? 8 : 12);
     const frameHeight = viewport ? Math.max(120, height - anchor - 12) : rect.height;
-    const closing = hero!.querySelector<HTMLElement>('.text-actions,.choices-resolution');
+    const closing = hero!.querySelector<HTMLElement>(options.footer || '.text-actions,.choices-resolution');
     const tail = closing ? closing.getBoundingClientRect().height + parseFloat(getComputedStyle(closing).marginTop) : 0;
     const sidecar = options.sidecar ? hero!.querySelector<HTMLElement>(options.sidecar) : null;
     const sidecarRect = sidecar?.getBoundingClientRect();
@@ -80,10 +80,12 @@ export function createHeroPrint(hero: HTMLElement | null, options: PrintOptions 
   }
   function render(y: number) {
     const progress = clamp((y-start)/run);
+    const current = starts.reduce((at,from,i)=>progress>=from-.07?i:at,0);
     let shift = 0, occupied = 0, pressure = 0;
     blocks.forEach((element,index) => {
       // Finish the previous block before the next even starts.
       const p = enabled ? clamp((progress-starts[index])/duration) : 1;
+      if(options.isolateBlocks) element.style.visibility=enabled&&index!==current?'hidden':'';
       element.dataset.printProgress = p.toFixed(3);
       if (element.querySelector("a,button")) element.inert = enabled && p < 1;
       const geometry = blockGeometry[index];
@@ -108,8 +110,8 @@ export function createHeroPrint(hero: HTMLElement | null, options: PrintOptions 
     });
     hero!.style.setProperty('--print-pressure',String(enabled?pressure:0));
     if (message) {
-      message.style.height = enabled ? `${Math.min(messageHeight,occupied,viewport?readingRoom:Infinity)}px` : '';
-      message.scrollTop = viewport ? Math.max(0,occupied-readingRoom) : 0;
+      message.style.height = enabled ? `${options.isolateBlocks?readingRoom:Math.min(messageHeight,occupied,viewport?readingRoom:Infinity)}px` : '';
+      message.scrollTop = enabled&&options.isolateBlocks ? Math.max(blockGeometry[current].top,occupied-readingRoom) : viewport ? Math.max(0,occupied-readingRoom) : 0;
     }
     hero!.style.setProperty('--print-anchor',`${anchor-(enabled&&!viewport?shift:0)}px`);
     return progress;

@@ -89,6 +89,12 @@ def simplify(points, tolerance=.65):
 
 
 def region(x, y, scene='workbench'):
+    if scene == 'network':
+        if y > 780 and 300 < x < 1210:
+            return 2  # shared table, collective plan and local tools
+        if y < 580 and x > 300:
+            return 1  # publication streams, platform funnel and finance
+        return 0  # neighborhood, workers and popular printing workshop
     if scene == 'knowledge':
         if x < 480 and y > 300:
             return 0  # field notebook, observation and leaves
@@ -127,6 +133,7 @@ def order_locally(paths, scene='workbench'):
     """
     ordered = []
     seeds = {
+        'network': [(180, 740), (420, 520), (700, 870)],
         'workbench': [(620, 630), (810, 450), (510, 400)],
         'knowledge': [(160, 670), (650, 680), (1120, 460)],
         'handover': [(690, 790), (330, 600), (1020, 550)],
@@ -162,7 +169,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('image', type=Path)
     parser.add_argument('output', type=Path)
-    parser.add_argument('--scene', choices=['workbench', 'knowledge', 'handover'], default='workbench')
+    parser.add_argument('--scene', choices=['workbench', 'knowledge', 'handover', 'network'], default='workbench')
     args = parser.parse_args()
     source = args.image.read_bytes()
     with Image.open(args.image) as image:

@@ -36,7 +36,7 @@ export function packagePages(source, output, values = process.env) {
     tag: values.RELEASE_TAG,
     url: new URL(policy.basePath, policy.siteUrl).href,
     basePath: policy.basePath,
-    sections: 16,
+    sections: 17,
     edition: 'complete',
     externalAI: false,
   };

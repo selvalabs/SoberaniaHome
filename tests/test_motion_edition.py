@@ -28,14 +28,14 @@ def open_index(page):
 
 
 def ordered_navigation(page):
-    expected=['hero','folha','trabalho','deslocamento-2','processo','laboratorio',
+    expected=['hero','folha','meios-digitais','trabalho','deslocamento-2','processo','laboratorio',
               'deslocamento-1','editor','soberania','espiral','sobre','manifesto',
               'referencias','caderno','possibilidades','contato']
     actual=page.locator('main > section[data-number]').evaluate_all('(els)=>els.map(e=>e.id)')
     assert actual==expected,actual
     index=page.locator('#index-dialog .index-links a')
     assert index.evaluate_all('(links)=>links.map(a=>a.hash.slice(1))')==expected
-    assert index.locator('span').all_text_contents()==[f'{i:02}' for i in range(1,17)]
+    assert index.locator('span').all_text_contents()==[f'{i:02}' for i in range(1,18)]
     # Activate the actual index links and check the hash, active chapter and
     # mast counter, including the newly numbered atelier near the footer.
     for number,sid in enumerate(expected,1):
@@ -43,7 +43,7 @@ def ordered_navigation(page):
         open_index(page)
         page.locator(f'#index-dialog a[href="#{sid}"]').click()
         page.wait_for_function('(id)=>location.hash==="#"+id&&!document.querySelector("#index-dialog").open&&__SL_DEBUG.activeId===id',arg=sid)
-        assert page.locator('#section-counter').text_content()==f'{number:02} / 16'
+        assert page.locator('#section-counter').text_content()==f'{number:02} / 17'
     page.locator('#open-index').focus()
     open_index(page)
     page.locator('#index-dialog a[href="#hero"]').click()
@@ -182,7 +182,7 @@ with sync_playwright() as pw:
     previous=None;positions=[];attitudes=[]
     # Reading runway now slows physical time. Include that extra scroll so
     # the sample still covers a complete glide/gust cycle at the approved pace.
-    reading_runway=page.locator('#folha').evaluate('e=>Number(e.dataset.printRun)||0')
+    reading_runway=page.locator('#folha,#meios-digitais').evaluate_all('es=>es.reduce((total,e)=>total+(Number(e.dataset.printRun)||0),0)')
     sweep_end=hero_bottom+844*5+reading_runway
     for y in range(0,int(sweep_end),20):
         page.evaluate('(y)=>scrollTo({top:y,behavior:"instant"})',y);page.wait_for_timeout(20)

@@ -22,7 +22,7 @@ with sync_playwright() as pw:
     assert all(phrase in argument for phrase in ['Quem trabalha', 'poder sobre a tecnologia', 'Ferramentas e conhecimento', 'decidir e transformar a própria realidade'])
     assert 'cooperativas, comunidades e negócios sociais' in page.locator('#hero .hero-method').inner_text()
     assert 'Sistemas brasileiros' in page.locator('.brand-signature .eyebrow-tech-label').inner_text()
-    assert page.locator('section[data-number]').count()==16
+    assert page.locator('section[data-number]').count()==17
     assert page.locator('meta[name="robots"]').get_attribute('content')=='noindex,follow'
     assert page.locator('link[rel="canonical"]').count()==0
     assert not page.locator('a[href="#"]').count()

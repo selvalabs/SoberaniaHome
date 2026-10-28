@@ -3,6 +3,15 @@ import { generatedHighlights } from './generated-ink-model';
 /** Art direction is specific to each composition. Timing, pencil and light stay
  * identical to the approved study; these are not universal object detectors. */
 export const landingInkScenes = {
+  network: {
+    section: 'meios-digitais', title: 'O mundo digital também é território de luta.',
+    description: 'Gravura política e popular: um coletivo trabalha com impressão, comunicação e ferramentas digitais. Perfis e publicações alimentam uma plataforma representada como funil e uma engrenagem financeira. Na mesa, pessoas constroem seu próprio plano de rede. Os fluxos luminosos são uma metáfora editorial de concentração e organização coletiva.',
+    highlights: [
+      {name:'popular-work',x:240,y:800,rx:230,ry:180,at:.775},
+      {name:'collective-plan',x:700,y:865,rx:220,ry:130,at:.815},
+      {name:'local-means',x:1030,y:860,rx:190,ry:140,at:.855},
+    ],
+  },
   workbench: {
     section: 'folha', title: 'A ferramenta amplia. Quem trabalha dá direção.',
     description: 'Desenho editorial gerado: uma mão gira uma chave sobre uma peça presa à morsa; outra mão a sustenta sobre a bancada. A automação amplia possibilidades; a distribuição dos ganhos depende das decisões humanas.',
