@@ -1,11 +1,11 @@
 ---
 const steps = [
-  {name:'Entender', text:'Conversar com quem vive a rotina e observar como ela funciona. Saída: um problema delimitado e as pessoas envolvidas.'},
-  {name:'Investigar', text:'Comparar caminhos, restrições e o que já existe. Saída: hipóteses de trabalho e perguntas que ainda precisam de resposta.'},
-  {name:'Prototipar', text:'Experimentar uma parte do caminho antes de ampliar. Saída: uma interface ou fluxo que as pessoas possam usar e discutir.'},
-  {name:'Construir', text:'Transformar o caminho escolhido em software. Saída: uma versão utilizável, com integrações e decisões documentadas.'},
-  {name:'Testar', text:'Conferir o funcionamento e observar o uso. Saída: evidências do que atende à necessidade e do que precisa mudar.'},
-  {name:'Transferir', text:'Preparar a continuidade com quem vai operar. Saída: acessos, instruções de cuidado e um caminho de recuperação.'}
+  {name:'Entender', text:'Conversar com quem vive a rotina e observar como ela funciona.', output:'um problema delimitado e as pessoas envolvidas.'},
+  {name:'Investigar', text:'Comparar caminhos, restrições e o que já existe.', output:'hipóteses de trabalho e perguntas que ainda precisam de resposta.'},
+  {name:'Prototipar', text:'Experimentar uma parte do caminho antes de ampliar.', output:'uma interface ou fluxo que as pessoas possam usar e discutir.'},
+  {name:'Construir', text:'Transformar o caminho escolhido em software.', output:'uma versão utilizável, com integrações e decisões documentadas.'},
+  {name:'Testar', text:'Conferir o funcionamento e observar o uso.', output:'evidências do que atende à necessidade e do que precisa mudar.'},
+  {name:'Transferir', text:'Preparar a continuidade com quem vai operar.', output:'acessos, instruções de cuidado e um caminho de recuperação.'}
 ];
 ---
 <section id="processo" class="section process-section dark" data-number="5">
@@ -26,7 +26,7 @@ const steps = [
         <div class="process-panels" aria-label="Caderno de campo: as seis etapas">
           {steps.map((step,index)=><article class="process-panel">
             <h3><button type="button" data-process-step={index}><span class="process-step-number">{String(index+1).padStart(2,'0')}</span>{step.name}</button></h3>
-            <div class="process-body"><p>{step.text}</p></div>
+            <div class="process-body"><p>{step.text}<br />Saída: {step.output}</p></div>
           </article>)}
         </div>
       </div>
