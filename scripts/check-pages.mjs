@@ -10,7 +10,7 @@ assert.equal(release.url, 'https://selvalabs.github.io/SoberaniaHome/');
 assert.equal(release.sections, 16);
 assert.equal(release.externalAI, false);
 const html = fs.readFileSync(path.join(dir, 'index.html'), 'utf8');
-assert.match(html, /Mais.*automação/s);
+assert.match(html, /precisa chegar a/);
 assert.match(html, /Saberes diferentes/);
 assert.equal((html.match(/data-number="\d+"/g) || []).length, 16);
 assert.match(html, /name="robots" content="index,follow,max-image-preview:large"/);
