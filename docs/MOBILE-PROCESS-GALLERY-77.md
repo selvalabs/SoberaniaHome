@@ -17,3 +17,5 @@ Complemento: galerias de projetos passaram em 390x844,360x740,390x640,360x640 e 
 Os casos isolados 844x390,760x540,1024x600,1280x480 e 1440x900 passaram após a retomada.
 
 As barras vertical dos telefones e horizontal da galeria foram ocultadas, mantendo overflow e interação nativos. Build/check-static e teste real de toque passaram. O preview usa capturas em tiles, não iframe: formulários e botões dentro das imagens não são interativos, e não há carregamento do site original ao rolar. Data.js organiza a coleção, gallery.js monta as telas e o manifesto define os tiles.
+
+Pré-merge: o CI identificou a expectativa antiga de quadro com altura mínima 220px em test_motion_edition.py. Ela foi substituída pela verificação da nova composição: headline, contador e quadro de 100–240px em ordem, com parágrafo ativo legível. O teste comportamental correspondente foi reexecutado no mobile e desktop. Pages já passou no CI da revisão f16f4f4.
