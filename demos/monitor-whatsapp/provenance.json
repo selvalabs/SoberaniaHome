@@ -1,0 +1,19 @@
+{
+  "source": "Production build_notification_message and resident_notification_details; dispatcher returns title + two newlines + message",
+  "matching_source_sha256": "a6651c46eb2abc646896b5d8f7abf91b7a3399c71e6e0376e9e7e4297b0bfd32",
+  "dispatcher_source_sha256": "a6682f51c45ebc0065fef6aa20652f295cf74897ed6e9cb44a6cf1bfbd948176",
+  "runtime_sha": "82dc06d14e18be3e3fb357e35169d1e3cba4cc4b",
+  "verified_date": "2026-10-05",
+  "synthetic_variables": [
+    "name",
+    "street",
+    "number",
+    "neighborhood",
+    "municipality",
+    "date",
+    "time",
+    "cause"
+  ],
+  "production_or_personal_records_read": false,
+  "remote_changes": false
+}
