@@ -1,5 +1,20 @@
 window.SLLandingPages=[
   {
+    "key": "elara",
+    "name": "ELARA",
+    "kind": "elara.alejandraleao.com",
+    "pages": [
+      {
+        "label": "Abertura",
+        "asset": "tiles/elara-001.webp"
+      },
+      {
+        "label": "Jornada",
+        "asset": "tiles/elara-002.webp"
+      }
+    ]
+  },
+  {
     "key": "soberania-lp",
     "name": "Soberania Labs",
     "kind": "landingpage.soberania.cloud",

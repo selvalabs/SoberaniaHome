@@ -213,6 +213,7 @@ export function initMotion() {
         const viewport=scene.track.parentElement?.clientWidth||width;
         scene.offsets=scene.panels.map(card=>card.offsetLeft+card.offsetWidth/2-viewport/2);
       }
+      if(scene.flow){scene.sequence.style.setProperty('--process-intro-height',`${scene.section.querySelector<HTMLElement>('.process-intro')?.offsetHeight||0}px`);scene.sequence.style.setProperty('--process-head-height',`${scene.frame.querySelector<HTMLElement>('.scene-head')?.offsetHeight||0}px`);}
       scene.stageWidth=scene.stage?.clientWidth||0;scene.stageHeight=scene.stage?.clientHeight||0;
     }
     // The work gallery precedes this reveal. Its resized height must settle
@@ -224,7 +225,7 @@ export function initMotion() {
       scene.start=scene.sequence.getBoundingClientRect().top+y-(scene.kind==='horizontal'&&(width<760||height<620)?0:mastHeight);
       if(scene.flow&&leafEnabled){
         const first=scene.panels[0]?.getBoundingClientRect(),last=scene.panels.at(-1)?.getBoundingClientRect();
-        if(first&&last){scene.start=first.top+y-mastHeight-scene.stageHeight-24;scene.run=Math.max(1,last.top-first.top);}
+        if(first&&last){scene.start=first.top+y-processClearance(scene)-scene.stageHeight-24;scene.run=Math.max(1,last.top-first.top);}
       }
     });
     sections=all<HTMLElement>('main > .section').map(element=>{const r=element.getBoundingClientRect();return{element,top:r.top+y,bottom:r.bottom+y};});
@@ -275,7 +276,7 @@ export function initMotion() {
       scene.active=(animated||scene.flow&&leafEnabled)&&y>=scene.start-2&&y<=scene.start+scene.run+2;
       scene.index=Math.round(scene.progress*Math.max(1,scene.panels.length-1));
       if(scene.flow&&leafEnabled){
-        const focus=mastHeight+scene.stageHeight+32;
+        const focus=processClearance(scene)+scene.stageHeight+32;
         scene.index=scene.panels.reduce((index,panel,i)=>panel.getBoundingClientRect().top<=focus?i:index,0);
       }
       sceneProgress[scene.id]=scene.progress;
@@ -332,19 +333,23 @@ export function initMotion() {
     });
   }
 
+  function processClearance(scene:Scene) {
+    return mastHeight+(scene.section.querySelector<HTMLElement>('.process-intro')?.offsetHeight||0)+(scene.frame.querySelector<HTMLElement>('.scene-head')?.offsetHeight||0);
+  }
+
   function renderProcess(scene:Scene) {
     const board=scene.section.querySelector<HTMLElement>('.process-board');
     const w=scene.stageWidth,h=scene.stageHeight;
-    const scale=Math.min(w*(scene.flow ? .83 : .78)/1536,h*(scene.flow ? .9 : .79)/1024);
+    const scale=Math.min(w*(scene.flow ? .72 : .78)/1536,h*(scene.flow ? .9 : .79)/1024);
     if(board){board.style.width=`${1536*scale}px`;board.style.height=`${1024*scale}px`;}
     processNodes.forEach((node,index)=>{
       const built=assembled.has(index)?1:smooth((scene.progress-index*.14)/.3);
       const [ox,oy]=processOrigins[index];
-      const dx=(index%3-1)*w*(scene.flow ? .015 : .11)*(1-built),dy=(index<3?-1:1)*h*(scene.flow ? .04 : .18)*(1-built);
+      const dx=(index%3-1)*w*(scene.flow ? .085 : .11)*(1-built),dy=(index<3?-1:1)*h*(scene.flow ? .11 : .18)*(1-built);
       node.style.left=`${(ox-82)*scale}px`;node.style.top=`${(oy-72)*scale}px`;
       node.style.width=`${662*scale}px`;node.style.height=`${568*scale}px`;
       const drag=puzzleDrag?.id===index?puzzleDrag:null;
-      node.style.transform=`translate3d(${dx+(drag?.dx||0)}px,${dy+(drag?.dy||0)}px,0) rotate(${(index%2?1:-1)*(scene.flow?6:10)*(1-built)}deg)`;
+      node.style.transform=`translate3d(${dx+(drag?.dx||0)}px,${dy+(drag?.dy||0)}px,0) rotate(${(index%2?1:-1)*(scene.flow?12:10)*(1-built)}deg)`;
       node.classList.toggle('is-active',index===scene.index);node.classList.toggle('is-assembled',built>.98);
       node.setAttribute('aria-pressed',String(index===scene.index));
     });
@@ -570,7 +575,7 @@ export function initMotion() {
     const scene=scenes.find(item=>item.id===id);if(!scene){jumpSection(id);return;}
     navigationRevision++;
     const i=clamp(index,0,scene.panels.length-1);
-    if(scene.flow&&leafEnabled)scrollToY(scrollY+scene.panels[i].getBoundingClientRect().top-mastHeight-scene.stageHeight-24);
+    if(scene.flow&&leafEnabled)scrollToY(scrollY+scene.panels[i].getBoundingClientRect().top-processClearance(scene)-scene.stageHeight-24);
     else if(enabled&&!scene.static){pendingSceneJump={scene,index:i};scrollToY(scene.start+scene.run*i/Math.max(1,scene.panels.length-1));}
     else scene.panels[i]?.scrollIntoView({block:'center',behavior:'instant'});
   }

@@ -179,3 +179,18 @@ html.motion-edition:not(.motion) #laboratorio .landing-project [data-landing-gal
  #folha h2{font-size:clamp(33px,9.1vw,49px);line-height:1.1}
  #folha .choices-reference{margin-inline:0;padding-left:18px}
 }
+
+/* A single caption belongs to the frame; phone proportions never stretch with it. */
+#laboratorio .landing-project [data-landing-gallery]{grid-template-rows:minmax(0,1fr) auto!important;gap:8px;overflow:hidden}
+.landing-phone-rail{align-items:start}
+.landing-phone-card{grid-template-rows:auto auto;align-content:start}
+.landing-phone-frame{height:auto;aspect-ratio: .49}
+.landing-phone-scroll-hint{margin:0;padding:3px 8px 5px;text-align:center;font:11px/1.4 var(--mono)!important;color:var(--muted)}
+@media(max-width:759px){
+ html.motion-edition.motion #laboratorio .landing-project [data-landing-gallery]{height:min(58svh,470px)!important;min-height:0!important;align-self:start}
+ .landing-phone-card{flex-basis:min(clamp(140px,40vw,178px),max(88px,calc((58svh - 84px)*.49)))}
+}
+
+/* Keep native scrolling and keyboard focus; hide only the scrollbar chrome. */
+.landing-phone-screen,.landing-phone-rail{scrollbar-width:none;-ms-overflow-style:none}
+.landing-phone-screen::-webkit-scrollbar,.landing-phone-rail::-webkit-scrollbar{display:none;width:0;height:0}

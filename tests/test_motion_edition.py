@@ -74,9 +74,12 @@ def readable_process(page,w,h):
         rows=page.locator('#processo .process-panel').evaluate_all('(els)=>els.map(e=>({bottom:e.getBoundingClientRect().bottom,height:e.scrollHeight,client:e.clientHeight}))')
         assert len(rows)==6 and all(r['bottom']<=h-35 and r['height']<=r['client']+2 for r in rows),rows
     else:
-        state=page.evaluate('''()=>{const board=document.querySelector('.process-periphery').getBoundingClientRect(),panel=document.querySelector('.process-panel.is-active'),r=panel.getBoundingClientRect();return {board:board.toJSON(),panel:r.toJSON(),font:parseFloat(getComputedStyle(panel.querySelector('.process-body')).fontSize),overflow:panel.scrollHeight>panel.clientHeight+2}}''')
+        state=page.evaluate('''()=>{const board=document.querySelector('.process-periphery').getBoundingClientRect(),panel=document.querySelector('.process-panel.is-active'),r=panel.getBoundingClientRect();return {intro:document.querySelector('#processo .process-intro').getBoundingClientRect().toJSON(),head:document.querySelector('#processo .scene-head').getBoundingClientRect().toJSON(),board:board.toJSON(),panel:r.toJSON(),font:parseFloat(getComputedStyle(panel.querySelector('.process-body')).fontSize),overflow:panel.scrollHeight>panel.clientHeight+2}}''')
         assert state['font']>=16 and not state['overflow'],state
-        assert state['board']['height']>=220 and state['board']['top']>=0,state
+        # The title and counter now remain above the adaptive board on mobile.
+        assert 100<=state['board']['height']<=240 and state['board']['top']>=0,state
+        assert state['intro']['top']>=0 and state['intro']['bottom']<=state['head']['top']+2,state
+        assert state['head']['bottom']<=state['board']['top']+2,state
         assert state['panel']['top']>=state['board']['bottom'] and state['panel']['bottom']<=h,state
 
 with sync_playwright() as pw:
