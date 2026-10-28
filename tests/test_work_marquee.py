@@ -62,7 +62,7 @@ with sync_playwright() as pw:
  for w,h in [(1440,900),(390,844)]:
   q=b.new_page(viewport={'width':w,'height':h});q.goto(args.url,wait_until='networkidle')
   q.wait_for_function('window.__SL_DEBUG?.ready');q.mouse.move(2,2)
-  assert 'mais autonomia' in q.locator('.choices-benefit').inner_text()
+  assert 'tempo disponível' in q.locator('.choices-benefit').inner_text()
   assert q.locator('[data-edition-tab="liberdade"] b').inner_text()=='Portabilidade'
   assert q.locator('[data-marquee-token]').count()==16
   q.locator('[data-work-marquee]').scroll_into_view_if_needed()

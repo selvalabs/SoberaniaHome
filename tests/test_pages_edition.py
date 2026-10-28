@@ -37,7 +37,7 @@ with sync_playwright() as pw:
         assert page.locator('h1').count() == 1
         assert page.locator('section[data-number]').count() == 16
         assert page.locator('[data-atelier]').get_attribute('data-edge-enabled') == 'false'
-        assert 'Mais automação.' in page.locator('#folha h2').inner_text()
+        assert 'precisa chegar a quem trabalha.' in page.locator('#folha h2').inner_text()
         assert 'Saberes diferentes.' in page.locator('#knowledge-title').inner_text()
         assert page.locator('link[rel=canonical]').get_attribute('href') == release['url']
         assert page.locator('meta[name=robots]').get_attribute('content').startswith('index,follow')

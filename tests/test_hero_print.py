@@ -65,5 +65,5 @@ with sync_playwright() as pw:
   print('PASS sequential print',w,h,flush=True);page.close()
  page=b.new_page(java_script_enabled=False);page.goto(args.url)
  assert page.locator('.hero-argument').evaluate('(e)=>getComputedStyle(e).clipPath')=='none'
- assert 'decidir seu futuro' in page.locator('.hero-message').inner_text()
+ assert 'decidir e transformar a própria realidade' in page.locator('.hero-message').inner_text()
  print('PASS no JS',flush=True);b.close()
