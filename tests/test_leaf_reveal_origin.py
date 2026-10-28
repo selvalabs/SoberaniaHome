@@ -22,7 +22,7 @@ with sync_playwright() as pw:
    if y==1800:
     assert 20<after['y']<height*.9,('leaf stuck on edge during pinned hero',width,after)
     assert 0<after['clockScroll']<y*.5,('reveal did not slow the leaf clock',width,after)
-  for fold in ['hero','folha']:
+  for fold in ['hero','folha','deslocamento-2','handover-drawing']:
    limits=q.locator('#'+fold).evaluate('(e)=>({top:e.getBoundingClientRect().top+scrollY,height:e.offsetHeight})')
    clocks=[]
    for offset in [limits['height']*.45,limits['height']*.45+100]:

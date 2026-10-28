@@ -9,7 +9,11 @@ args=parser.parse_args()
 
 def jump(page,sid,index):
     page.evaluate('([id,i])=>SLMotion.jumpScene(id,i)',[sid,index])
-    page.wait_for_function('''([id,i])=>{const s=__SL_DEBUG.scenes.find(s=>s.id===id),cards=document.querySelectorAll(`#${id} .portfolio-card`),r=cards[i].getBoundingClientRect(),f=cards[i].closest('.scene-frame').getBoundingClientRect();return !s.static&&s.end>s.start&&Math.abs(s.raw-i)<.01&&Math.abs(r.x+r.width/2-innerWidth/2)<2&&f.top>=-1&&f.bottom<=innerHeight+1}''',arg=[sid,index])
+    try:
+        page.wait_for_function('''([id,i])=>{const s=__SL_DEBUG.scenes.find(s=>s.id===id),cards=document.querySelectorAll(`#${id} .portfolio-card`),r=cards[i].getBoundingClientRect(),f=cards[i].closest('.scene-frame').getBoundingClientRect();return !s.static&&s.end>s.start&&Math.abs(s.raw-i)<.01&&Math.abs(r.x+r.width/2-innerWidth/2)<2&&f.top>=-1&&f.bottom<=innerHeight+1}''',arg=[sid,index])
+    except Exception:
+        print('Gallery jump failure',sid,index,page.evaluate('(id)=>({scene:__SL_DEBUG.scenes.find(s=>s.id===id),y:scrollY,width:innerWidth,height:innerHeight,frame:document.querySelector(`#${id} .scene-frame`).getBoundingClientRect().toJSON(),card:document.querySelector(`#${id} .portfolio-card`).getBoundingClientRect().toJSON()})',sid),flush=True)
+        raise
     page.wait_for_timeout(350)
 
 with sync_playwright() as p:

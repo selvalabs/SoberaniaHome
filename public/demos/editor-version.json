@@ -1,0 +1,9 @@
+{
+  "version": "1.7.0",
+  "status": "candidate",
+  "repository": "https://github.com/selvalabs/inline-editor",
+  "commit": "b97229234e5263142860fb15b36385722ab295f8",
+  "pullRequest": "https://github.com/selvalabs/inline-editor/pull/4",
+  "headFragmentSha256": "f44e42838daf494dd72a011f0cb5386ecfeffc58e643507c749ee87efc45c308",
+  "bodyFragmentSha256": "b35c1b588ae346afa4a716380c8eb40c3ccb15585d38aac370cf4775c45f08de"
+}

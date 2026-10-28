@@ -5,6 +5,8 @@ import { galleryLeafSpiral } from './leaf-gallery-spiral';
 import { createLeafFlight, leafGust, lifeOrbit, LEAF_SCROLL_PACE } from './leaf-physics';
 import { createLeafReturn, LEAF_RETURN_SECONDS, type LeafPose } from './leaf-return';
 import { glowColor, textSurface } from './leaf-contrast';
+import { initWorkMarquee } from './work-marquee';
+import { createLandingInk } from './landing-ink';
 
 /** One source of movement: the document's native scroll position.
  * Scenes use CSS sticky, never JS pin spacers. All rendering sleeps at rest. */
@@ -35,11 +37,23 @@ export function initMotion() {
   const mast = document.getElementById('mast');
   const hero = document.getElementById('hero');
   const brandSignature = initBrandSignature(hero);
+  const workMarquee = initWorkMarquee();
   const heroPrint = createHeroPrint(hero);
   const choicesPrint = createHeroPrint(document.getElementById('folha'), {
     stage: '.choices-print-stage', message: '.choices-print-body', finishAtBottom: true,
-    blocks: '.choices-opening > p,.choices-reference,.choices-benefit'
+    blocks: '.choices-opening > p,.choices-benefit', keepHeading: true, sidecar: '.choices-sketch'
   });
+  const landingInk = createLandingInk();
+  const knowledgePrint = createHeroPrint(document.getElementById('deslocamento-2'), {
+    stage: '.knowledge-cover-stage', message: '.knowledge-cover-copy',
+    blocks: '.knowledge-cover-copy > p', keepHeading: true
+  });
+  const handoverPrint = createHeroPrint(document.getElementById('handover-drawing'), {
+    stage: '.handover-ink-stage', message: '.handover-ink-message',
+    blocks: '.handover-ink-message > p', keepHeading: true
+  });
+  addEventListener('beforeprint',()=>landingInk.print());
+  addEventListener('afterprint',()=>landingInk.restore());
   const flight = document.getElementById('leaf-flight');
   const depth = document.getElementById('leaf-depth');
   const leaf = document.getElementById('wind-leaf');
@@ -65,7 +79,7 @@ export function initMotion() {
   let navigationRevision=0;
   // Cache editorial targets once. Product interfaces and controls keep their own colors.
   const glowTargets = all<HTMLElement>('main h1,main h2,main h3,main p,main figcaption,main .technology-note,main .knowledge-note,main .eyebrow-lab,.brand-signature .eyebrow-tech-label')
-    .filter(el => !el.closest('button,a,.work-evidence,.cooperative-screen,.process-panels,.orbit-view,#referencias,dialog'))
+    .filter(el => !el.closest('button,a,.work-marquee,.work-evidence,.cooperative-screen,.process-panels,.orbit-view,#referencias,dialog'))
     .flatMap(el => {
       const marks=all<HTMLElement>('strong,em,.hero-future,.choices-pencil,.choices-paper,.choices-ink',el);
       return marks.length ? marks : [el];
@@ -104,7 +118,7 @@ export function initMotion() {
   let orbitSelection: number | null = null, orbitSelectionAt = 0;
   const orbitNodes = all<HTMLButtonElement>('#espiral [data-orbit-node]');
   const processOrigins = [[20,88],[518,88],[1016,88],[20,507],[518,507],[1016,507]];
-  const debug: any = window.__SL_DEBUG = {ready:false,enabled:false,activeId:'hero',scenes:[],leaf:{},metrics,scroll:scrollY,maxScroll:1};
+  const debug: any = window.__SL_DEBUG = {ready:false,enabled:false,activeId:'hero',scenes:[],leaf:{},metrics,scroll:scrollY,maxScroll:1,ink:landingInk.debug};
 
   for (const [id,kind] of [['trabalho','horizontal'],['processo','process'],['laboratorio','horizontal'],['espiral','spiral']] as const) {
     const section = document.getElementById(id);
@@ -201,6 +215,10 @@ export function initMotion() {
       }
       scene.stageWidth=scene.stage?.clientWidth||0;scene.stageHeight=scene.stage?.clientHeight||0;
     }
+    // The work gallery precedes this reveal. Its resized height must settle
+    // before the knowledge section captures its document-space pin anchor.
+    knowledgePrint?.measure(enabled,height,width,mastHeight,layoutHeight);
+    handoverPrint?.measure(enabled,height,width,mastHeight,layoutHeight);
     const y=scrollY;
     scenes.forEach(scene=>{
       scene.start=scene.sequence.getBoundingClientRect().top+y-(scene.kind==='horizontal'&&(width<760||height<620)?0:mastHeight);
@@ -246,7 +264,10 @@ export function initMotion() {
     else if(directionTravel>36&&!document.querySelector('dialog[open]'))root.dataset.mastHidden='true';
     previousY=y;
     heroPrint?.render(y);
-    choicesPrint?.render(y);
+    const choicesProgress = choicesPrint?.render(y) ?? 0;
+    const knowledgeProgress=knowledgePrint?.render(y) ?? 0;
+    const handoverProgress=handoverPrint?.render(y) ?? 0;
+    landingInk.render({workbench:choicesProgress,knowledge:knowledgeProgress,handover:handoverProgress},enabled);
     renderBrandSignature(brandSignature, mast, y, height, width);
     for(const scene of scenes) {
       const animated=enabled&&!scene.static;
@@ -285,7 +306,7 @@ export function initMotion() {
 
   function rememberReadingPosition() {
     readingAnchor=null;
-    if(width>=760||activeId==='hero'||activeId==='folha'||scenes.some(scene=>scene.active&&!scene.flow&&!scene.static))return;
+    if(width>=760||sections.find(item=>item.element.id===activeId)?.element.dataset.printPinned==='true'||scenes.some(scene=>scene.active&&!scene.flow&&!scene.static))return;
     const chapter=sections.find(item=>item.element.id===activeId)?.element;
     if(!chapter)return;
     const focus=document.activeElement;
@@ -361,7 +382,7 @@ export function initMotion() {
     if(!flight||!leaf||!depth)return;
     const hero=sections[0];
     // Reveal runway is reading time, not extra distance from the branch.
-    const runways=[heroPrint?.runway(),choicesPrint?.runway()].filter((item):item is NonNullable<typeof item>=>!!item);
+    const runways=[heroPrint?.runway(),choicesPrint?.runway(),knowledgePrint?.runway(),handoverPrint?.runway()].filter((item):item is NonNullable<typeof item>=>!!item);
     const leafScroll=(position:number)=>leafScrollClock(position,runways);
     const clockY=leafScroll(y);
     const launchBottom=heroPrint?.naturalGeometry().bottom||hero?.bottom||height;
@@ -468,6 +489,7 @@ export function initMotion() {
     const dy=bounds.top<edge?edge-bounds.top:bounds.bottom>height-edge?height-edge-bounds.bottom:0;
     if(dx||dy){x+=dx;ly+=dy;flight.style.transform=`translate3d(${x}px,${ly}px,0)`;}
     const lightX=bounds.left+dx+bounds.width/2,lightY=bounds.top+dy+bounds.height/2;
+    workMarquee?.setLeafLight({x:lightX,y:lightY,hue:y*.16,radius:clamp(height*.17,95,170)});
     const current=sections.find(s=>s.element.id===activeId)?.element;
     // Keep the leaf present in every fold. Only soften it over interfaces;
     // pointer pass-through protects controls instead of hiding the animation.
@@ -513,6 +535,7 @@ export function initMotion() {
     for(const property of ['--leaf-glow','--leaf-hue','--leaf-light-y'])mark.style.removeProperty(property);
   }
   function clearLeafGlow() {
+    workMarquee?.setLeafLight(null);
     litMarks.forEach(resetLeafMark);litMarks.clear();
     heroGlowTargets.forEach(mark=>delete mark.dataset.scrollGlow);
   }
@@ -655,7 +678,7 @@ export function initMotion() {
   addEventListener('resize',()=>{
     const revision=navigationRevision;
     const reading=readingAnchor?{...readingAnchor}:null,resizeY=scrollY;
-    const print=all<HTMLElement>('#hero[data-print-pinned="true"],#folha[data-print-pinned="true"]').find(element=>scrollY>=Number(element.dataset.printStart)&&scrollY<=Number(element.dataset.printStart)+Number(element.dataset.printRun));
+    const print=all<HTMLElement>('main [data-print-pinned="true"]').find(element=>scrollY>=Number(element.dataset.printStart)&&scrollY<=Number(element.dataset.printStart)+Number(element.dataset.printRun));
     const printStart=Number(print?.dataset.printStart),printRun=Number(print?.dataset.printRun);
     const active=pendingSceneJump?.scene||scenes.find(scene=>scene.active&&!scene.flow&&!scene.static);
     const jump=pendingSceneJump?.scene===active?pendingSceneJump:null;

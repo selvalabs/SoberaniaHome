@@ -1,0 +1,135 @@
+---
+import InkStrokes from './InkStrokes.astro';
+import { inkNoise } from '../scripts/ink-model';
+import type { InkScene } from '../data/ink-scenes';
+interface Props { scene: InkScene; instance?: string }
+const { scene, instance = 'main' } = Astro.props;
+const uid = `ink-${scene.id}-${instance}`;
+const ring = (x:number,y:number,r:number) => `M${x+r} ${y} A${r} ${r} 0 1 1 ${x-r} ${y} A${r} ${r} 0 1 1 ${x+r} ${y}`;
+const hatch = (x:number,y:number,n:number,len:number) => Array.from({length:n},(_,i)=>`M${(x+i*5.7).toFixed(1)} ${y+inkNoise(scene.seed,i)*3} l${len*.42} ${-len-inkNoise(scene.seed+1,i)*5}`);
+const book = (x:number,y:number,w=150,h=105) => [
+  `M${x} ${y} Q${x+w*.2} ${y-18} ${x+w*.5} ${y+4} Q${x+w*.8} ${y-18} ${x+w} ${y-3} L${x+w+4} ${y+h} Q${x+w*.78} ${y+h-12} ${x+w*.5} ${y+h+5} Q${x+w*.2} ${y+h-12} ${x-3} ${y+h} Z`,
+  `M${x+w*.5} ${y+4} L${x+w*.5} ${y+h+5} M${x-3} ${y+h+5} Q${x+w*.2} ${y+h-6} ${x+w*.5} ${y+h+11} Q${x+w*.8} ${y+h-6} ${x+w+4} ${y+h+5}`,
+  ...Array.from({length:5},(_,i)=>`M${x+12} ${y+18+i*13} Q${x+34} ${y+10+i*13} ${x+w*.5-10} ${y+23+i*13} M${x+w*.5+12} ${y+22+i*13} Q${x+w*.8} ${y+10+i*13} ${x+w-12} ${y+17+i*13}`),
+];
+const leaf = (x:number,y:number) => [`M${x} ${y} Q${x-24} ${y-44} ${x+26} ${y-73} Q${x+46} ${y-23} ${x} ${y} Z M${x} ${y} L${x+26} ${y-73} M${x+8} ${y-23} l-17 -14 M${x+13} ${y-38} l20 -7 M${x+19} ${y-53} l-9 -9`];
+const hand = [
+  'M405 310 Q373 296 348 311 L323 326 Q307 330 293 324 C283 319 278 330 288 338 L315 348',
+  'M315 348 Q294 353 278 344 C264 341 264 354 275 360 L310 371 Q325 377 341 365 L378 351 L409 365',
+  'M319 326 C329 339 329 352 321 365 M337 319 Q352 333 346 350 M355 312 Q370 328 365 343 M379 308 Q392 321 390 335 M397 307 L408 365',
+  'M286 341 Q284 332 290 326 M300 347 Q300 338 305 333 M315 350 l5 -9',
+];
+---
+<svg class="ink-art" viewBox="0 0 1040 680" role="img" aria-labelledby={`${uid}-title ${uid}-desc`}>
+  <title id={`${uid}-title`}>{scene.title}</title>
+  <desc id={`${uid}-desc`}>{scene.deck} {scene.stages.map(s=>s.copy).join(' ')} {scene.closing}</desc>
+  <defs>
+    <filter id={`${uid}-grain`} x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency=".62" numOctaves="2" seed={scene.seed % 100} result="noise" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale=".85" result="rough" />
+      <feColorMatrix in="noise" type="luminanceToAlpha" result="alpha" />
+      <feComponentTransfer in="alpha" result="graphite"><feFuncA type="linear" slope="1.45" intercept=".16" /></feComponentTransfer>
+      <feComposite in="rough" in2="graphite" operator="in" />
+    </filter>
+  </defs>
+  <g class="ink-engraving" filter={`url(#${uid}-grain)`}>
+    {scene.id === 'tempo' && <>
+      <g data-ink-phase="0">
+        <InkStrokes paths={[
+          'M55 412 Q244 405 467 415 L481 436 Q241 428 56 438 Z M84 439 L76 509 M439 437 L449 509 M79 486 L445 487',
+          'M142 360 L232 339 L294 362 L207 386 Z M142 360 L144 400 L207 417 L207 386 M207 417 L295 399 L294 362',
+          'M157 365 L200 379 M220 389 L282 372 M221 402 L280 386',
+          'M232 339 L228 311 L245 302 L259 310 L261 342 M228 311 L245 319 L259 310 M245 319 L245 341',
+          'M244 306 L284 275 C274 264 279 250 291 247 L288 263 L299 268 L311 257 C315 271 306 285 294 283 L255 320',
+        ]}/>
+        <g data-matter="hand"><InkStrokes paths={hand}/><InkStrokes paths={hatch(344,355,8,13)} class="ink-hatch"/></g>
+        <InkStrokes paths={hatch(155,395,23,25)} class="ink-hatch"/>
+        <InkStrokes paths={Array.from({length:7},(_,i)=>`M${80+i*12} 465 l-2 14`)} class="ink-faint"/>
+        <g data-ink-label="0"><text x="76" y="548">a mesma peça, outra vez.</text><path d="M197 525 Q189 505 202 467 M195 474 l7 -9 l3 10"/></g>
+      </g>
+      <g data-ink-phase="1">
+        <InkStrokes paths={[
+          'M435 408 L433 261 Q436 249 449 249 L497 249 M452 407 L451 280 L495 280',
+          ring(499,264,30),ring(499,264,22),'M499 234 L499 294 M469 264 L529 264',
+          'M471 264 Q456 217 429 213 L340 213 L325 301 M489 295 L487 373 L458 384 M508 294 L508 382 L477 394',
+          'M458 384 L477 394 L478 408 L459 400 Z M462 389 l11 7',
+          ring(516,145,66),ring(516,145,59),'M503 75 L503 61 L530 61 L530 75 M553 88 l10 -13',
+        ]}/>
+        <g data-matter="wheel"><InkStrokes paths={['M478 243 L520 285 M479 284 L520 243']}/></g>
+        <g data-matter="piston"><InkStrokes paths={['M487 311 L509 311 L509 362 L487 362 Z M488 328 l20 -2 M488 337 l20 -2 M488 346 l20 -2']}/></g>
+        <InkStrokes paths={Array.from({length:12},(_,i)=>{const t=i*Math.PI/6;return `M${516+Math.sin(t)*49} ${145-Math.cos(t)*49} l${Math.sin(t)*6} ${-Math.cos(t)*6}`;})} class="ink-faint"/>
+        <g data-matter="clock-sector"><InkStrokes paths={['M516 91 A54 54 0 0 1 570 145 L516 145 Z']} class="ink-accent"/></g>
+        <g data-matter="clock-hand"><InkStrokes paths={['M516 145 L516 99 M516 145 L495 164']}/></g>
+        <g data-ink-label="1"><text x="605" y="137" class="ink-large">¼</text><text x="602" y="172">do tempo</text><text x="291" y="235" class="ink-small">o mecanismo assume a repetição</text></g>
+      </g>
+      <g data-ink-phase="2" data-history>
+        <InkStrokes paths={['M583 200 Q665 150 750 177 L783 201 M772 187 l13 16 l-21 -4']} class="ink-accent"/>
+        {Array.from({length:8},(_,i)=>{const y=313-i*15;return <g data-coin={i}><InkStrokes paths={[`M794 ${y} C791 ${y-12} 872 ${y-16} 883 ${y-3} C891 ${y+10} 806 ${y+14} 794 ${y} M794 ${y} l1 11 C815 ${y+22} 872 ${y+19} 885 ${y+7} l-2 -10`]}/></g>;})}
+        <InkStrokes paths={['M718 410 Q805 406 915 411 M901 403 l17 8 l-16 7','M796 441 C793 426 868 422 881 436 C886 450 812 458 796 441 M796 441 l1 12 Q837 469 881 449 l0 -13']}/>
+        <InkStrokes paths={['M337 371 l-8 15 M355 368 l-6 16 M373 362 l-4 15']} class="ink-accent"/>
+        <g data-ink-label="2"><text x="779" y="158">o lucro cresce</text><text x="735" y="499">o salário não acompanha</text><text x="237" y="577" class="ink-small">o ritmo aperta.</text></g>
+      </g>
+      <g data-ink-phase="3">
+        <InkStrokes paths={['M510 518 L560 435 L607 518 Z M519 519 Q563 527 614 519 M552 450 L560 465 L570 448',ring(560,435,9),'M540 435 Q527 467 496 469 M560 435 Q623 450 657 422']}/>
+        <g data-matter="lever"><InkStrokes paths={['M560 435 L560 370 M554 370 Q551 356 559 354 Q572 353 567 370 Z']}/></g>
+        <g data-matter="decision-hand"><InkStrokes paths={['M576 388 Q603 367 623 378 L649 397 Q657 407 649 412 L625 398 M625 398 Q643 419 633 425 L603 406 Q590 411 580 403 L565 390 M602 381 Q608 392 609 403 M612 379 Q621 389 622 396']}/></g>
+        <g data-ink-label="3"><text x="407" y="569">decidir juntos</text><text x="407" y="592" class="ink-small">outra distribuição.</text></g>
+      </g>
+      <g data-ink-phase="4">
+        <g data-matter="rope"><InkStrokes paths={['M569 456 Q604 514 652 530 M569 456 Q700 511 805 530 M569 456 Q778 498 940 530']} class="ink-accent"/></g>
+        <g data-matter="paper"><InkStrokes paths={book(620,542,91,66)}/></g>
+        <InkStrokes paths={['M775 604 L809 573 C800 563 806 548 816 545 L814 560 L824 565 L834 555 C838 568 831 580 819 580 L785 615 Z','M764 620 Q805 630 849 619',ring(913,567,14),ring(951,566,14),'M898 602 Q914 579 930 600 Q945 578 967 601 M891 608 Q940 602 982 609 L974 622 L894 622 Z M905 623 l-3 21 M966 623 l4 21']}/>
+        <g data-ink-label="4"><text x="620" y="650" class="ink-small">aprender</text><text x="770" y="652" class="ink-small">menos desgaste</text><text x="911" y="674" class="ink-small">vida em comum</text></g>
+      </g>
+    </>}
+    {scene.id === 'saberes' && <>
+      <g data-ink-phase="0">
+        <InkStrokes paths={book(75,165,200,170)}/>
+        <InkStrokes paths={[ring(342,220,54),ring(342,220,46),'M306 260 L260 310 L271 321 L320 273']}/>
+        <InkStrokes paths={leaf(160,274)} class="ink-faint"/>
+        <InkStrokes paths={['M430 283 L495 263 L543 281 L480 303 Z M430 283 L432 322 L481 337 L480 303 M481 337 L544 319 L543 281', 'M481 265 L480 236 L494 229 L508 236 L508 265','M495 231 L531 204 C520 190 534 178 545 179 L540 191 L552 195 L560 185 C567 202 550 215 541 212 L505 246']}/>
+        <g transform="translate(225 -78)"><InkStrokes paths={hand}/></g>
+        <InkStrokes paths={['M742 336 L742 233 L830 167 L923 229 L923 337 Z M731 241 L830 161 L936 239 M773 336 L773 273 L808 273 L808 337 M840 252 L887 252 L887 293 L840 293 Z M863 252 L863 293 M840 272 L887 272','M746 335 L737 362 M921 335 L931 362 M729 363 Q836 355 939 364']}/>
+        <InkStrokes paths={hatch(755,329,27,19)} class="ink-hatch"/>
+        <g data-ink-label="0"><text x="125" y="383">pesquisa</text><text x="450" y="383">ofício</text><text x="762" y="408">vida cotidiana</text></g>
+      </g>
+      <g data-ink-phase="1">
+        <g data-matter="threads"><InkStrokes paths={['M197 398 C140 491 431 463 512 511','M493 398 Q463 455 512 511','M832 423 C893 489 606 454 512 511']} class="ink-accent"/></g>
+        <InkStrokes paths={[ring(512,511,19),'M492 511 Q503 490 525 504 Q533 517 516 527 M491 508 L524 521 M501 495 L509 527']}/>
+        <g data-ink-label="1"><text x="320" y="100">nenhum saber chega vazio.</text></g>
+      </g>
+      <g data-ink-phase="2">
+        <g data-matter="paper"><InkStrokes paths={['M411 558 L611 551 L627 650 L403 656 Z M422 578 L592 573 M423 595 L491 592 L492 635 L423 637 Z M514 591 L600 587 M515 609 L604 604 M515 626 L605 623']}/></g>
+        <InkStrokes paths={leaf(679,613)} class="ink-accent"/>
+        <g data-ink-label="2"><text x="645" y="653" class="ink-small">a solução nasce da conversa.</text></g>
+      </g>
+    </>}
+    {scene.id === 'autonomia' && <>
+      <g data-ink-phase="0">
+        <InkStrokes paths={['M155 237 L439 224 L455 412 L146 425 Z M170 251 L422 242 L431 391 L164 402 Z M155 425 L128 445 Q296 460 477 439 L454 412 M270 435 l56 -2','M213 284 L194 304 L215 324 M376 277 L398 297 L378 318 M315 270 L289 335','M192 364 L322 359 M194 378 L385 369']}/>
+        <InkStrokes paths={book(565,259,205,154)}/>
+        <InkStrokes paths={hatch(167,390,42,12)} class="ink-hatch"/>
+        <g data-ink-label="0"><text x="190" y="490">a ferramenta</text><text x="589" y="475">o conhecimento</text></g>
+      </g>
+      <g data-ink-phase="1">
+        <g data-matter="paper"><InkStrokes paths={['M548 203 L758 193 L782 399 L564 416 Z M574 228 L733 218 M576 247 L703 237 M580 287 L749 273 M587 320 L742 305 M589 345 L749 328','M696 194 L694 151 L724 150 L726 193 M700 153 L700 135 Q713 114 731 130 L732 152']}/></g>
+        <InkStrokes paths={['M475 333 Q490 294 529 296 M518 287 l13 9 l-15 5','M796 326 L830 292 C820 281 826 267 839 265 L835 280 L848 285 L858 275 C864 291 852 304 841 302 L808 338 Z']} class="ink-accent"/>
+        <g data-ink-label="1"><text x="808" y="380">abrir e ajustar</text></g>
+      </g>
+      <g data-ink-phase="2">
+        <g data-matter="threads"><InkStrokes paths={['M303 459 C283 552 505 581 570 535 M695 452 Q667 534 570 535 M570 535 Q695 610 807 534']} class="ink-accent"/></g>
+        <InkStrokes paths={['M520 556 Q531 531 550 537 L568 549 Q582 533 599 542 L629 574 L611 593 L574 575 L549 579 Z M550 539 L565 555 M572 548 L588 567 M585 542 L601 558','M775 531 Q794 506 818 525 L833 548 L817 565 L787 552 Z']}/>
+        <g data-matter="wind"><InkStrokes paths={leaf(861,584)}/></g>
+        <g data-ink-label="2"><text x="329" y="640">o próximo passo também pode ser seu.</text></g>
+      </g>
+    </>}
+  </g>
+  {scene.id === 'tempo' && <g class="ink-fragments" aria-hidden="true">
+    {[false,true].map(proposal => Array.from({length:18},(_,i)=><rect data-fragment={i} data-route={proposal?'proposal':'profit'} width={i%3===0?4:2.4} height={i%2===0?4:2.4} rx=".4" />))}
+  </g>}
+  <g class="ink-pencil" data-ink-pencil hidden aria-hidden="true">
+    <path d="M0 0 L13 -6 L84 -6 L88 -2 L84 3 L13 3 Z" fill="var(--sketch-bg)"/>
+    <path d="M0 0 L13 -6 L13 3 Z M19 -5 L19 2 M24 -5 L24 2 M81 -5 L81 2"/>
+  </g>
+  <g class="ink-dust" data-ink-dust hidden aria-hidden="true">{Array.from({length:8},(_,i)=><rect x={-9+inkNoise(scene.seed,i)*18} y={-10+inkNoise(scene.seed+2,i)*18} width={i%2+1} height={i%2+1} opacity={.15+inkNoise(scene.seed+3,i)*.4} />)}</g>
+</svg>
