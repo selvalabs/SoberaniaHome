@@ -504,5 +504,132 @@
       "width": 390,
       "height": 862
     }
+  ],
+  "elara": [
+    {
+      "src": "tiles/elara-001.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/elara-002.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/elara-003.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/elara-004.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/elara-005.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/elara-006.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/elara-007.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/elara-008.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/elara-009.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/elara-010.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/elara-011.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/elara-012.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/elara-013.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/elara-014.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/elara-015.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/elara-016.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/elara-017.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/elara-018.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/elara-019.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/elara-020.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/elara-021.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/elara-022.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/elara-023.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/elara-024.webp",
+      "width": 390,
+      "height": 1200
+    },
+    {
+      "src": "tiles/elara-025.webp",
+      "width": 390,
+      "height": 879
+    }
   ]
 }

@@ -14,8 +14,8 @@
       rail.style.scrollBehavior='auto';
       const touchPreview=window.matchMedia('(pointer: coarse)').matches;
       rail.setAttribute('aria-label',touchPreview
-        ? 'Oito landing pages em mockups de celular. Deslize para cima ou para baixo dentro da tela para ler. Deslize para os lados para ver outras páginas.'
-        : 'Oito landing pages em mockups de celular. Role dentro da tela para ler a página. Arraste para os lados ou use Shift mais a roda do mouse para ver outras páginas.');
+        ? 'Landing pages em mockups de celular. Deslize para cima ou para baixo dentro da tela para ler. Deslize para os lados para ver outras páginas.'
+        : 'Landing pages em mockups de celular. Role dentro da tela para ler a página. Arraste para os lados ou use Shift mais a roda do mouse para ver outras páginas.');
       const startScreens=[];
       projects.forEach(project=>{
         const card=document.createElement('article');
@@ -49,8 +49,7 @@
           screen.append(image);
         });
         frame.append(screen);
-        const hint=document.createElement('span');hint.className='landing-phone-scroll-hint';hint.textContent=touchPreview?'Deslize para ler ↕ · Outros sites ↔':'Role na tela ↕ · Arraste ou Shift + roda ↔';
-        card.append(heading,frame,hint);rail.append(card);
+        card.append(heading,frame);rail.append(card);
       });
       rail.addEventListener('wheel',event=>{
         if(event.ctrlKey||!event.cancelable)return;
@@ -86,7 +85,8 @@
       const endDrag=event=>{if(drag?.id===event.pointerId){drag=null;delete rail.dataset.dragging;if(rail.hasPointerCapture(event.pointerId))rail.releasePointerCapture(event.pointerId);}};
       rail.addEventListener('pointerup',endDrag);rail.addEventListener('pointercancel',endDrag);
       rail.addEventListener('lostpointercapture',endDrag);
-      figure.replaceChildren(rail);
+      const hint=document.createElement('figcaption');hint.className='landing-phone-scroll-hint';hint.textContent=touchPreview?'Deslize na tela para ler · Para os lados, outros sites':'Role na tela para ler · Arraste para ver outros sites';
+      figure.replaceChildren(rail,hint);
       if('IntersectionObserver' in window){const visible=new IntersectionObserver(entries=>{if(entries.some(entry=>entry.isIntersecting)){startScreens.forEach(start=>start());visible.disconnect();}},{rootMargin:'400px'});visible.observe(figure);}
       else startScreens.forEach(start=>start());
       return;

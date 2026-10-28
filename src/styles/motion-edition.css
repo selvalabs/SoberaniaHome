@@ -206,3 +206,12 @@ html.motion-edition:not(.motion) .scene-controls {display:none!important;}
  html.motion-edition .section-label{flex-wrap:wrap;gap:8px}
  html.motion-edition :is(.technology-stage,.knowledge-cover-stage,.atelier-grid)>*{min-width:0}
 }
+
+/* Mobile process: the title, counter and board share a persistent reading stack. */
+@media(max-width:759px){
+ html.motion-edition.leaf-motion #processo [data-process-flow="true"]{--process-board-height:clamp(100px,min(55vw,calc(100svh - var(--motion-mast-height) - var(--process-intro-height) - var(--process-head-height) - 150px)),240px)}
+ html.motion-edition.leaf-motion #processo [data-process-flow="true"] .process-intro{position:sticky!important;top:var(--motion-mast-height)!important;z-index:8!important}
+ html.motion-edition.leaf-motion #processo [data-process-flow="true"] .scene-head{position:sticky!important;top:calc(var(--motion-mast-height) + var(--process-intro-height))!important;z-index:7!important;background:#102419!important}
+ html.motion-edition.leaf-motion #processo .process-periphery{top:calc(var(--motion-mast-height) + var(--process-intro-height) + var(--process-head-height))!important;height:var(--process-board-height)!important}
+ html.motion-edition #processo .process-panel{scroll-margin-top:calc(var(--motion-mast-height) + var(--process-intro-height) + var(--process-head-height) + var(--process-board-height) + 24px)}
+}
