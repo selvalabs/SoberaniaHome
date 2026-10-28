@@ -20,4 +20,3 @@ O PNG original permanece intacto. `python scripts/trace-ink.py public/assets/ink
 O mesmo motor de lápis, máscara e iluminação das demais gravuras recebe o progresso da nova dobra. Os cabos são Béziers com impulso amortecido e pontas fixas; partículas seguem a curva e desaparecem nas extremidades. O motor usa o único relógio de scroll já existente, sem RAF ou timer próprios. No modo leitura/reduced-motion e sem JavaScript, o desenho completo e todos os textos permanecem disponíveis.
 
 A gravura é uma alegoria editorial. As notas da FTC sustentam as referências a monetização de dados e práticas manipulativas; não constituem comprovação de cada elemento simbólico da imagem.
-

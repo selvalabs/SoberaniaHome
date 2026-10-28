@@ -39,6 +39,13 @@ dobras mantêm os valores padrão. A duração nova entra no relógio da folha,
 preservando a queda mais lenta durante o pin. Não há RAF, timer ou interceptação
 de scroll adicionais.
 
+A seção adicional muda a fase da queda na chegada às galerias. A regressão
+mediu um caso em que o deslocamento da queda compensava parte da espiral. A
+projeção horizontal da hélice em telas estreitas passou de 12% para 15% da
+largura, com o mesmo teto de 104 px; queda pendular, rotação e eixo vertical
+permanecem. O teste percorre 101 pontos sincronizados de cada galeria para
+avaliar todos os giros, preservando a exigência de deslocamento superior a 100 px.
+
 ## Leitura, fontes e operação
 
 Sem JavaScript, com movimento reduzido ou em modo de leitura, o conteúdo completo
@@ -56,3 +63,25 @@ Rollback da experiência: usar a revisão de copy `3c0ebc9` ou a release públic
 `v0.3.0` (`80d2140`). Sem migração de dados, mudança de Worker, VPS ou sincronização
 de mirror. Dependências não foram alteradas; a instalação existente do workspace
 é compartilhada por junction local ignorada pelo Git.
+
+## Validação local
+
+- Tipos, 62 testes Node, build estática e check-static passaram; npm audit não
+  encontrou vulnerabilidades, assim como a consulta das dependências Python
+  fixadas com `--no-deps --disable-pip` (sem resolução de transitivas).
+- Nova cena: 1440×900, 1280×680, 1024×768, 390×844, 360×640, 320×480 e 844×390.
+  Todas as linhas foram alcançadas durante o reveal; headline, arte e rodapé
+  permaneceram dentro do viewport. Reversão, impressão/restauração, repouso,
+  modo leitura, movimento reduzido e versão sem JavaScript passaram.
+- As quatro gravuras passaram nas regressões de máscaras, lápis, luz e fallback
+  sem Canvas; navegação/índice, controles, galerias, folha e privacidade passaram.
+- A amostragem final de 101 posições mediu deslocamento horizontal de 115 px
+  na galeria Trabalho e 180 px no Laboratório. Os limites de continuidade,
+  rotação, reversibilidade e enquadramento dos testes foram mantidos.
+- O pacote local no prefixo `/SoberaniaHome/` passou em 79 referências locais,
+  17 seções, metadados e política de IA externa desativada. Nova cena no prefixo
+  real passou nos sete viewports; a edição pública local passou em 390×844,
+  1440×900 e sem JavaScript. Artefato de teste v0.0.0, sem tag ou publicação.
+- Prévia Wi-Fi respondeu HTTP 200 na porta 4204 com a copy final. Os resultados
+  e capturas detalhados ficam em `.playwright/` local; o CI completo da PR
+  continua sendo uma verificação separada antes de homologação e merge.

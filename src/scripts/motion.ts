@@ -451,7 +451,7 @@ export function initMotion() {
       galleryEnvelope=local.envelope;
       // Recenter the helical flight so each loop can open without edge clamping.
       x=mix(x,width*(.5+lateral*.18+drift*.06),local.envelope*.85);
-      const dx=local.x*Math.min(104,width*.12),dy=local.y*Math.min(58,height*.065);
+      const dx=local.x*Math.min(104,width*.15),dy=local.y*Math.min(58,height*.065);
       gallerySpiralX=dx;gallerySpiralY=dy;
       x+=dx;ly+=dy;
       rx+=local.pitch;ry+=local.yaw;rz+=local.bank;

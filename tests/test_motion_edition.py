@@ -202,8 +202,11 @@ with sync_playwright() as pw:
     for sid in ['trabalho','laboratorio']:
         data=page.evaluate('(id)=>__SL_DEBUG.scenes.find(s=>s.id===id)',sid)
         samples=[]
-        for fraction in [0,.08,.16,.25,.36,.48,.6,.72,.86,1]:
-            page.evaluate('(y)=>scrollTo({top:y,behavior:"instant"})',data['start']+(data['end']-data['start'])*fraction)
+        fractions=[i/100 for i in range(101)]
+        for fraction in fractions:
+            y=data['start']+(data['end']-data['start'])*fraction
+            page.evaluate('(y)=>scrollTo({top:y,behavior:"instant"})',y)
+            page.wait_for_function('(y)=>Math.abs(__SL_DEBUG.scroll-y)<2',arg=y)
             page.wait_for_timeout(45)
             state=leaf_state(page);samples.append(page.evaluate('({...__SL_DEBUG.leaf})'))
             assert state['opacity']>=.4 and not state['hidden'],(sid,fraction,state)
@@ -215,7 +218,7 @@ with sync_playwright() as pw:
             page.evaluate('(y)=>scrollTo({top:y,behavior:"instant"})',data['start']+(data['end']-data['start'])*fraction)
             page.wait_for_timeout(60)
             replay=page.evaluate('({...__SL_DEBUG.leaf})')
-            prior=samples[[0,.08,.16,.25,.36,.48,.6,.72,.86,1].index(fraction)]
+            prior=samples[fractions.index(fraction)]
             for key in ['x','y','roll','drift']:
                 assert abs(replay[key]-prior[key])<.01,('wind changes on scroll reversal',sid,key,replay,prior)
 
