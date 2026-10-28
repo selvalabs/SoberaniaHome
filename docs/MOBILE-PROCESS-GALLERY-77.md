@@ -15,3 +15,5 @@ Prévia da revisão: http://192.168.1.4:4201/. Main para comparação: porta 420
 Complemento: galerias de projetos passaram em 390x844,360x740,390x640,360x640 e 1440x900. Navegação horizontal passou em 240x320,320x480,360x568,390x600 e 667x375; o primeiro lote teve timeout de inicialização antes do caso 844x390. Os casos restantes foram retomados em execução isolada no build estável; consultar o resultado final na PR. A ordem final autorizada é ELARA, Soberania, Desafio da Empreendedora, Entretrama e demais páginas preservadas.
 
 Os casos isolados 844x390,760x540,1024x600,1280x480 e 1440x900 passaram após a retomada.
+
+As barras vertical dos telefones e horizontal da galeria foram ocultadas, mantendo overflow e interação nativos. Build/check-static e teste real de toque passaram. O preview usa capturas em tiles, não iframe: formulários e botões dentro das imagens não são interativos, e não há carregamento do site original ao rolar. Data.js organiza a coleção, gallery.js monta as telas e o manifesto define os tiles.

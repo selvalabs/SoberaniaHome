@@ -190,3 +190,7 @@ html.motion-edition:not(.motion) #laboratorio .landing-project [data-landing-gal
  html.motion-edition.motion #laboratorio .landing-project [data-landing-gallery]{height:min(58svh,470px)!important;min-height:0!important;align-self:start}
  .landing-phone-card{flex-basis:min(clamp(140px,40vw,178px),max(88px,calc((58svh - 84px)*.49)))}
 }
+
+/* Keep native scrolling and keyboard focus; hide only the scrollbar chrome. */
+.landing-phone-screen,.landing-phone-rail{scrollbar-width:none;-ms-overflow-style:none}
+.landing-phone-screen::-webkit-scrollbar,.landing-phone-rail::-webkit-scrollbar{display:none;width:0;height:0}
