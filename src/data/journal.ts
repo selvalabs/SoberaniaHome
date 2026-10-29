@@ -2,7 +2,7 @@ import {expandedArticles} from './expanded-journal';
 import { principles, examples } from './manifesto';
 export interface JournalArticle {
   slug:string; category:string; title:string; deck:string;
-  sections:{heading?:string;paragraphs:string[]}[];
+  sections:{id?:string;heading?:string;paragraphs:string[]}[];
   sources?:{label:string;url:string}[];
 }
 const notes = [
