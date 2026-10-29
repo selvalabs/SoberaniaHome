@@ -143,3 +143,19 @@ html.motion-edition #espiral.concise-spiral .spiral-caption p{font:italic clamp(
 .journal-library li{border-top:1px solid var(--rule)}.journal-library .journal-read{font-size:14px;line-height:1.45;min-height:48px;padding-block:10px}
 .journal-library details[open]>summary{color:var(--rust)}
 @media(max-width:759px){#caderno.journal-concise .journal-featured{display:block}#caderno.journal-concise .journal-featured .field-note{padding-block:18px;border-bottom:1px solid var(--rule)}#caderno.journal-concise .journal-featured h3{font-size:29px}.journal-library{grid-template-columns:1fr;gap:0}.journal-library summary{min-height:54px}}
+
+#possibilidades.atelier-concise{padding-block:32px}
+#possibilidades.atelier-concise .atelier-heading{display:block;text-align:center;margin-bottom:24px}
+#possibilidades.atelier-concise h2{font-size:clamp(35px,4.7vw,68px);max-width:28ch;margin:18px auto}
+#possibilidades.atelier-concise .atelier-heading>p{font:italic 22px var(--serif);margin:0 auto}
+#possibilidades.atelier-concise .atelier-guide{justify-content:center;margin-bottom:20px}
+#possibilidades.atelier-concise .atelier-flow{counter-reset:step}
+#possibilidades.atelier-concise .atelier-flow>li{padding-block:14px;min-height:0}
+#possibilidades.atelier-concise .atelier-flow summary{cursor:pointer;min-height:36px;display:flex;align-items:center;padding-right:18px}
+#possibilidades.atelier-concise .atelier-flow details[open]>summary{color:#d9eab4}
+#possibilidades.atelier-concise .atelier-flow details p{font-size:16px;line-height:1.5;margin:8px 0 0}
+.atelier-explanation{margin-block:12px;border-top:1px solid #65766050;padding-top:6px}
+.atelier-explanation>summary{cursor:pointer;min-height:40px;display:flex;align-items:center;font:12px/1.4 var(--mono)}
+#possibilidades.atelier-concise .atelier-explanation p{font-size:16px;line-height:1.5}
+#possibilidades.atelier-concise .atelier-context-note[hidden]{display:none}
+@media print{.atelier-explanation::details-content,.atelier-flow details::details-content{display:block}.atelier-explanation>summary,.atelier-flow summary{font-weight:bold}}

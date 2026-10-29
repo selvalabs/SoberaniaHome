@@ -49,12 +49,13 @@ if (root) {
     text('[data-atelier-title]',proposal.title);text('[data-atelier-summary]',proposal.summary);
     text('[data-atelier-output-mode]',source);text('[data-atelier-next]',proposal.next);
     text('[data-atelier-result-context]',submittedContext||`Nenhuma anotação incluída. Exemplo: ${sectorLabels[submittedSector].toLowerCase()}.`);
+    find('[data-atelier-result-context]').closest<HTMLElement>('.atelier-context-note')!.hidden=!submittedContext.trim();
     text('[data-atelier-context-origin]',generated?'Contexto utilizado nesta proposta de IA. Revise a interpretação.':'Anotação de contexto; o roteiro local é preparado.');
     list('[data-atelier-data]',proposal.data);list('[data-atelier-human]',proposal.human);
     find('[data-atelier-steps]').replaceChildren(...proposal.steps.map((step,index)=>{
       const li=document.createElement('li');li.dataset.step=String(index+1).padStart(2,'0');
       const strong=document.createElement('strong');strong.textContent=step.title;
-      const p=document.createElement('p');p.textContent=step.detail;li.append(strong,p);return li;
+      const details=document.createElement('details');details.name='atelier-steps';details.open=index===0;const summary=document.createElement('summary');summary.append(strong);const p=document.createElement('p');p.textContent=step.detail;details.append(summary,p);li.append(details);return li;
     }));
     updateDraft();clearTimeout(arrivalTimer);output.dataset.arriving='true';
     arrivalTimer=setTimeout(()=>delete output.dataset.arriving,900);

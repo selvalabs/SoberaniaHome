@@ -345,5 +345,27 @@ export const expandedArticles:JournalArticle[] = [
         ]
       }
     ]
+  },
+  {
+    "slug": "mesa-de-possibilidades",
+    "category": "Método / possibilidades",
+    "title": "Do problema ao primeiro teste.",
+    "deck": "Como usar os exemplos locais e reconhecer os limites de uma proposta.",
+    "sections": [
+      {
+        "heading": "Explorar uma situação",
+        "paragraphs": [
+          "Escolha uma situação, examine um caminho possível e leve um esboço para conversar com sua equipe. Comece pelo que precisa mudar na rotina.",
+          "Quem enfrenta a dificuldade? Como resolve hoje? O que gostaria de mudar?",
+          "",
+          "O exemplo local é um roteiro preparado para o campo escolhido. Sua anotação acompanha o esboço, mas não altera esse roteiro. Não há inferência de IA nem envio do texto. Evite dados pessoais ou confidenciais.",
+          "O exemplo de cooperativa está aberto. Escolha outro campo para comparar.",
+          "Nenhuma anotação incluída. Este é o exemplo de cooperativa.",
+          "Há uma anotação nova. Atualize o esboço para incorporá-la. O download mantém o último resultado.",
+          "Para levar à conversa: quem precisa participar desse primeiro teste? Conheça outras ferramentas do laboratório ↗",
+          "Este cenário pode ser lido sem JavaScript. Para combinar outros contextos e exportar um esboço, ative os recursos interativos do navegador."
+        ]
+      }
+    ]
   }
 ];
