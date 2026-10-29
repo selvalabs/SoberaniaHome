@@ -1,10 +1,10 @@
 ---
 import {journalArticles,articlePath} from '../../data/journal';
 const featured=[
- {slug:'meios-digitais-poder-popular',deck:'Disputar as redes. Construir meios próprios.'},
- {slug:'tempo-de-quem-trabalha',deck:'Para quem vai o tempo poupado?'},
- {slug:'manifesto',deck:'Dez princípios para orientar as escolhas.'}
-].map(item=>({...journalArticles.find(article=>article.slug===item.slug)!,shortDeck:item.deck}));
+ {slug:'meios-digitais-poder-popular',label:'Meios digitais, poder popular.'},
+ {slug:'tempo-de-quem-trabalha',label:'Tempo para quem trabalha.'},
+ {slug:'manifesto',label:'Princípios de construção.'}
+].map(item=>({...journalArticles.find(article=>article.slug===item.slug)!,shortTitle:item.label}));
 const essays=['manifesto','meios-digitais-poder-popular','tempo-de-quem-trabalha','saberes-em-comum','nada-existe-isolado','construir-no-brasil'];
 const practice=['antes-do-codigo','ferramentas-em-uso','outras-ferramentas','tecnologia-no-trabalho','capacidade-de-continuar','laboratorio-com-os-pes-no-mundo'];
 const groups=[{title:'Ensaios e manifesto',items:journalArticles.filter(a=>essays.includes(a.slug))},{title:'Ferramentas e método',items:journalArticles.filter(a=>practice.includes(a.slug))},{title:'Notas do laboratório',items:journalArticles.filter(a=>!essays.includes(a.slug)&&!practice.includes(a.slug))}];
@@ -12,7 +12,7 @@ const groups=[{title:'Ensaios e manifesto',items:journalArticles.filter(a=>essay
 <section id="caderno" class="section journal-section field-journal journal-concise" data-number="15" aria-labelledby="field-journal-title">
   <div class="journal-edition-line"><span>15 / Caderno aberto</span><span>Pesquisa · código · território</span></div>
   <header class="field-journal-heading"><h2 id="field-journal-title">O Caderno<br /><em>fica aberto.</em></h2><div class="journal-stamp" aria-hidden="true"><span>CADERNO</span><b>{String(journalArticles.length).padStart(2,'0')}</b><span>LEITURAS</span></div></header>
-  <div class="field-notes journal-index journal-featured">{featured.map(note=><article class="field-note" id={`destaque-${note.slug}`}><div class="field-note-meta">{note.category}</div><h3><a href={articlePath(note.slug)}>{note.title}</a></h3><p class="field-note-deck">{note.shortDeck}</p><a class="journal-read" href={articlePath(note.slug)}>Abrir a leitura</a></article>)}</div>
+  <div class="field-notes journal-index journal-featured">{featured.map(note=><article class="field-note" id={`destaque-${note.slug}`}><div class="field-note-meta">{note.category}</div><h3><a href={articlePath(note.slug)} aria-label={note.title}>{note.shortTitle}</a></h3></article>)}</div>
   <div class="journal-library" aria-label="Todas as leituras">{groups.map(group=><details><summary>{group.title}<span>{String(group.items.length).padStart(2,'0')}</span></summary><ul>{group.items.map(note=><li id={`nota-${note.slug}`}><a class="journal-read" href={articlePath(note.slug)}>{note.title}</a></li>)}</ul></details>)}</div>
   <footer class="field-journal-colophon"><span>Textos editoriais do laboratório.</span><a href="#contato" data-jump>Continuar a conversa</a></footer>
 </section>

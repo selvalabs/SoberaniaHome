@@ -47,3 +47,5 @@ conteúdo completo, SEO, Pages e servidor Wi-Fi. Sem merge, release, VPS ou mirr
 - Contato e rodapé: pergunta direta, três campos de oferta e duas ações. Localização, navegação, modo de leitura e a chegada da folha ao monte final preservados; apresentação original arquivada junto do texto Sobre.
 
 - Conferência visual: bússola explicitamente visível no celular, ponteiro no anel externo e link de aprofundamento com contraste no fundo escuro.
+
+- Caderno mobile: chamadas reduzidas a três temas clicáveis, sem sinopses ou links duplicados. Os títulos completos permanecem nos artigos, na biblioteca e no nome acessível de cada chamada.
