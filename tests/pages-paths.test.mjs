@@ -5,6 +5,7 @@ import { relocatePages } from '../scripts/package-pages.mjs';
 test('Pages relocation covers HTML, CSS, data and dynamic imports without changing external or relative URLs', () => {
   const base = '/SoberaniaHome/';
   const samples = [
+    ['.html', '<a href="/caderno/manifesto/">Ler</a>', '<a href="/SoberaniaHome/caderno/manifesto/">Ler</a>'],
     ['.html', '<a href="/"><img src="/assets/a.webp"></a><a href="/#hero">Home</a>', '<a href="/SoberaniaHome/"><img src="/SoberaniaHome/assets/a.webp"></a><a href="/SoberaniaHome/#hero">Home</a>'],
     ['.css', 'a{background:url(/assets/a.webp)}b{background:url("/assets/b.webp")}', 'a{background:url(/SoberaniaHome/assets/a.webp)}b{background:url("/SoberaniaHome/assets/b.webp")}'],
     ['.js', 'import("/_astro/motion.js");img.src="/assets/x.webp";fetch("/api/atelier")', 'import("/SoberaniaHome/_astro/motion.js");img.src="/SoberaniaHome/assets/x.webp";fetch("/SoberaniaHome/api/atelier")'],

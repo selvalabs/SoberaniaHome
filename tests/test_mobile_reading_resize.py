@@ -8,7 +8,7 @@ with sync_playwright() as pw:
   q=browser.new_page(viewport={'width':w,'height':h},is_mobile=True,has_touch=True)
   q.goto(args.url,wait_until='networkidle');q.wait_for_function('window.__SL_DEBUG?.ready')
   q.wait_for_timeout(300)
-  for selector in ['.knowledge-cover-copy>p','#sobre .about-copy p','.field-note-body p','#footer .footer-details p']:
+  for selector in ['.knowledge-cover-copy>p','#sobre .about-copy p','.field-note-deck','#footer .footer-details p']:
    target=q.locator(selector).first
    if selector=='.knowledge-cover-copy>p':
     section=q.locator('#deslocamento-2')

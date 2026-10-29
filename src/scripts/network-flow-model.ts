@@ -3,7 +3,7 @@ export type Point = {x:number;y:number};
 export type NetworkWire = {id:string;kind:'capture'|'profit'|'common';from:Point;to:Point;c1:Point;c2:Point;seed:number};
 const clamp=(n:number)=>Math.max(0,Math.min(1,Number.isFinite(n)?n:0));
 const ease=(n:number)=>{const t=clamp(n);return t*t*(3-2*t);};
-export const networkPasses=[{start:.035,end:.17},{start:.205,end:.34},{start:.375,end:.51},{start:.67,end:.90}];
+export const networkPasses=[{start:0,end:.19},{start:.20,end:.60},{start:.64,end:1}];
 export const networkWires:NetworkWire[]=[
   {id:'attention',kind:'capture',from:{x:350,y:530},to:{x:1010,y:198},c1:{x:550,y:545},c2:{x:800,y:190},seed:.2},
   {id:'data',kind:'capture',from:{x:420,y:588},to:{x:1010,y:276},c1:{x:650,y:600},c2:{x:790,y:290},seed:1.1},
@@ -16,7 +16,7 @@ export const networkWires:NetworkWire[]=[
 
 export function sampleNetwork(value:number,active=true){
   const p=active?clamp(value):1;
-  const collective=p>=.95?1:ease((p-.73)/.22),capture=ease((p-.27)/.14);
+  const collective=p>=.95?1:ease((p-.73)/.22),capture=ease((p-.20)/.18);
   const transition=ease((p-.54)/.11);
   return {progress:p,act:networkPasses.reduce((at,pass,i)=>p>=pass.start?i:at,0),collective,capture,
     // A complete first plate, a reading pause, then a separately drawn answer.

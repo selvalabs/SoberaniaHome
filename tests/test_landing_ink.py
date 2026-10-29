@@ -46,7 +46,7 @@ with sync_playwright() as pw:
    assert float(svg.locator('[data-generated-complete]').get_attribute('opacity'))==1
    assert svg.locator('[data-generated-pencil]').get_attribute('hidden') is not None
    if h>=580:assert svg.locator('[data-generated-highlight]').evaluate_all('es=>es.every(e=>+e.getAttribute("opacity")>0)')
-  assert q.locator('.choices-reference a').get_attribute('href').startswith('https://www.marxists.org/')
+  assert '/caderno/tempo-de-quem-trabalha/' in q.locator('#folha .narrative-footer a').get_attribute('href')
   assert q.locator('.knowledge-reference a').get_attribute('href').startswith('https://dominiopublico.mec.gov.br/')
   for i in range(3):
    q.locator('.handover-tabs a').nth(i).click()

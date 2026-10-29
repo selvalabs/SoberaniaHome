@@ -26,8 +26,9 @@ entender o que construímos, para quem, qual problema isso enfrenta e como entra
 em contato. Manter a oferta explícita: sites e presença digital, software e
 automações para quem trabalha, produz e se organiza.
 
-Esta entrega é um estudo versionado. Não altera componentes, conteúdo publicado,
-animações, tempos de scroll, assets, SEO ou comportamento da versão de comparação.
+Este roteiro foi a primeira entrega, no commit cea5025. Depois, o usuário autorizou
+a implementação do piloto nesta mesma branch; o estado atual está registrado abaixo.
+A versão de comparação #83 permanece preservada.
 
 ## Gramática proposta
 
@@ -203,10 +204,81 @@ nenhum arquivo de runtime foi alterado; não atribuir novos testes funcionais a 
 
 ## Estado e reversão
 
-Entrega atual: issue, branch remota, checkout isolado e este roteiro. Não há
-redesign implementado nesta branch. Prévia #83 usa 4204 e permanece na baseline;
-não representar essa prévia como implementação do estudo.
+Primeira entrega: issue, branch remota, checkout isolado e roteiro (cea5025).
+Entrega seguinte autorizada: piloto implementado na mesma branch, servido na 4205.
+Prévia #83 na 4204 permanece na baseline 892fc94 para comparação.
 
 Reversão do estudo: reverter seu commit de documentação, preservando histórico.
 Comparação e rollback da experiência: `892fc94`. Produção: v0.3.0 / `80d2140`.
 Sem tag, release, deploy, migração, mudança em Worker, VPS ou mirror.
+
+
+## Piloto implementado
+
+A implementação aplica o roteiro à hero, à cena do tempo e aos meios digitais.
+As duas cenas de desenho têm a arte central e três falas em HTML; uma frase por
+vez acompanha o progresso do mesmo relógio nativo. A hero preserva a identidade,
+a árvore e a folha, com uma oferta explícita e dois acessos diretos.
+
+O tempo usa 1500–2300px de percurso conforme o viewport; a cena digital usa
+2200–3400px para preservar as duas gravuras detalhadas. A hero usa um único
+passe curto de 900px. Esses valores substituem a espera pelos parágrafos longos,
+sem criar outro RAF ou interceptar wheel/touch. O cálculo de runway da folha
+recebe as novas durações; sua física não foi alterada.
+
+O Caderno agora é um índice de nove leituras. As seis notas anteriores foram
+preservadas numa coleção compartilhada. Os textos completos de hero/tempo/meios
+foram migrados para as novas leituras, e os dez princípios e suas consequências
+estão na página do manifesto. Fontes de Lenin e FTC permanecem junto do argumento;
+o artigo de tempo identifica a paráfrase e a natureza editorial da ilustração.
+
+Métrica editorial dos corpos de prosa (exclui títulos, navegação, créditos e links;
+na baseline inclui as legendas junto do argumento):
+
+| Cena | Baseline 892fc94 | Piloto |
+|---|---:|---:|
+| Oferta/argumento da hero | 64 palavras | 11 palavras |
+| Tempo: argumento, citação e legendas | 146 palavras | 14 palavras |
+| Meios digitais: atos e legendas | 161 palavras | 14 palavras |
+| Total nessa seleção | 371 | 39 |
+
+Isso mede redução de texto obrigatório, não comprova compreensão ou conversão.
+A avaliação editorial do piloto ainda depende da leitura e do uso pelo usuário.
+Outras dobras mantêm sua copy. A chamada do manifesto foi compactada e o índice
+substitui os artigos expandidos; a riqueza do conteúdo continua nas rotas próprias.
+
+As nove rotas usam título, descrição, Article e canonical conforme a política de
+publicação; o sitemap inclui as leituras apenas quando a edição é indexável.
+O empacotamento Pages reconhece /caderno/ e verifica referências sob o prefixo.
+Não há conteúdo escondido só para SEO nem cópia longa automática para leitores de tela.
+
+A impressão mostra a narração inteira e ambas as gravuras. O motor conserva a
+máscara e os fluxos durante a impressão e restaura o estado anterior. Modo leitura,
+reduced-motion e sem JS usam fluxo natural, com desenhos completos e as falas na ordem.
+
+Validação executada e limites finais serão registrados no PR #86. A porta 4205
+é prévia local do piloto, não publicação de uma release. Sem assets novos, dependências,
+backend, migração, VPS ou mirror; rollback de experiência em 892fc94.
+
+
+### Verificações da implementação
+
+- TypeScript, 65 testes Node, build Astro, check-static e diff-check passaram.
+- Piloto: 1440×900, 1280×680, 1024×768, 390×844, 360×640, 320×480 e 844×390;
+  enquadramento, narração, ordem das gravuras, reversão, repouso, impressão/restauração,
+  ambos os temas, leitura e movimento reduzido passaram.
+- Nove rotas de leitura sem JS: conteúdo, metadados, fontes e dez princípios conferidos.
+  Parágrafos originais do piloto comparados com o texto das páginas geradas.
+- Cinco gravuras nos sete tamanhos, fallback sem JS e sem Canvas passaram.
+- Áreas seguras simuladas, mudança de altura do navegador e campo em foco passaram.
+- Contraste de tinta/glows em celular e desktop, nos temas claro/escuro, passou.
+- Regressão geral de HTML, privacidade, exportação, referências, previews de apps e
+  scroll interno dos celulares passou (desktop, reduced-motion e sem JS).
+- Giros da folha nas duas galerias passaram em desktop, celular e landscape.
+  Scrub, leitura interna, controles, reversão, saída e toque passaram em dez viewports.
+- npm audit: zero vulnerabilidades. Pacotes Python fixados: nenhuma vulnerabilidade
+  conhecida na consulta sem resolução de dependências transitivas.
+- Verificação de artefato Pages no prefixo e identidade final: resultado no PR #86.
+
+São testes de navegador emulado, não homologação física de todos os aparelhos.
+A experiência editorial e o ritmo continuam sujeitos à avaliação do piloto.

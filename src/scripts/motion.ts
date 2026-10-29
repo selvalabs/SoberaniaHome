@@ -8,7 +8,8 @@ import { glowColor, textSurface } from './leaf-contrast';
 import { initWorkMarquee } from './work-marquee';
 import { createLandingInk } from './landing-ink';
 import { createNetworkFlow } from './network-flow';
-import { sampleNetwork, networkPasses } from './network-flow-model';
+import { sampleNetwork } from './network-flow-model';
+import { createSceneNarration } from './scene-narration';
 
 /** One source of movement: the document's native scroll position.
  * Scenes use CSS sticky, never JS pin spacers. All rendering sleeps at rest. */
@@ -40,16 +41,10 @@ export function initMotion() {
   const hero = document.getElementById('hero');
   const brandSignature = initBrandSignature(hero);
   const workMarquee = initWorkMarquee();
-  const heroPrint = createHeroPrint(hero);
-  const choicesPrint = createHeroPrint(document.getElementById('folha'), {
-    stage: '.choices-print-stage', message: '.choices-print-body', finishAtBottom: true,
-    blocks: '.choices-opening > p,.choices-benefit', keepHeading: true, sidecar: '.choices-sketch'
-  });
+  const heroPrint = createHeroPrint(hero,{stage:'.hero-stage',message:'.hero-message',blocks:'.hero-lead',runMultiplier:.5});
+  const choicesPrint = createSceneNarration(document.getElementById('folha'),'.choices-print-stage','time');
   const landingInk = createLandingInk();
-  const networkPrint = createHeroPrint(document.getElementById('meios-digitais'), {
-    stage: '.network-stage', message: '.network-message', blocks: '.network-act',
-    keepHeading: true, footer: '.network-footer', isolateBlocks: true, runMultiplier: 1.8, passes: networkPasses
-  });
+  const networkPrint = createSceneNarration(document.getElementById('meios-digitais'),'.network-stage','network');
   const networkFlow = createNetworkFlow();
   const knowledgePrint = createHeroPrint(document.getElementById('deslocamento-2'), {
     stage: '.knowledge-cover-stage', message: '.knowledge-cover-copy',
@@ -60,9 +55,9 @@ export function initMotion() {
     blocks: '.handover-ink-message > p', keepHeading: true
   });
   addEventListener('beforeprint',()=>landingInk.print());
-  addEventListener('beforeprint',()=>networkFlow.render(1,false));
+  addEventListener('beforeprint',()=>networkFlow.print());
   addEventListener('afterprint',()=>landingInk.restore());
-  addEventListener('afterprint',()=>networkFlow.render(networkPrint?.render(scrollY) ?? 0,enabled));
+  addEventListener('afterprint',()=>networkFlow.restore());
   const flight = document.getElementById('leaf-flight');
   const depth = document.getElementById('leaf-depth');
   const leaf = document.getElementById('wind-leaf');

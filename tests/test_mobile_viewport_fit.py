@@ -28,7 +28,7 @@ with sync_playwright() as pw:
   q.goto(args.url,wait_until='networkidle');q.wait_for_function('window.__SL_DEBUG?.ready')
   q.wait_for_timeout(300)
   assert q.locator('main > section[data-number]').count()==17
-  for sid,body_sel,stage_sel,closing_sel in [('hero','.hero-message','.hero-stage','.text-actions'),('folha','.choices-print-body','.choices-print-stage','.choices-closing'),('deslocamento-2','.knowledge-cover-copy','.knowledge-cover-stage','.knowledge-cover-closing'),('handover-drawing','.handover-ink-message','.handover-ink-stage','.handover-ink-message>p:last-child')]:
+  for sid,body_sel,stage_sel,closing_sel in [('hero','.hero-message','.hero-stage','.text-actions'),('deslocamento-2','.knowledge-cover-copy','.knowledge-cover-stage','.knowledge-cover-closing'),('handover-drawing','.handover-ink-message','.handover-ink-stage','.handover-ink-message>p:last-child')]:
    section=q.locator('#'+sid);body=section.locator(body_sel);seen=set();expected=set()
    for step in range(71):
     progress=step/70
@@ -43,8 +43,6 @@ with sync_playwright() as pw:
      assert r['y']>=-1 and r['y']+r['height']<=h+1,(w,h,sid,progress,selector,r)
    assert expected<=seen,('unreadable lines',w,h,sid,sorted(expected-seen))
    # First body rows must never collapse underneath later text rows.
-   if sid=='hero':
-    assert section.locator('.hero-method').bounding_box()['y']>=section.locator('.hero-thesis').evaluate('e=>e.getBoundingClientRect().bottom')-1
    # Resizing a toolbar mid-reveal must preserve the reading position.
    section.evaluate('(e)=>scrollTo({top:Number(e.dataset.printStart)+Number(e.dataset.printRun)*.62,behavior:"instant"})')
    q.wait_for_timeout(100)
@@ -80,7 +78,7 @@ with sync_playwright() as pw:
   assert tabs.locator('a').nth(1).get_attribute('aria-selected')=='true'
   assert q.locator('#entrega-conhecimento').is_visible()
   q.evaluate('SLMotion.setReading(true)');q.wait_for_timeout(300)
-  for selector in ['.hero-message','.choices-print-body','.knowledge-cover-copy']:
+  for selector in ['.hero-message','.scene-narration','.knowledge-cover-copy']:
    assert q.locator(selector).evaluate('e=>getComputedStyle(e).overflowY==="visible"||e.scrollHeight<=e.clientHeight+1'),('reading content clipped',w,h,selector)
   assert not errors,errors
   print('PASS mobile reading, 17 chapters and resize',w,h,flush=True);q.close()

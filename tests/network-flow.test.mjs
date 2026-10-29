@@ -62,7 +62,7 @@ test('the answer starts after a complete first drawing and a reversible reading 
   assert.ok(Math.abs(cross.primaryOpacity+cross.responseOpacity-1)<1e-10);
   assert.equal(sampleNetwork(.95).responseInk,1);
   assert.equal(sampleNetwork(.95).collective,1);
-  assert.equal(sampleNetwork(1).act,3);
+  assert.equal(sampleNetwork(1).act,2);
   assert.equal(sampleNetwork(.2,false).primaryOpacity,1);
   assert.equal(sampleNetwork(.2,false).responseOpacity,1);
 });

@@ -15,6 +15,7 @@ ${publication.indexable ? 'Este arquivo resume o conteúdo desta edição do sit
 - [Laboratório](${publicUrl('/#laboratorio')}): landing pages, publicação, voz e busca em documentos locais.
 - [Processo](${publicUrl('/#processo')}): entender, investigar, prototipar, construir, testar e transferir capacidade.
 - [Possibilidades](${publicUrl('/#possibilidades')}): quatro roteiros locais preparados, anotação de contexto e exportação; IA externa opcional, explicitamente acionada.
+- [Caderno aberto](${publicUrl('/#caderno')}): índice das leituras e fontes.
 - [Manifesto](${publicUrl('/#manifesto')}): princípios que orientam o trabalho.
 - [Perguntas frequentes](${publicUrl('/perguntas/')}): escopo, autonomia, agentes e estágio dos projetos.
 
@@ -27,7 +28,7 @@ ${publication.indexable ? 'Este arquivo resume o conteúdo desta edição do sit
 - Universal Voice Engine: perfis de voz, roteiro, prévias e exportação de áudio em fluxo local. [Repositório](https://github.com/selvalabs/universal-voice-engine).
 - RAG Local: busca semântica e lexical em documentos locais, com referências às fontes e Ollama opcional. [Repositório](https://github.com/selvalabs/sialabs-local-rag).
 
-As telas identificadas como demonstrativas usam dados de demonstração. Capturas de UVE e RAG Local mostram interfaces reais sem comprovar uma execução de inferência. Os estudos de landing pages não implicam resultados comerciais medidos. O Caderno reúne seis notas editoriais originais sobre princípios de trabalho; não apresenta resultados de pesquisa científica. As referências de leitura não representam endosso dessas pessoas ao laboratório.
+As telas identificadas como demonstrativas usam dados de demonstração. Capturas de UVE e RAG Local mostram interfaces reais sem comprovar uma execução de inferência. Os estudos de landing pages não implicam resultados comerciais medidos. O Caderno reúne notas editoriais, o manifesto e ensaios em páginas de leitura próprias sobre princípios de trabalho; não apresenta resultados de pesquisa científica. As referências de leitura não representam endosso dessas pessoas ao laboratório.
 
 A Mesa de possibilidades apresenta um de quatro roteiros preparados no modo local. O texto anotado acompanha o esboço, mas não altera o roteiro e não é interpretado por IA. Uma integração opcional com Cloudflare Workers AI depende de configuração; a interface informa a disponibilidade e só envia texto e campo escolhido ao clicar em “Explorar com IA”. A exportação preserva a origem e o contexto do último resultado, sem incluir edições ainda não incorporadas.
 
