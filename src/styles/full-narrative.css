@@ -26,3 +26,12 @@ html.motion-edition #deslocamento-2.knowledge-narrative h2{grid-row:2;margin:0 a
 @media(max-width:759px){html.motion-edition #deslocamento-2.knowledge-narrative .narrative-stage{padding:16px 20px max(14px,var(--mobile-safe-bottom))}html.motion-edition #deslocamento-2.knowledge-narrative h2{font-size:clamp(26px,min(7vw,4.2svh),37px)}}
 @media(max-height:619px) and (min-width:600px){html.motion-edition #deslocamento-2.knowledge-narrative .narrative-stage{grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);grid-template-rows:auto minmax(0,1fr) auto}html.motion-edition #deslocamento-2.knowledge-narrative h2{grid-row:2;grid-column:1;font-size:clamp(25px,3.4vw,36px)}}
 html:not(.motion) #deslocamento-2.knowledge-narrative{overflow-x:clip!important}
+
+/* Six labels remain visible; only the selected piece narrates its outcome. */
+html.motion #processo.concise-process .process-panel:not(.is-active) .process-body{display:none}
+html.motion #processo.concise-process .process-panel{padding-block:10px!important;min-height:0}
+html.motion #processo.concise-process .process-panel h3{font-size:clamp(19px,2vw,28px)!important}
+html.motion #processo.concise-process .process-panel .process-body{font-size:16px!important;line-height:1.4!important}
+#processo.concise-process .process-output{display:inline-block;margin-top:5px;color:#e7cf9e}
+#processo.concise-process .scene-hint a{text-decoration:underline;text-underline-offset:3px}
+@media print{#processo.concise-process .process-body{display:block!important}}
