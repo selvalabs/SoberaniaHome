@@ -20,6 +20,8 @@ ROOT_TESTS = [
     'test_mobile_process_gallery.py',
     'test_visual_narrative.py',
     'test_full_narrative.py',
+    'test_reference_search.py',
+    'test_contact_brief.py',
     'test_ink_notebook.py',
     'test_generated_ink.py',
     'test_landing_ink.py',
