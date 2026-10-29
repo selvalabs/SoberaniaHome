@@ -48,6 +48,8 @@ export function initEditionInteractions() {
       function activate(index: number) {
         const selected = tabs[index].dataset.editionTab!;
         instrument.dataset.active = selected;
+        const compass=instrument.querySelector<HTMLElement>('.manifesto-compass');
+        if(compass){compass.style.setProperty('--compass-angle',`${index*36}deg`);const number=compass.querySelector('[data-manifesto-number]');if(number)number.textContent=String(index+1).padStart(2,'0');}
         tabs.forEach(tab => {
           const active = tab.dataset.editionTab === selected;
           tab.setAttribute('aria-selected', String(active));
