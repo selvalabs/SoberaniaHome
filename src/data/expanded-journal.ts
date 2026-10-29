@@ -176,5 +176,32 @@ export const expandedArticles:JournalArticle[] = [
         ]
       }
     ]
+  },
+  {
+    "slug": "capacidade-de-continuar",
+    "category": "Entrega / continuidade",
+    "title": "A entrega também é autonomia.",
+    "deck": "Acessos, documentação, dados e condições para continuar.",
+    "sections": [
+      {
+        "paragraphs": [
+          "Quem recebe um sistema precisa conseguir operá-lo amanhã. Por isso, combinamos desde o início quais acessos, registros e conhecimentos vão acompanhar a entrega.",
+          "As chaves ficam com você. O caminho fica registrado. Seus dados podem seguir com você.",
+          "Um sistema entregue. Capacidade compartilhada.",
+          "Um sistema entregue. Capacidade compartilhada.",
+          "Mapear contas, permissões e responsáveis faz parte do projeto. A operação precisa de acesso adequado, recuperável e documentado.",
+          "Acesso suficiente para cuidar. Permissão delimitada para proteger.",
+          "A próxima pessoa precisa compreender o que foi decidido, como o sistema funciona e por onde começar quando algo muda.",
+          "projeto /",
+          "├── LEIA-ME comece aqui",
+          "├── decisões / o porquê",
+          "├── operação / como cuidar",
+          "└── recuperação / como retomar",
+          "Para quem chega amanhã. E para quem precisa resolver hoje.",
+          "Formatos documentados e interfaces compreensíveis permitem integrar, adaptar e planejar uma migração quando ela fizer sentido.",
+          "Mudar de ferramenta pode dar trabalho. Não precisa significar começar do zero."
+        ]
+      }
+    ]
   }
 ];

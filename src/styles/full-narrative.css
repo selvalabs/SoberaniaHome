@@ -71,3 +71,16 @@ html:not(.motion) .field-narration p{grid-area:auto;margin:6px 0;opacity:1;visib
 @media(max-width:759px){.field-footer{font-size:10px;gap:12px}#deslocamento-1.technology-concise{padding:24px 20px}#deslocamento-1.technology-concise .technology-collage{height:clamp(220px,38svh,360px)}.field-narration{font-size:24px}}
 @media(prefers-reduced-motion:reduce){.technology-concise .cooperative-tasks li{transition:none}}
 @media print{.field-narration p{grid-area:auto!important;visibility:visible!important;opacity:1!important}}
+
+#editor.handover-section{padding-top:0}
+#editor .handover-ink-intro{margin-bottom:0}
+#editor .handover-narrative-stage{padding-inline:0}
+.handover-inspector{margin:0 auto 30px;max-width:1300px;border-top:1px solid var(--rule)}
+.handover-inspector>summary{padding:20px 0;cursor:pointer;font:14px/1.5 var(--mono);text-align:center;min-height:56px}
+.handover-inspector .handover-tabs>a{grid-template-rows:auto;min-height:64px;padding-block:16px}
+.handover-inspector .document-body>p{font-size:17px;line-height:1.45}
+.handover-inspector .handover-tabs>a>span{grid-row:1}
+.handover-inspector .handover-bench{padding:26px;gap:30px}
+html:not(.motion) #handover-drawing{overflow-x:clip!important}
+@media(max-width:759px){.handover-inspector .handover-bench{padding:18px}.handover-inspector .handover-tabs>a{min-height:50px}.handover-inspector .document-body>p{font-size:16px}}
+@media print{.handover-inspector::details-content{display:block}.handover-inspector>summary{display:none}}

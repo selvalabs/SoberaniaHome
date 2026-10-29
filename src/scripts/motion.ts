@@ -49,10 +49,7 @@ export function initMotion() {
   const networkFlow = createNetworkFlow();
   const fieldNarration = createFieldNarration();
   const knowledgePrint = createSceneNarration(document.getElementById('deslocamento-2'),'.knowledge-narrative-stage','knowledge');
-  const handoverPrint = createHeroPrint(document.getElementById('handover-drawing'), {
-    stage: '.handover-ink-stage', message: '.handover-ink-message',
-    blocks: '.handover-ink-message > p', keepHeading: true
-  });
+  const handoverPrint = createSceneNarration(document.getElementById('handover-drawing'),'.handover-narrative-stage','handover');
   addEventListener('beforeprint',()=>landingInk.print());
   addEventListener('beforeprint',()=>networkFlow.print());
   addEventListener('afterprint',()=>landingInk.restore());
