@@ -39,3 +39,5 @@ conteúdo completo, SEO, Pages e servidor Wi-Fi. Sem merge, release, VPS ou mirr
 - Sobre: identidade factual e Brasil permanecem explícitos; escutar/construir/compartilhar ganham um percurso visual conduzido pelo scroll. Apresentação original em /caderno/laboratorio-com-os-pes-no-mundo/.
 
 - Referências: caça-palavras, 110 nomes, lista acessível, mapa, brilho e tinta/embaralhamento de cinco segundos preservados. Instrução reduzida a uma ação; o aviso de não endosso continua visível.
+
+- Caderno: três chamadas curtas e biblioteca em três grupos sob escolha, com todas as leituras preservadas. O índice não vira uma nova parede de parágrafos; cada artigo mantém rota, fontes e metadados próprios.
