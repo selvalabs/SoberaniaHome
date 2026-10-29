@@ -7,7 +7,6 @@
   const grid = section.querySelector('[data-reference-grid]');
   const board = section.querySelector('[data-reference-board]');
   const targetList = section.querySelector('[data-reference-targets]');
-  const library = section.querySelector('[data-reference-library-list]');
   const status = section.querySelector('[data-reference-status]');
   const foundCount = section.querySelector('[data-reference-found]');
   const roundLabel = section.querySelector('[data-reference-round]');
@@ -19,18 +18,9 @@
   let seed = 34817;
   const random = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
   const shuffled = values => values.map(value => [random(), value]).sort((a,b) => a[0]-b[0]).map(entry => entry[1]);
-  let round = 0, busy = false, activeWords = [], cells = [];
-
-  function buildLibrary() {
-    const groups = [...new Set(names.map(item => item.field))];
-    library.replaceChildren(...groups.map(field => {
-      const group = document.createElement('section');
-      const heading = document.createElement('h4'); heading.textContent = field;
-      const list = document.createElement('p'); list.textContent = names.filter(item => item.field === field).map(item => item.name).join(' · ');
-      group.append(heading, list); return group;
-    }));
-    section.querySelector('.reference-library summary').textContent = `Ver as ${names.length} pessoas da curadoria`;
-  }
+  const compactViewport = matchMedia('(max-width: 759px)');
+  const layouts = new Map(), foundNames = new Set();
+  let round = 0, busy = false, activeWords = [], cells = [], candidates = [];
 
   function placeWord(word, matrix, cols, rows) {
     for (let attempt = 0; attempt < 6000; attempt++) {
@@ -46,24 +36,33 @@
     return null;
   }
 
-  function renderRound() {
-    round++;
-    const mobile = matchMedia('(max-width: 759px)').matches;
+  function buildLayout(mobile) {
     const cols = mobile ? 14 : 32, rows = mobile ? 18 : 22, wanted = mobile ? 12 : 30;
     const matrix = Array.from({length: rows}, () => Array(cols).fill(''));
-    const candidates = shuffled(names.map(item => ({...item, letters: normalize(item.name)})).filter(item => item.letters.length >= 4 && item.letters.length <= Math.max(cols,rows)));
-    const chosen = candidates.slice(0, wanted).sort((a,b) => b.letters.length-a.letters.length);
-    activeWords = chosen.map(word => placeWord(word,matrix,cols,rows)).filter(Boolean);
+    // Keep discoveries when a different layout is needed. Each layout is cached
+    // for this round, so rotating back restores the exact original board.
+    const eligible = candidates.filter(item => item.letters.length >= 4 && item.letters.length <= Math.max(cols,rows));
+    const chosen = [...eligible.filter(item => foundNames.has(item.name)), ...eligible.filter(item => !foundNames.has(item.name))]
+      .slice(0, wanted).sort((a,b) => b.letters.length-a.letters.length);
+    const words = chosen.map(word => placeWord(word,matrix,cols,rows)).filter(Boolean);
     matrix.forEach(row => row.forEach((letter,index) => { if (!letter) row[index] = alphabet[Math.floor(random()*alphabet.length)]; }));
+    return {cols, rows, words, letters: matrix.flat()};
+  }
+
+  function renderBoard() {
+    const focusedName = targetList.contains(document.activeElement) ? document.activeElement.textContent : null;
+    const listScroll = targetList.scrollTop;
+    const mobile = compactViewport.matches;
+    if (!layouts.has(mobile)) layouts.set(mobile, buildLayout(mobile));
+    const {cols, rows, words, letters} = layouts.get(mobile);
+    activeWords = words;
     grid.style.setProperty('--reference-cols', cols);
     grid.setAttribute('aria-label', `Caça-palavras, rodada ${round}, ${cols} colunas por ${rows} linhas.`);
-    cells = matrix.flat().map((letter,index) => {
+    cells = letters.map((letter,index) => {
       const cell = document.createElement('span'); cell.className = 'reference-cell'; cell.textContent = letter;
       cell.dataset.cell = index; cell.setAttribute('aria-hidden','true'); return cell;
     });
     grid.replaceChildren(...cells);
-    const placedIds = new Map(activeWords.map((word,index) => [word,index]));
-    const found = new Set(), visited = activeWords.map(() => new Set());
     const lookup = new Map();
     activeWords.forEach((word,id) => word.indices.forEach(index => {
       if (!lookup.has(index)) lookup.set(index,[]);
@@ -74,16 +73,23 @@
       item.title = word.field; return item;
     }));
     roundLabel.textContent = `${names.length} vozes · rodada ${String(round).padStart(2,'0')}`;
-    foundCount.textContent = `0 / ${activeWords.length} encontrados`;
-    status.textContent = `Passe ou toque para iluminar. ${names.length} referências.`;
-
-    function reveal(id) {
-      if (busy || found.has(id)) return;
-      found.add(id);
+    const refreshCount = () => {
+      const visibleFound = activeWords.filter(word => foundNames.has(word.name)).length;
+      foundCount.textContent = `${visibleFound} / ${activeWords.length} encontrados`;
+    };
+    function paintWord(id) {
       activeWords[id].indices.forEach(position => { cells[position].dataset.found = 'true'; });
       const item = targetList.querySelector(`[data-word="${id}"]`);
       item?.setAttribute('data-found','true'); item?.querySelector('button')?.setAttribute('aria-pressed','true');
-      foundCount.textContent = `${found.size} / ${activeWords.length} encontrados`;
+    }
+    activeWords.forEach((word,id) => { if (foundNames.has(word.name)) paintWord(id); });
+    refreshCount();
+
+    function reveal(id) {
+      if (busy || foundNames.has(activeWords[id].name)) return;
+      foundNames.add(activeWords[id].name);
+      paintWord(id);
+      refreshCount();
       status.textContent = `${activeWords[id].name} · ${activeWords[id].field}.`;
     }
     const discover = event => {
@@ -94,6 +100,19 @@
     grid.onpointerover = discover;
     grid.onclick = discover;
     grid.dataset.round = String(round);
+    if (focusedName) {
+      const buttons = [...targetList.querySelectorAll('button')];
+      (buttons.find(button => button.textContent === focusedName) || buttons[0])?.focus({preventScroll: true});
+    }
+    targetList.scrollTop = listScroll;
+  }
+
+  function renderRound() {
+    round++;
+    layouts.clear(); foundNames.clear();
+    candidates = shuffled(names.map(item => ({...item, letters: normalize(item.name)})));
+    renderBoard();
+    status.textContent = `Passe, toque ou selecione um nome na lista para iluminar. ${names.length} referências.`;
   }
 
   async function shuffleRound() {
@@ -109,8 +128,22 @@
     status.textContent = 'Nova rodada. Encontre outros nomes.';
     await pause(450);
     busy = false; shuffleButton.disabled = false;
+    // A rotation can also happen during the short ink-exit transition.
+    if (Number(grid.style.getPropertyValue('--reference-cols')) !== (compactViewport.matches ? 14 : 32)) renderBoard();
   }
 
   shuffleButton.addEventListener('click', shuffleRound);
+  compactViewport.addEventListener('change', () => {
+    if (busy) return; // The covered board will use the latest viewport at reveal.
+    renderBoard();
+    status.textContent = 'Grade adaptada à tela. Os nomes já encontrados continuam guardados nesta rodada.';
+  });
   renderRound();
+  section.dataset.ready = 'true';
+  section.closest('#referencias').querySelectorAll('[data-reference-interactive]').forEach(element => { element.hidden = false; });
+  const libraryDetails = section.querySelector('.reference-library');
+  libraryDetails.open = false;
+  let libraryWasOpen = false;
+  addEventListener('beforeprint', () => { libraryWasOpen = libraryDetails.open; libraryDetails.open = true; });
+  addEventListener('afterprint', () => { libraryDetails.open = libraryWasOpen; });
 })();

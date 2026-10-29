@@ -1,17 +1,29 @@
 ---
+import '../../styles/contact-brief.css';
 ---
 
-<section id="contato" class="section contact-section contact-concise" data-number="17">
+<section id="contato" class="section contact-section contact-concise" data-number="16">
   <div class="prose-section">
-    <div class="section-label"><span>17</span><span>Contato</span></div>
+    <div class="section-label"><span>16</span><span>Contato</span></div>
     <div class="two-columns">
       <div>
         <h2>Que parte da sua rotina precisa mudar?</h2>
-        <p class="lead">Conte o que acontece hoje.</p>
+        <p class="lead">Prepare o primeiro contato.</p>
       </div>
       <div>
         <div class="contact-list"><p>Sites.</p><p>Sistemas.</p><p>Automação.</p></div>
-        <div class="contact-links"><a class="text-link" href="#possibilidades">Explorar meu projeto</a><a class="text-link" href="https://github.com/selvalabs" target="_blank" rel="noopener noreferrer">GitHub</a></div>
+        <form class="contact-brief" data-contact-brief aria-label="Preparar uma mensagem" aria-describedby="contact-brief-notice">
+          <p id="contact-brief-notice" class="contact-brief-notice">O envio ainda não está conectado. Prepare e copie sua mensagem.</p>
+          <div class="contact-brief-details">
+            <label for="contact-brief-name">Seu nome <span>(opcional)</span><input id="contact-brief-name" type="text" autocomplete="name" maxlength="100" /></label>
+            <label for="contact-brief-reply">Como podemos falar com você? <span>(opcional)</span><input id="contact-brief-reply" type="text" autocomplete="off" maxlength="160" placeholder="E-mail ou outro contato" /></label>
+          </div>
+          <label for="contact-brief-project">O que você quer construir ou melhorar?<textarea id="contact-brief-project" rows="4" required maxlength="2400" placeholder="Conte um pouco da sua rotina e do que precisa mudar." aria-describedby="contact-brief-help"></textarea></label>
+          <p id="contact-brief-help" class="contact-brief-help">Use só as informações necessárias para começar a conversa. O texto fica nesta página até você copiar ou baixar.</p>
+          <div class="contact-brief-actions"><button type="submit" data-contact-brief-copy hidden disabled>Copiar mensagem</button><a href="#possibilidades">Explorar um exemplo</a></div>
+          <p class="contact-brief-status" data-contact-brief-status role="status" aria-live="polite" aria-atomic="true"></p>
+          <noscript><p class="contact-brief-help">Sem JavaScript, você pode escrever e copiar o texto manualmente. Este formulário não envia mensagens.</p></noscript>
+        </form>
       </div>
     </div>
   </div>
@@ -90,3 +102,7 @@
     </div>
   </footer>
 </section>
+
+<script>
+  import '../../scripts/contact-brief';
+</script>

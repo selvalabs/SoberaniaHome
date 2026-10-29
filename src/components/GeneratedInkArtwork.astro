@@ -13,7 +13,7 @@ const { scene } = Astro.props;
 const traces = { workbench, knowledge, handover, network, 'network-solution':networkSolution }[scene];
 const spec = landingInkScenes[scene];
 const prefix = `landing-${scene}`;
-const art = `${import.meta.env.BASE_URL}assets/ink/${scene}-generated-v1.png`;
+const art = `${import.meta.env.BASE_URL}assets/ink/${scene}-generated-v1.webp`;
 ---
 <svg class="generated-art" viewBox="-22 -32 1580 1090" role="img" aria-labelledby={`${prefix}-title ${prefix}-description`} data-generated-art data-landing-ink={scene}>
   <title id={prefix+'-title'}>{spec.title}</title>

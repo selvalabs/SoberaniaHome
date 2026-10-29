@@ -20,8 +20,8 @@
       {label:'Aula',asset:'edition/portfolio-circulo-lesson-v1.webp',alt:'Página real de aula do Círculo em desenvolvimento, com material, progresso e comentários.',caption:'Conteúdo, acompanhamento e conversa no mesmo lugar.'}
     ],
     editor: [
-      {label:'Documento',asset:'edition/portfolio-editor-real-document-v1.webp',alt:'Documento HTML autocontido antes de abrir o Inline Editor 1.6.1.',caption:'Um documento aberto para ler e transformar.'},
-      {label:'Edição',asset:'edition/portfolio-editor-real-v2.webp',alt:'Inline Editor 1.6.1 com ferramentas de edição e exportação do HTML.',caption:'Editar na página. Levar o documento consigo.'}
+      {label:'Documento',asset:'edition/portfolio-editor-real-document-v1.webp',alt:'Documento HTML autocontido antes de abrir a edição no navegador.',caption:'Um documento aberto para ler e transformar.'},
+      {label:'Edição',asset:'edition/portfolio-editor-real-v2.webp',alt:'Interface do Inline Editor com ferramentas de edição e exportação do HTML.',caption:'Editar na página. Levar o documento consigo.'}
     ],
     monitor: [
       {label:'Abertura',asset:'edition/portfolio-monitor-public-v1.webp',alt:'Página real do Monitor Comunitário para acompanhar avisos públicos e cadastrar um endereço.',caption:'Avisos públicos, mais perto de quem precisa.'},

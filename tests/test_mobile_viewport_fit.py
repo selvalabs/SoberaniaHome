@@ -27,7 +27,7 @@ with sync_playwright() as pw:
   q.on('pageerror',lambda e:errors.append(str(e)))
   q.goto(args.url,wait_until='networkidle');q.wait_for_function('window.__SL_DEBUG?.ready')
   q.wait_for_timeout(300)
-  assert q.locator('main > section[data-number]').count()==17
+  assert q.locator('main > section[data-number]').count()==16
   for sid,body_sel,stage_sel,closing_sel in [('hero','.hero-message','.hero-stage','.text-actions')]:
    section=q.locator('#'+sid);body=section.locator(body_sel);seen=set();expected=set()
    for step in range(71):
@@ -82,5 +82,5 @@ with sync_playwright() as pw:
   for selector in ['.hero-message','.scene-narration']:
    assert q.locator(selector).evaluate_all('es=>es.every(e=>getComputedStyle(e).overflowY==="visible"||e.scrollHeight<=e.clientHeight+1)'),('reading content clipped',w,h,selector)
   assert not errors,errors
-  print('PASS mobile reading, 17 chapters and resize',w,h,flush=True);q.close()
+  print('PASS mobile reading, 16 chapters and resize',w,h,flush=True);q.close()
  browser.close()

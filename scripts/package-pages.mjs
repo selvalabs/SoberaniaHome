@@ -36,7 +36,7 @@ export function packagePages(source, output, values = process.env) {
     tag: values.RELEASE_TAG,
     url: new URL(policy.basePath, policy.siteUrl).href,
     basePath: policy.basePath,
-    sections: 17,
+    sections: (fs.readFileSync(path.join(input, 'index.html'), 'utf8').match(/<section\b[^>]*\bdata-number="\d+"/g) || []).length,
     edition: 'complete',
     externalAI: false,
   };

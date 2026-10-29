@@ -168,7 +168,7 @@ export function initMotion() {
     root.classList.toggle('leaf-motion',leafEnabled);
     root.classList.add('motion-edition');
     root.dataset.mastHidden='false';
-    for(const item of all<HTMLElement>('#hero,#folha,#deslocamento-1,#deslocamento-2')) item.dataset.pin='false';
+    for(const item of all<HTMLElement>('#hero,#folha,#deslocamento-2')) item.dataset.pin='false';
     for(const scene of scenes) {
       scene.sequence.style.removeProperty('height');
       scene.track?.style.removeProperty('transform');

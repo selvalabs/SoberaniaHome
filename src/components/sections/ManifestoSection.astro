@@ -2,8 +2,8 @@
 import {principles} from '../../data/manifesto';
 const labels=['Dignidade','Autonomia','Supervisão','Saberes','Conexões','Ecologia','Cuidado','Documentar','Cooperar','Construir'];
 ---
-<section id="manifesto" class="section manifesto dark manifesto-edition manifesto-invitation manifesto-restored" data-number="13" aria-labelledby="manifesto-title">
-  <div class="manifesto-heading"><div class="section-label"><span>13</span><span>Manifesto</span></div><h2 id="manifesto-title">O que orienta<br /><em>cada escolha.</em></h2></div>
+<section id="manifesto" class="section manifesto dark manifesto-edition manifesto-invitation manifesto-restored" data-number="12" aria-labelledby="manifesto-title">
+  <div class="manifesto-heading"><div class="section-label"><span>12</span><span>Manifesto</span></div><h2 id="manifesto-title">O que orienta<br /><em>cada escolha.</em></h2></div>
   <div class="manifesto-control" data-edition-tabs data-active="principio-1">
     <div class="manifesto-compass" aria-hidden="true"><span data-manifesto-number>01</span><svg viewBox="0 0 240 240"><circle cx="120" cy="120" r="104"/><circle cx="120" cy="120" r="78"/><path d="M120 0V42M120 198V240M0 120H42M198 120H240M47 47L68 68M172 172L193 193M47 193L68 172M172 68L193 47"/><path class="compass-needle" d="M120 22L130 63L120 55L110 63Z"/></svg><small>PRINCÍPIO EM FOCO</small></div>
     <nav class="manifesto-tabs" data-edition-tablist aria-label="Princípios de trabalho">{labels.map((label,index)=><a href={`#orientacao-${index+1}`} data-edition-tab={`principio-${index+1}`} data-compass-index={index}><span>{String(index+1).padStart(2,'0')}</span>{label}</a>)}</nav>
