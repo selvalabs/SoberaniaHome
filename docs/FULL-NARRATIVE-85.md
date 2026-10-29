@@ -110,3 +110,5 @@ originais, normalizando apenas marcação e espaços de pontuação.
 
 Navegadores emulados, sem alegar homologação em aparelhos físicos. Publicação,
 merge e aprovação editorial continuam fora desta execução.
+
+- Impressão: paleta da bússola explicitamente adaptada ao papel; os dez princípios e seus links permanecem legíveis, sem depender da seleção em tela.

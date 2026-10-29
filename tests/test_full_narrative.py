@@ -60,6 +60,10 @@ with sync_playwright() as pw:
   q.wait_for_timeout(400);frames=q.evaluate('__SL_DEBUG.metrics.frames');q.wait_for_timeout(220);assert frames==q.evaluate('__SL_DEBUG.metrics.frames'),'perpetual animation loop'
   q.evaluate('SLMotion.setReading(true)');q.wait_for_function('!__SL_DEBUG.enabled')
   assert q.locator('[data-generated-complete]').evaluate_all('es=>es.every(e=>e.getAttribute("opacity")==="1")')
+  q.emulate_media(media='print')
+  assert q.locator('.manifesto-readout article:visible').count()==10
+  assert q.locator('.manifesto-readout .journal-read').first.evaluate('e=>getComputedStyle(e).color')=='rgb(17, 17, 17)'
+  q.emulate_media(media='screen')
   assert not errors,errors
   print('PASS all 17 chapters and preserved instruments',width,height,flush=True);q.close()
  q=browser.new_page(java_script_enabled=False,viewport={'width':320,'height':480});q.goto(args.url)

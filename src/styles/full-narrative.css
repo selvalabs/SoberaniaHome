@@ -17,7 +17,7 @@
 .manifesto-readout article{margin-block:20px}
 @media(max-width:599px){.manifesto-tabs{gap:6px}.manifesto-tabs a{font-size:10px;padding:9px}.manifesto-readout .journal-read{font-size:11px;max-width:90%;text-wrap:balance}}
 @media(prefers-reduced-motion:reduce){#manifesto .manifesto-compass svg{transition:none}}
-@media print{#manifesto .manifesto-tabs{display:none}.manifesto-readout article[hidden]{display:block!important}.manifesto-readout{color:black}}
+@media print{#manifesto.manifesto-restored{--ink:#111;--paper:#fff;--muted:#444;--rust:#743e20;--rule:#999;background:#fff;color:#111}#manifesto .manifesto-tabs{display:none}.manifesto-readout article[hidden]{display:block!important}.manifesto-readout{color:black}}
 
 #deslocamento-2.knowledge-narrative{background:var(--paper);color:var(--ink);margin:0;padding:0!important}
 html.motion-edition #deslocamento-2.knowledge-narrative .narrative-stage{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr) auto;padding:20px var(--pad) max(16px,var(--mobile-safe-bottom));gap:14px}
