@@ -35,3 +35,16 @@ html.motion #processo.concise-process .process-panel .process-body{font-size:16p
 #processo.concise-process .process-output{display:inline-block;margin-top:5px;color:#e7cf9e}
 #processo.concise-process .scene-hint a{text-decoration:underline;text-underline-offset:3px}
 @media print{#processo.concise-process .process-body{display:block!important}}
+
+/* Project interfaces lead the card. Details remain one deliberate click away. */
+html.motion-edition.motion :is(#trabalho,#laboratorio) .work-project.concise-project{display:flex!important;flex-direction:column;align-items:stretch;gap:8px;padding:18px!important;min-height:0;height:100%;overflow-y:auto!important}
+html.motion-edition.motion :is(#trabalho,#laboratorio) .work-project.concise-project h3{text-align:center;flex:none;margin:0!important;font-size:clamp(27px,3vw,44px)}
+html.motion-edition.motion :is(#trabalho,#laboratorio) .work-project.concise-project .card-meta{flex:none;margin:0!important}
+html.motion-edition.motion :is(#trabalho,#laboratorio) .work-project.concise-project .work-evidence{flex:1;min-height:180px!important;height:auto!important;margin:2px 0!important;grid-column:auto;grid-row:auto;width:100%}
+html.motion-edition.motion :is(#trabalho,#laboratorio) .work-project.concise-project>.project-summary{flex:none;margin:0!important;text-align:center;font-size:17px!important;line-height:1.35!important;max-width:100%}
+.project-tags{display:flex;justify-content:center;flex-wrap:wrap;gap:5px 12px;list-style:none;padding:0;margin:0;font:10px/1.5 var(--mono);color:var(--muted)}
+.project-tags li{border-bottom:1px solid var(--rule)}
+html.motion-edition.motion :is(#trabalho,#laboratorio) .work-project.concise-project .card-tail{flex:none;flex-wrap:wrap;gap:8px;margin:0!important;padding-top:6px!important}
+.project-reading{text-decoration:underline;text-underline-offset:3px}
+@media(max-width:759px),(max-height:619px){html.motion-edition.motion :is(#trabalho,#laboratorio) .work-project.concise-project .work-evidence{flex:none;height:240px!important;min-height:180px!important}html.motion-edition.motion :is(#trabalho,#laboratorio) .work-project.concise-project h3{font-size:29px}.project-tags{font-size:9px}}
+@media print{.project-tags{display:flex}.project-summary{font-size:13pt}}

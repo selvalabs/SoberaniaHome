@@ -82,5 +82,41 @@ export const expandedArticles:JournalArticle[] = [
         ]
       }
     ]
+  },
+  {
+    "slug": "ferramentas-em-uso",
+    "category": "Portfólio / ferramentas",
+    "title": "Ferramentas em uso.",
+    "deck": "O que cada projeto faz, o estágio de desenvolvimento e seus limites.",
+    "sections": [
+      {
+        "id": "analytics",
+        "heading": "SoberanIA Analytics",
+        "paragraphs": [
+          "Uma plataforma para reunir SEO, acompanhamento de acessos e conversões e Meta Ads na operação de landing pages. Agentes conectam ferramentas via MCP a um backend em infraestrutura própria, com controle de acesso e proteção dos dados. A integração com o gerador de landing pages e novos serviços está em desenvolvimento."
+        ]
+      },
+      {
+        "id": "circulo",
+        "heading": "Círculo",
+        "paragraphs": [
+          "Cursos e comunidade em uma plataforma moldada ao projeto: identidade, conteúdos, jornadas e acessos. A proposta inclui operação por agentes em fluxos controlados via MCP. Projetos aceitos no programa de parceiros podem usar a plataforma gratuitamente."
+        ]
+      },
+      {
+        "id": "editor-html",
+        "heading": "Editor HTML",
+        "paragraphs": [
+          "Textos, imagens e composição podem ser ajustados na própria página, pelo navegador. O cliente salva uma cópia editável ou exporta o HTML final para publicar. Pequenas mudanças passam a fazer parte da rotina de quem cuida do site."
+        ]
+      },
+      {
+        "id": "monitor",
+        "heading": "Monitor Comunitário",
+        "paragraphs": [
+          "Nem todo morador é titular da conta ou tem acesso aos cadastros das fornecedoras de água e luz. O Monitor aproxima os avisos de quem vive no endereço: acompanha desligamentos programados da Celesc e envia alertas pelo WhatsApp conforme o endereço cadastrado."
+        ]
+      }
+    ]
   }
 ];

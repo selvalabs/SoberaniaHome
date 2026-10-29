@@ -23,3 +23,5 @@ conteúdo completo, SEO, Pages e servidor Wi-Fi. Sem merge, release, VPS ou mirr
 - Saberes: gravura original centralizada, três falas ligadas à pesquisa/ofício/participação; argumentos e citação de Freire preservados em /caderno/saberes-em-comum/.
 
 - Processo: seis peças, encaixes e seleção preservados; seis verbos/saídas curtos, com narração apenas na peça em foco. Método integral em /caderno/antes-do-codigo/.
+
+- Trabalho: quatro interfaces, seletores e estados preservados; resumo de uma frase e tags por produto. Recursos MCP, proteção de dados, personalização e condições do programa de parceiros continuam identificáveis. Descrições completas em /caderno/ferramentas-em-uso/.
