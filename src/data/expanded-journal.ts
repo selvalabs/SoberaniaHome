@@ -343,6 +343,19 @@ export const expandedArticles:JournalArticle[] = [
         "paragraphs": [
           "Conhecimento, ferramentas e capacidade de continuar."
         ]
+      },
+      {
+        "id": "contato",
+        "heading": "Conversar sobre um projeto",
+        "paragraphs": [
+          "Conte o que acontece hoje. O primeiro passo pode ser uma boa pergunta.",
+          "Projetos de software.",
+          "IA e automação.",
+          "Infraestrutura.",
+          "Interfaces.",
+          "Pesquisa.",
+          "Experimentos difíceis de encaixar numa categoria."
+        ]
       }
     ]
   },
