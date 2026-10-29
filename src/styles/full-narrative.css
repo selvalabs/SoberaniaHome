@@ -123,3 +123,9 @@ html.motion-edition #espiral.concise-spiral .spiral-caption p{font:italic clamp(
 .about-route>span::before{content:'';position:absolute;left:50%;top:-31px;width:12px;height:12px;border-radius:50%;background:var(--paper);border:1px solid var(--rust)}
 .about-concise[data-field-phase="0"] .about-route>span:nth-of-type(1)::before,.about-concise[data-field-phase="1"] .about-route>span:nth-of-type(2)::before,.about-concise[data-field-phase="2"] .about-route>span:nth-of-type(3)::before{background:var(--rust);box-shadow:0 0 12px var(--rust)}
 .about-concise .field-footer{flex-wrap:wrap;justify-content:center;gap:18px 32px}
+
+#referencias.concise-references{padding-block:32px}
+#referencias.concise-references>h2{max-width:none;text-align:center;margin:18px auto 24px;font-size:clamp(34px,4.5vw,64px)}
+#referencias.concise-references .reference-search-top{align-items:center;margin-bottom:18px}
+#referencias.concise-references .reference-search-top p{font:12px/1.5 var(--mono);max-width:none}
+#referencias.concise-references .reference-status{font:12px/1.4 var(--mono);margin-top:12px}

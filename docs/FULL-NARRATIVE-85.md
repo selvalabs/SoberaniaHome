@@ -37,3 +37,5 @@ conteúdo completo, SEO, Pages e servidor Wi-Fi. Sem merge, release, VPS ou mirr
 - Espiral: órbitas, nove palavras, vida no centro e trajeto da folha preservados. Conexões narradas por frases curtas; textos longos de cada palavra em /caderno/nada-existe-isolado/.
 
 - Sobre: identidade factual e Brasil permanecem explícitos; escutar/construir/compartilhar ganham um percurso visual conduzido pelo scroll. Apresentação original em /caderno/laboratorio-com-os-pes-no-mundo/.
+
+- Referências: caça-palavras, 110 nomes, lista acessível, mapa, brilho e tinta/embaralhamento de cinco segundos preservados. Instrução reduzida a uma ação; o aviso de não endosso continua visível.
