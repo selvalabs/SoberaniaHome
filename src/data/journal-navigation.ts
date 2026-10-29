@@ -13,7 +13,7 @@ const articleScenes: Record<string, { anchor: string; label: string }> = {
   'antes-do-codigo': { anchor: 'processo', label: 'O processo' },
   'ferramentas-em-uso': { anchor: 'trabalho', label: 'Trabalhos do laboratório' },
   'outras-ferramentas': { anchor: 'laboratorio', label: 'Outras ferramentas' },
-  'tecnologia-no-trabalho': { anchor: 'deslocamento-1', label: 'Organização coletiva' },
+  'tecnologia-no-trabalho': { anchor: 'processo', label: 'O processo' },
   'capacidade-de-continuar': { anchor: 'editor', label: 'Autonomia na entrega' },
   'construir-no-brasil': { anchor: 'soberania', label: 'Construir no Brasil' },
   'nada-existe-isolado': { anchor: 'espiral', label: 'Nada existe isolado' },

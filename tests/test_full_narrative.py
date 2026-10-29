@@ -3,7 +3,7 @@ import argparse
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 parser=argparse.ArgumentParser();parser.add_argument('--url',default='http://127.0.0.1:4205/');args=parser.parse_args()
-IDS=['hero','folha','meios-digitais','trabalho','deslocamento-2','processo','laboratorio','deslocamento-1','editor','soberania','espiral','sobre','manifesto','referencias','caderno','possibilidades','contato']
+IDS=['hero','folha','meios-digitais','trabalho','deslocamento-2','processo','laboratorio','editor','soberania','espiral','sobre','manifesto','referencias','caderno','possibilidades','contato']
 with sync_playwright() as pw:
  browser=pw.chromium.launch()
  for width,height in [(1440,900),(390,844),(320,568),(844,390)]:
@@ -65,7 +65,7 @@ with sync_playwright() as pw:
   assert q.locator('.manifesto-readout .journal-read').first.evaluate('e=>getComputedStyle(e).color')=='rgb(17, 17, 17)'
   q.emulate_media(media='screen')
   assert not errors,errors
-  print('PASS all 17 chapters and preserved instruments',width,height,flush=True);q.close()
+  print('PASS all 16 chapters and preserved instruments',width,height,flush=True);q.close()
  q=browser.new_page(java_script_enabled=False,viewport={'width':320,'height':480});q.goto(args.url)
  assert q.evaluate('document.documentElement.scrollWidth<=innerWidth')
  assert q.locator('#caderno .journal-library a').count()>=19

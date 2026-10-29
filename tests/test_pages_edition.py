@@ -12,7 +12,7 @@ base = urlsplit(args.url)
 assert base.path == '/SoberaniaHome/'
 with urlopen(urljoin(args.url, 'release.json')) as response:
     release = json.load(response)
-assert release['sections'] == 17 and release['edition'] == 'complete'
+assert release['sections'] == 16 and release['edition'] == 'complete'
 assert release['url'] == 'https://selvalabs.github.io/SoberaniaHome/'
 with sync_playwright() as pw:
     browser = pw.chromium.launch()
@@ -35,7 +35,7 @@ with sync_playwright() as pw:
             print({'errors': errors, 'failures': failures, 'escaped': escaped}, flush=True)
             raise
         assert page.locator('h1').count() == 1
-        assert page.locator('section[data-number]').count() == 17
+        assert page.locator('section[data-number]').count() == 16
         assert page.locator('[data-atelier]').get_attribute('data-edge-enabled') == 'false'
         assert 'precisa chegar a quem trabalha.' in page.locator('#folha h2').inner_text()
         assert 'Saberes diferentes.' in page.locator('#knowledge-title').inner_text()
@@ -79,7 +79,7 @@ with sync_playwright() as pw:
     context = browser.new_context(java_script_enabled=False, viewport={'width': 390, 'height': 844})
     page = context.new_page()
     page.goto(args.url)
-    assert page.locator('section[data-number]').count() == 17
+    assert page.locator('section[data-number]').count() == 16
     assert page.locator('[data-atelier-form] button[type=submit]').is_disabled()
     assert 'Paulo Freire' in page.locator('#deslocamento-2 .narrative-footer').inner_text()
     assert page.locator('a[href="/SoberaniaHome/perguntas/"]').count() > 0

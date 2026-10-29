@@ -41,3 +41,7 @@ Base autorizada pelo usuário: `bd8661efc81f88af9c0556287e03eca945218b5e`, da ve
 Prévia local isolada; sem merge, release, publicação ou alteração em VPS/mirror. Reversão: a branch-base e o commit `bd8661e` continuam disponíveis. O formulário fica pronto para uma futura integração de envio, que exige definir o canal e o tratamento das mensagens.
 
 Resultados dos checks e identificação final da branch serão registrados no PR.
+
+## Ajuste após homologação visual
+
+O usuário solicitou retirar a antiga dobra 08 (Alta tecnologia / Organização coletiva), por não contribuir com a narrativa. A edição passa a ter 16 dobras: Laboratório segue diretamente para Entrega/Autonomia. Índice, numeração, contador, identidade Pages e checks acompanham a nova sequência. O artigo Organização coletiva permanece no Caderno e retorna ao Processo. Essa solicitação substitui o critério anterior de preservar as 17 dobras; as cinco gravuras e as duas galerias permanecem.

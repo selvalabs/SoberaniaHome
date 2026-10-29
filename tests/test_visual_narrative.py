@@ -12,7 +12,7 @@ def run(url,focus='all'):
   for width,height in [(1440,900),(1280,680),(1024,768),(390,844),(360,640),(320,480),(844,390)]:
    q=browser.new_page(viewport={'width':width,'height':height});errors=[];q.on('pageerror',lambda e:errors.append(str(e)))
    q.goto(url,wait_until='networkidle');q.wait_for_function('window.__SL_DEBUG?.ready')
-   assert q.locator('main>section[data-number]').count()==17
+   assert q.locator('main>section[data-number]').count()==16
    for sid,stage_selector in scenes:
     section=q.locator('#'+sid)
     def go(progress):
