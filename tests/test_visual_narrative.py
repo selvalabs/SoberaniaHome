@@ -7,8 +7,8 @@ from playwright.sync_api import sync_playwright
 def run(url,focus='all'):
  with sync_playwright() as pw:
   browser=pw.chromium.launch()
-  scenes=[('hero','.hero-stage'),('folha','.choices-print-stage'),('meios-digitais','.network-stage')]
-  if focus!='all':scenes=[scene for scene in scenes if scene[0]=={'hero':'hero','time':'folha','network':'meios-digitais'}[focus]]
+  scenes=[('hero','.hero-stage'),('folha','.choices-print-stage'),('meios-digitais','.network-stage'),('deslocamento-2','.knowledge-narrative-stage'),('handover-drawing','.handover-narrative-stage')]
+  if focus!='all':scenes=[scene for scene in scenes if scene[0]=={'hero':'hero','time':'folha','network':'meios-digitais','knowledge':'deslocamento-2','handover':'handover-drawing'}[focus]]
   for width,height in [(1440,900),(1280,680),(1024,768),(390,844),(360,640),(320,480),(844,390)]:
    q=browser.new_page(viewport={'width':width,'height':height});errors=[];q.on('pageerror',lambda e:errors.append(str(e)))
    q.goto(url,wait_until='networkidle');q.wait_for_function('window.__SL_DEBUG?.ready')
@@ -58,18 +58,19 @@ def run(url,focus='all'):
     q.evaluate('(theme)=>{if(document.documentElement.dataset.theme!==theme)document.querySelector("[data-theme-toggle]").click()}',theme)
     assert q.locator('.scene-narration').evaluate_all('es=>es.every(e=>getComputedStyle(e).color!==getComputedStyle(e.closest("section")).backgroundColor)')
    q.evaluate('SLMotion.setReading(true)');q.wait_for_function('!__SL_DEBUG.enabled && [...document.querySelectorAll(".narrative-section")].every(e=>e.dataset.printPinned==="false")')
-   assert q.locator('.narrative-section [data-narration-step]:visible').count()==6
+   assert q.locator('.narrative-section [data-narration-step]:visible').count()==12
    assert q.locator('.narrative-section [data-network-plate]').evaluate_all('es=>es.every(e=>getComputedStyle(e).opacity==="1")')
    q.evaluate('SLMotion.setReading(false)');q.emulate_media(reduced_motion='reduce');q.wait_for_function('!__SL_DEBUG.enabled && [...document.querySelectorAll(".narrative-section [data-narration-step]")].every(e=>e.dataset.current==="true")')
-   assert q.locator('.narrative-section [data-narration-step]:visible').count()==6
+   assert q.locator('.narrative-section [data-narration-step]:visible').count()==12
    assert not errors,errors
    print('PASS visual narration',focus,width,height,flush=True);q.close()
   if focus=='all':
    q=browser.new_page(java_script_enabled=False,viewport={'width':390,'height':844});q.goto(url)
-   assert q.locator('[data-narration-step]:visible').count()==6
+   assert q.locator('[data-narration-step]:visible').count()==12
    assert q.evaluate('document.documentElement.scrollWidth<=innerWidth')
-   assert q.locator('#caderno a.journal-read').count()==9
-   links=q.locator('#caderno a.journal-read').evaluate_all('es=>es.map(e=>e.href)')
+   links=q.locator('#caderno .journal-library a.journal-read').evaluate_all('es=>es.map(e=>e.href)')
+   expected=int(q.locator('.journal-stamp b').inner_text());assert len(links)==expected and expected>=18
+   assert len(set(links))==expected
    for link in links:
     response=q.goto(link);assert response.status==200
     assert q.locator('h1').count()==1
@@ -81,7 +82,7 @@ def run(url,focus='all'):
      assert 'capitalismo selvagem' in q.locator('main').inner_text();assert 'perderemos batalhas' in q.locator('main').inner_text();assert q.locator('.reading-sources a').count()==2
     if '/tempo-de-quem-trabalha/' in link:
      assert 'E a jornada de trabalho?' in q.locator('main').inner_text();assert 'Paráfrase de V. I. Lenin, 1914' in q.locator('main').inner_text()
-   print('PASS no-JS transcript and all 9 reading routes, original manifesto, sources and article metadata',flush=True);q.close()
+   print('PASS no-JS transcript and all reading routes, original manifesto, sources and article metadata',flush=True);q.close()
   browser.close()
 
 if __name__=='__main__':

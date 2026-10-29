@@ -1,3 +1,5 @@
+> A expansão para as 17 dobras está registrada em [FULL-NARRATIVE-85.md](./FULL-NARRATIVE-85.md). Este documento preserva o roteiro e a avaliação do piloto.
+
 # Estudo 85 — a cena conduz, o texto pontua
 
 Issue: https://github.com/selvalabs/SoberaniaHome/issues/85

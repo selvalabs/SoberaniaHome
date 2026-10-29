@@ -53,3 +53,60 @@ conteúdo completo, SEO, Pages e servidor Wi-Fi. Sem merge, release, VPS ou mirr
 - Revisão editorial do arquivo: espaçamento de pontuação normalizado nos textos transferidos, mantendo palavras, fontes e conteúdo.
 
 - Preview mobile conferido por captura: largura dos celulares passa a derivar da altura real do contêiner, reservando espaço para título, sombra e instrução. Corrige corte da moldura sem alongar o aparelho ou alterar seu scroll interno.
+
+## Cobertura final das 17 dobras
+
+| Dobra | Comunicação e instrumento preservado |
+| --- | --- |
+| 01 Hero | Oferta de sites, software e automações; árvore, folha, reveal e duas ações. |
+| 02 Tempo | Gravura sobre produtividade com três falas; argumentos e Lenin no Caderno. |
+| 03 Meios digitais | As duas gravuras: captura e construção de meios próprios; três falas e fontes. |
+| 04 Trabalho | Quatro produtos com interfaces, tabs, estágio e recursos curtos. |
+| 05 Saberes | Gravura central; pesquisa, ofício e participação narram a construção. |
+| 06 Processo | Seis peças; verbos e saídas, com explicação na etapa em foco. |
+| 07 Laboratório | Cinco cards, todas as landings, ELARA primeiro, UVE e RAG reais. |
+| 08 Tecnologia | Colagem cooperativa e tarefa em foco no scroll nativo. |
+| 09 Entrega | Gravura e três falas; documentos completos sob escolha. |
+| 10 Soberania | Três rotas animadas, caminhos e resultados curtos. |
+| 11 Conexões | Nove palavras, VIDA e folha em órbita; legendas curtas. |
+| 12 Sobre | Origem factual e Brasil; percurso escutar/construir/compartilhar. |
+| 13 Manifesto | Bússola, dez princípios, teclado e aprofundamento individual. |
+| 14 Referências | Caça-palavras, 110 nomes, tinta, mapa e lista acessível. |
+| 15 Caderno | Três chamadas; 19 leituras em três grupos voluntários. |
+| 16 Mesa | Quatro roteiros, etapas expansíveis, privacidade e exportação completa. |
+| 17 Contato | Oferta e duas ações; navegação, localização e pouso da folha preservados. |
+
+## Medição de prosa
+
+Comparação reproduzível: texto dos elementos `p` dentro de cada uma das 17 seções,
+entre o HTML da comparação `892fc94` e a revisão integral. Inclui parágrafos
+recolhidos e os nomes do caça-palavras; exclui títulos, links isolados, labels e
+conteúdo dos artigos. De 2.932 para 941 palavras nessa definição: cerca de 68% de
+redução. Não é uma medição de conversão, compreensão ou de todas as palavras da
+página. Os 110 nomes e a informação funcional/privacidade da Mesa são preservados.
+
+Os argumentos completos estão em 19 artigos com rotas próprias, fontes, metadados
+Article e entradas em sitemap/llms. Foram comparados os parágrafos migrados com os
+originais, normalizando apenas marcação e espaços de pontuação.
+
+## Validação local
+
+- TypeScript, 65 testes Node, build Astro (23 páginas), check-static e diff-check.
+- Cinco gravuras: sete viewports de 320×480 a 1440×900 e landscape, ordem,
+  reversibilidade, impressão/restauração, repouso e modos de leitura/reduced-motion.
+- Todas as 17 dobras: oito viewports de 320×480 a 844×390; hero, fim dos capítulos,
+  resize da toolbar e teclado nos documentos. Conferência visual de celular/desktop.
+- Duas galerias: scrub, gestos, controles, reversão e saída em dez viewports;
+  leitura interna, seleção de telas e decodificação dos previews. Molduras de
+  celulares verificadas dentro do rail, com instrução única fora dele.
+- Contraste em ambos os temas; área segura; campos em foco; nenhuma nova animação
+  permanente em repouso. Bússola visível no celular e links com contraste mínimo 4,5:1.
+- Mesa local e contrato edge simulado: erros, timeout, recuperação, privacidade,
+  zero envio indevido e exportação completa. Testes não ativam IA em produção.
+- HTML sem JS: narração e documentos acessíveis, 19 leituras, formulário sem envio.
+- npm audit: zero vulnerabilidades. requirements-pages.txt fixado: sem
+  vulnerabilidades conhecidas em consulta sem resolução de dependências transitivas.
+  requirements.txt é uma especificação por intervalos, não um lockfile auditado.
+
+Navegadores emulados, sem alegar homologação em aparelhos físicos. Publicação,
+merge e aprovação editorial continuam fora desta execução.

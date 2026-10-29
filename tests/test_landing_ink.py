@@ -3,7 +3,7 @@ import argparse
 from playwright.sync_api import sync_playwright
 
 parser=argparse.ArgumentParser();parser.add_argument('--url',default='http://127.0.0.1:4198/');args=parser.parse_args()
-SCENES=[('workbench','folha','.choices-print-stage'),('knowledge','deslocamento-2','.knowledge-cover-stage'),('handover','handover-drawing','.handover-ink-stage'),('network','meios-digitais','.network-stage'),('network-solution','meios-digitais','.network-stage')]
+SCENES=[('workbench','folha','.choices-print-stage'),('knowledge','deslocamento-2','.knowledge-narrative-stage'),('handover','handover-drawing','.handover-narrative-stage'),('network','meios-digitais','.network-stage'),('network-solution','meios-digitais','.network-stage')]
 with sync_playwright() as pw:
  b=pw.chromium.launch()
  for w,h in [(1440,900),(1280,680),(1024,768),(390,844),(360,640),(320,480),(844,390)]:
@@ -47,7 +47,8 @@ with sync_playwright() as pw:
    assert svg.locator('[data-generated-pencil]').get_attribute('hidden') is not None
    if h>=580:assert svg.locator('[data-generated-highlight]').evaluate_all('es=>es.every(e=>+e.getAttribute("opacity")>0)')
   assert '/caderno/tempo-de-quem-trabalha/' in q.locator('#folha .narrative-footer a').get_attribute('href')
-  assert q.locator('.knowledge-reference a').get_attribute('href').startswith('https://dominiopublico.mec.gov.br/')
+  assert '/caderno/saberes-em-comum/' in q.locator('#deslocamento-2 .narrative-footer a').get_attribute('href')
+  q.locator('.handover-inspector > summary').click()
   for i in range(3):
    q.locator('.handover-tabs a').nth(i).click()
    assert q.locator('.handover-tabs a').nth(i).get_attribute('aria-selected')=='true'
@@ -65,6 +66,7 @@ with sync_playwright() as pw:
  q=b.new_page(java_script_enabled=False,viewport={'width':390,'height':844});q.goto(args.url)
  assert q.locator('[data-landing-ink]').count()==5
  assert q.locator('[data-landing-ink]').evaluate_all('es=>es.every(e=>e.querySelector("[data-generated-complete]").getAttribute("opacity")!=="0")')
+ q.locator('.handover-inspector > summary').click()
  assert q.locator('.handover-document:visible').count()==3
  assert q.evaluate('document.documentElement.scrollWidth<=innerWidth')
  print('PASS integrated ink no-JS',flush=True);q.close()

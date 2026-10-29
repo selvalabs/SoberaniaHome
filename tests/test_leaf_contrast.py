@@ -5,8 +5,8 @@ from playwright.sync_api import sync_playwright
 parser=argparse.ArgumentParser();parser.add_argument('--url',default='http://127.0.0.1:4196/')
 args=parser.parse_args()
 selectors=['.eyebrow-lab','.eyebrow-tech-label','.hero-ink-note','.choices-paper','.choices-ink','.choices-closing strong',
-           '.knowledge-copy-technical','.knowledge-cover-closing','.knowledge-note',
-           '.technology-note','.technology-closing strong']
+           '#deslocamento-2 h2 em','#deslocamento-2 .scene-narration p',
+           '.technology-note','.technology-concise .field-narration p']
 measure=r'''selector=>{
  const rgb=s=>(s.match(/[\d.]+/g)||[]).map(Number);
  const lum=c=>c.slice(0,3).map(x=>{x/=255;return x<=.04045?x/12.92:((x+.055)/1.055)**2.4}).reduce((sum,x,i)=>sum+x*[.2126,.7152,.0722][i],0);

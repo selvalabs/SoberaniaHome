@@ -19,7 +19,7 @@ with sync_playwright() as pw:
     # The short offer stays on the landing; the original argument has a reading route.
     assert 'quem trabalha, produz e se organiza' in page.locator('#hero .hero-lead').inner_text()
     assert 'Sites, software e automações' in page.locator('#hero .hero-lead').inner_text()
-    assert page.locator('#manifesto a').get_attribute('href').endswith('/caderno/manifesto/')
+    assert '/caderno/manifesto/' in page.locator('.manifesto-readout a').first.get_attribute('href')
     assert 'Sistemas brasileiros' in page.locator('.brand-signature .eyebrow-tech-label').inner_text()
     assert page.locator('section[data-number]').count()==17
     assert page.locator('meta[name="robots"]').get_attribute('content')=='noindex,follow'
@@ -102,7 +102,7 @@ with sync_playwright() as pw:
     assert page.locator('[data-atelier-form] button[type="submit"]').is_disabled()
     assert page.locator('h1').count()==1 and page.locator('.work-uve img').count()==1
     assert 'Paulo Freire' in page.locator('[data-reference-library-list]').text_content()
-    assert page.locator('#caderno a.journal-read').count()==9
+    assert page.locator('#caderno .journal-library a.journal-read').count()>=18
     assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
     page.goto(args.url+'perguntas/',wait_until='load')
     assert page.locator('h1').count()==1

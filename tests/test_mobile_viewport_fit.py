@@ -28,7 +28,7 @@ with sync_playwright() as pw:
   q.goto(args.url,wait_until='networkidle');q.wait_for_function('window.__SL_DEBUG?.ready')
   q.wait_for_timeout(300)
   assert q.locator('main > section[data-number]').count()==17
-  for sid,body_sel,stage_sel,closing_sel in [('hero','.hero-message','.hero-stage','.text-actions'),('deslocamento-2','.knowledge-cover-copy','.knowledge-cover-stage','.knowledge-cover-closing'),('handover-drawing','.handover-ink-message','.handover-ink-stage','.handover-ink-message>p:last-child')]:
+  for sid,body_sel,stage_sel,closing_sel in [('hero','.hero-message','.hero-stage','.text-actions')]:
    section=q.locator('#'+sid);body=section.locator(body_sel);seen=set();expected=set()
    for step in range(71):
     progress=step/70
@@ -72,14 +72,15 @@ with sync_playwright() as pw:
     tail=section.locator('p,a,button,summary').filter(visible=True).last
     tail.scroll_into_view_if_needed();r=tail.bounding_box()
     assert r['y']<h and r['y']+r['height']>0,(w,h,sid,'unreachable end',r)
+  q.locator('.handover-inspector>summary').click()
   tabs=q.locator('.handover-tabs')
   assert tabs.get_attribute('aria-orientation')==('horizontal' if w<760 else 'vertical')
   tabs.locator('a').first.focus();q.keyboard.press('ArrowRight' if w<760 else 'ArrowDown')
   assert tabs.locator('a').nth(1).get_attribute('aria-selected')=='true'
   assert q.locator('#entrega-conhecimento').is_visible()
   q.evaluate('SLMotion.setReading(true)');q.wait_for_timeout(300)
-  for selector in ['.hero-message','.scene-narration','.knowledge-cover-copy']:
-   assert q.locator(selector).evaluate('e=>getComputedStyle(e).overflowY==="visible"||e.scrollHeight<=e.clientHeight+1'),('reading content clipped',w,h,selector)
+  for selector in ['.hero-message','.scene-narration']:
+   assert q.locator(selector).evaluate_all('es=>es.every(e=>getComputedStyle(e).overflowY==="visible"||e.scrollHeight<=e.clientHeight+1)'),('reading content clipped',w,h,selector)
   assert not errors,errors
   print('PASS mobile reading, 17 chapters and resize',w,h,flush=True);q.close()
  browser.close()

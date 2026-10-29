@@ -21,6 +21,7 @@ with sync_playwright() as p:
   rail=q.locator('.landing-phone-rail');hint=q.locator('.landing-phone-scroll-hint')
   assert hint.count()==1 and hint.locator('xpath=ancestor::*[contains(@class,"landing-phone-rail")]').count()==0
   rect=q.locator('.landing-phone-frame').first.bounding_box();assert 1.95<rect['height']/rect['width']<2.15,rect
+  rail_rect=rail.bounding_box();assert rect['y']+rect['height']<=rail_rect['y']+rail_rect['height']-5,('phone frame clipped by rail',rect,rail_rect)
   phone=q.locator('.landing-phone-screen').first;phone.evaluate('(e)=>e.scrollTop=150');assert phone.evaluate('(e)=>e.scrollTop')>=149
   before=hint.bounding_box()['x'];rail.evaluate('(e)=>e.scrollLeft=300');q.wait_for_timeout(100);assert abs(hint.bounding_box()['x']-before)<1
   assert q.locator('.landing-phone-heading strong',has_text='ELARA').count()==1
