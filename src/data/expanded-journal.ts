@@ -8,7 +8,7 @@ export const expandedArticles:JournalArticle[] = [
     "sections": [
       {
         "paragraphs": [
-          "Há conhecimento na pesquisa , no ofício e na vida cotidiana. Quem trabalha com uma ferramenta, cuida de uma comunidade ou enfrenta um problema todos os dias conhece detalhes que precisam participar do projeto.",
+          "Há conhecimento na pesquisa, no ofício e na vida cotidiana. Quem trabalha com uma ferramenta, cuida de uma comunidade ou enfrenta um problema todos os dias conhece detalhes que precisam participar do projeto.",
           "Colocamos esses saberes em conversa com o conhecimento técnico para decidir o que construir, experimentar caminhos e ajustar a solução com quem vai usá-la.",
           "Quem vive o problema participa da construção."
         ]

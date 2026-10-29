@@ -49,3 +49,5 @@ conteúdo completo, SEO, Pages e servidor Wi-Fi. Sem merge, release, VPS ou mirr
 - Conferência visual: bússola explicitamente visível no celular, ponteiro no anel externo e link de aprofundamento com contraste no fundo escuro.
 
 - Caderno mobile: chamadas reduzidas a três temas clicáveis, sem sinopses ou links duplicados. Os títulos completos permanecem nos artigos, na biblioteca e no nome acessível de cada chamada.
+
+- Revisão editorial do arquivo: espaçamento de pontuação normalizado nos textos transferidos, mantendo palavras, fontes e conteúdo.
