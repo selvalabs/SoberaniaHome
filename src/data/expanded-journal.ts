@@ -312,5 +312,38 @@ export const expandedArticles:JournalArticle[] = [
         ]
       }
     ]
+  },
+  {
+    "slug": "laboratorio-com-os-pes-no-mundo",
+    "category": "Laboratório / apresentação",
+    "title": "Tecnologia com os pés no mundo.",
+    "deck": "De Florianópolis, em conversa com outros territórios.",
+    "sections": [
+      {
+        "paragraphs": [
+          "A Soberania Labs é um laboratório independente de tecnologia em Florianópolis, Brasil. Construímos software, ferramentas de inteligência artificial, infraestrutura e experiências digitais.",
+          "Nosso trabalho começa em uma situação concreta: alguém que precisa organizar uma comunidade, cuidar de um acervo, acompanhar um serviço ou transformar uma rotina.",
+          "Pesquisa, desenvolvimento e documentação caminham juntos. Cada projeto precisa deixar um caminho de operação, aprendizado e continuidade."
+        ]
+      },
+      {
+        "heading": "De onde partimos",
+        "paragraphs": [
+          "Florianópolis, Brasil. Em conversa com outros territórios."
+        ]
+      },
+      {
+        "heading": "Como trabalhamos",
+        "paragraphs": [
+          "Escuta, investigação, construção. Aprender com o uso faz parte."
+        ]
+      },
+      {
+        "heading": "O que fica",
+        "paragraphs": [
+          "Conhecimento, ferramentas e capacidade de continuar."
+        ]
+      }
+    ]
   }
 ];

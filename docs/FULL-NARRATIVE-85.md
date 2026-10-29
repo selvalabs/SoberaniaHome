@@ -35,3 +35,5 @@ conteúdo completo, SEO, Pages e servidor Wi-Fi. Sem merge, release, VPS ou mirr
 - Soberania: diagrama animado e três rotas/tabs preservados; caminhos e resultados curtos assumem a explicação. Contexto técnico, formação e infraestrutura brasileira preservados em /caderno/construir-no-brasil/.
 
 - Espiral: órbitas, nove palavras, vida no centro e trajeto da folha preservados. Conexões narradas por frases curtas; textos longos de cada palavra em /caderno/nada-existe-isolado/.
+
+- Sobre: identidade factual e Brasil permanecem explícitos; escutar/construir/compartilhar ganham um percurso visual conduzido pelo scroll. Apresentação original em /caderno/laboratorio-com-os-pes-no-mundo/.
