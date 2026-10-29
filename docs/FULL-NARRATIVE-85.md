@@ -112,3 +112,27 @@ Navegadores emulados, sem alegar homologação em aparelhos físicos. Publicaç�
 merge e aprovação editorial continuam fora desta execução.
 
 - Impressão: paleta da bússola explicitamente adaptada ao papel; os dez princípios e seus links permanecem legíveis, sem depender da seleção em tela.
+
+## Pages, prévia e entrega para revisão
+
+- Fixture final do produto: `b136fadb3179e48fdd3b2ba023ddddd5501a77f3`,
+  385 arquivos, 95.694.841 bytes e 307 referências locais verificadas.
+  `v0.0.0` é apenas a identidade da fixture local; nenhuma tag foi criada.
+- Testes Pages passaram: edição pública mobile/desktop/sem JS, as 17 dobras,
+  impressão dos dez princípios, sete viewports dos reveals e todas as 19 leituras.
+  A checagem completa dos reveals/rotas foi feita no artefato `a4a507a`; a fixture
+  final acrescenta somente o contraste do manifesto para impressão, validado
+  novamente pelo teste completo de instrumentos em quatro viewports e sem JS.
+- Prévia reutilizada: http://192.168.1.4:4205/ (HTTP 200, 17 dobras), processo
+  existente 24712, bind 0.0.0.0. Artigo Saberes também responde HTTP 200.
+- Comparação #83 preservada em http://192.168.1.4:4204/ (HTTP 200), processo 27224.
+- Base remota confirmada por fetch: `892fc94309d9a3132e5e8472f1d43f1e5e92e382`.
+  Main permanece `80d2140ce6f4270e7b434852198047417b188117` / v0.3.0.
+- Issue #85 e PR #86 em rascunho; branch `study/85-animation-led-narrative`.
+  O PR tem base #83 por autorização explícita: não deve ser tratado como uma
+  release independente antes de resolver a dependência. Os workflows atuais
+  filtram PRs para main; esta base de estudo não recebe jobs automáticos.
+- Rollback da experiência: piloto `a1e3487`, ou comparação `892fc94`.
+  Sem migrações, novos assets, dependências ou alterações no contrato de backend.
+- Sem merge, release de produção, deploy, Worker, VPS ou sincronização de mirror.
+  A homologação editorial permanece no PR; a goal cobre implementação e validação.
