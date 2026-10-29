@@ -25,3 +25,5 @@ conteúdo completo, SEO, Pages e servidor Wi-Fi. Sem merge, release, VPS ou mirr
 - Processo: seis peças, encaixes e seleção preservados; seis verbos/saídas curtos, com narração apenas na peça em foco. Método integral em /caderno/antes-do-codigo/.
 
 - Trabalho: quatro interfaces, seletores e estados preservados; resumo de uma frase e tags por produto. Recursos MCP, proteção de dados, personalização e condições do programa de parceiros continuam identificáveis. Descrições completas em /caderno/ferramentas-em-uso/.
+
+- Laboratório: cinco cards e todas as telas/landings preservados, ELARA continua primeiro; resumos de uma frase, recursos e estágio visíveis. Phones mantêm scroll independente e proporção; explicação completa em /caderno/outras-ferramentas/.

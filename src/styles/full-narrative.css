@@ -48,3 +48,7 @@ html.motion-edition.motion :is(#trabalho,#laboratorio) .work-project.concise-pro
 .project-reading{text-decoration:underline;text-underline-offset:3px}
 @media(max-width:759px),(max-height:619px){html.motion-edition.motion :is(#trabalho,#laboratorio) .work-project.concise-project .work-evidence{flex:none;height:240px!important;min-height:180px!important}html.motion-edition.motion :is(#trabalho,#laboratorio) .work-project.concise-project h3{font-size:29px}.project-tags{font-size:9px}}
 @media print{.project-tags{display:flex}.project-summary{font-size:13pt}}
+
+/* Phone proportions and their independent internal scrolling stay intact. */
+html.motion-edition.motion #laboratorio .landing-project.concise-project .work-evidence{height:360px!important;min-height:360px!important;flex:none}
+@media(min-width:1100px) and (min-height:800px){html.motion-edition.motion #laboratorio .landing-project.concise-project .work-evidence{height:430px!important;min-height:430px!important}}

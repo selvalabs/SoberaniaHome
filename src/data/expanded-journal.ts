@@ -118,5 +118,48 @@ export const expandedArticles:JournalArticle[] = [
         ]
       }
     ]
+  },
+  {
+    "slug": "outras-ferramentas",
+    "category": "Portfólio / laboratório",
+    "title": "Publicar, encontrar, criar.",
+    "deck": "As propostas, interfaces e condições das ferramentas do laboratório.",
+    "sections": [
+      {
+        "id": "landing-pages",
+        "heading": "Uma proposta. Muitas formas.",
+        "paragraphs": [
+          "Páginas para apresentar serviços, organizar uma oferta e convidar à participação. A coleção reúne propostas para educação, trabalho autoral e comunidade. Role dentro de cada celular para conhecer a página inteira."
+        ]
+      },
+      {
+        "id": "esquerda-em-foco",
+        "heading": "Esquerda em Foco",
+        "paragraphs": [
+          "Uma publicação para conhecer candidaturas, trajetórias e suas fontes. A consulta por estado e cargo aproxima cada nome do contexto da eleição, preservando o recorte e as referências de cada edição."
+        ]
+      },
+      {
+        "id": "tech-ia",
+        "heading": "Tech / IA",
+        "paragraphs": [
+          "Um espaço de leitura e investigação sobre tecnologia e inteligência artificial. Textos, glossário e ferramentas de consulta conectam conceitos a novas perguntas. Uma experiência editorial ainda em desenvolvimento."
+        ]
+      },
+      {
+        "id": "uve",
+        "heading": "Universal Voice Engine",
+        "paragraphs": [
+          "Gera voz a partir de um perfil local e de um roteiro, com saída em WAV ou MP3. O Studio reúne perfis, edição de texto, prévias e exportação — sem depender de um serviço hospedado de voz."
+        ]
+      },
+      {
+        "id": "rag-local",
+        "heading": "RAG Local",
+        "paragraphs": [
+          "Organiza coleções de documentos e encontra evidências com busca semântica e lexical. As respostas preservam referências às fontes; documentos, índice e histórico ficam no armazenamento local, com Ollama opcional."
+        ]
+      }
+    ]
   }
 ];
