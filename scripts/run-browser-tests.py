@@ -27,7 +27,7 @@ ROOT_TESTS = [
     'test_landing_ink.py',
     'test_editor_demo_layout.py',
 ]
-PAGES_TESTS = ['test_mobile_process_gallery.py', 'test_pages_edition.py', 'test_project_galleries.py', 'test_visual_narrative.py', 'test_full_narrative.py', 'test_ink_notebook.py', 'test_generated_ink.py', 'test_landing_ink.py', 'test_editor_demo_layout.py']
+PAGES_TESTS = ['test_mobile_process_gallery.py', 'test_pages_edition.py', 'test_project_galleries.py', 'test_visual_narrative.py', 'test_full_narrative.py', 'test_reference_search.py', 'test_contact_brief.py', 'test_ink_notebook.py', 'test_generated_ink.py', 'test_landing_ink.py', 'test_editor_demo_layout.py']
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--directory', required=True)
