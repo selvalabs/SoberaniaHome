@@ -96,3 +96,17 @@ html:not(.motion) #handover-drawing{overflow-x:clip!important}
 #soberania.concise-routes .route-footnote{margin-top:18px;text-align:center;font:12px var(--mono)}
 #soberania.concise-routes .route-footnote a{text-decoration:underline;text-underline-offset:4px}
 @media(max-width:759px){#soberania.concise-routes .route-panel{padding:18px;gap:14px}#soberania.concise-routes .route-diagram{height:clamp(160px,27svh,230px)}#soberania.concise-routes .route-panel-copy>p{font-size:21px}}
+
+/* Keep life, the orbit and the leaf together; the readout is a short caption. */
+html.motion-edition.motion #espiral.concise-spiral [data-motion-static=false] .spiral-stage{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr) auto!important;gap:10px!important;padding:10px var(--pad)!important}
+html.motion-edition.motion #espiral.concise-spiral [data-motion-static=false] .orbit-view{width:min(100%,900px);justify-self:center;max-width:none;height:100%;min-height:0}
+html.motion-edition #espiral.concise-spiral .spiral-reading{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:8px 24px;align-items:center;width:min(100%,1100px);justify-self:center}
+html.motion-edition #espiral.concise-spiral .spiral-captions{min-height:0}
+html.motion-edition #espiral.concise-spiral .spiral-caption>.small-label{margin:0 0 6px}
+html.motion-edition #espiral.concise-spiral .spiral-caption p{font:italic clamp(20px,2vw,28px)/1.2 var(--serif)}
+#espiral.concise-spiral .orbit-note{min-height:0;padding:8px 0 8px 18px;border-top:0;border-left:1px solid #506a4b}
+#espiral.concise-spiral .orbit-note h3{font-size:18px;margin-bottom:5px}
+#espiral.concise-spiral .orbit-note p{font-size:15px;max-width:none;line-height:1.4}
+#espiral.concise-spiral .orbit-instruction{grid-column:1/-1;font:10px var(--mono);text-align:center;margin:0}
+#espiral.concise-spiral .scene-hint a{text-decoration:underline;text-underline-offset:3px}
+@media(max-width:759px){html.motion-edition #espiral.concise-spiral .spiral-reading{gap:8px 12px}#espiral.concise-spiral .orbit-note h3{font-size:16px}#espiral.concise-spiral .orbit-note p{font-size:13px}}

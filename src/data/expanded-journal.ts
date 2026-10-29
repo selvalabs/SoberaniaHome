@@ -241,5 +241,76 @@ export const expandedArticles:JournalArticle[] = [
         ]
       }
     ]
+  },
+  {
+    "slug": "nada-existe-isolado",
+    "category": "Ecologia / relações",
+    "title": "Nada existe isolado.",
+    "deck": "Trabalho, energia, água, território e cultura atravessam o digital.",
+    "sections": [
+      {
+        "heading": "Demandas",
+        "paragraphs": [
+          "Tudo começa na vida.",
+          "Uma ferramenta ganha sentido quando responde a uma necessidade concreta de quem vai usá-la."
+        ]
+      },
+      {
+        "heading": "Código",
+        "paragraphs": [
+          "Código é uma escolha.",
+          "As regras de um sistema organizam possibilidades: quem acessa, quem decide e quem pode transformar."
+        ]
+      },
+      {
+        "heading": "Dados",
+        "paragraphs": [
+          "Dados têm contexto.",
+          "Coletar o necessário, explicar o uso e preservar o controle de quem produz a informação."
+        ]
+      },
+      {
+        "heading": "Energia",
+        "paragraphs": [
+          "A nuvem também tem chão.",
+          "Software depende de máquinas e energia. Reutilizar um resultado, reduzir processamento e dimensionar o sistema para o uso são decisões de projeto."
+        ]
+      },
+      {
+        "heading": "Água",
+        "paragraphs": [
+          "Infraestrutura encontra território.",
+          "Os recursos que sustentam a vida também sustentam a tecnologia. Essa relação precisa permanecer visível."
+        ]
+      },
+      {
+        "heading": "Trabalho",
+        "paragraphs": [
+          "Tecnologia é trabalho coletivo.",
+          "Automatizar tarefas pode ampliar capacidades quando as pessoas participam das decisões e dos benefícios."
+        ]
+      },
+      {
+        "heading": "Território",
+        "paragraphs": [
+          "Cada lugar faz perguntas próprias.",
+          "A conexão cai? O celular é compartilhado? A rotina acontece fora de uma mesa? As condições do lugar ajudam a decidir como a ferramenta deve funcionar."
+        ]
+      },
+      {
+        "heading": "Cultura",
+        "paragraphs": [
+          "Imaginar é construir possibilidades.",
+          "A cultura transforma o que desejamos. O que desejamos orienta os sistemas que construímos."
+        ]
+      },
+      {
+        "heading": "Conhecimento",
+        "paragraphs": [
+          "Conhecimento cresce em circulação.",
+          "Documentação, pesquisa e troca de experiências permitem que mais pessoas compreendam e transformem a tecnologia."
+        ]
+      }
+    ]
   }
 ];

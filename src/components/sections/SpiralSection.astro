@@ -1,17 +1,7 @@
 ---
-const nodes = [
-  {name:'DEMANDAS',title:'Tudo começa na vida.',text:'Uma ferramenta ganha sentido quando responde a uma necessidade concreta de quem vai usá-la.'},
-  {name:'CÓDIGO',title:'Código é uma escolha.',text:'As regras de um sistema organizam possibilidades: quem acessa, quem decide e quem pode transformar.'},
-  {name:'DADOS',title:'Dados têm contexto.',text:'Coletar o necessário, explicar o uso e preservar o controle de quem produz a informação.'},
-  {name:'ENERGIA',title:'A nuvem também tem chão.',text:'Software depende de máquinas e energia. Reutilizar um resultado, reduzir processamento e dimensionar o sistema para o uso são decisões de projeto.'},
-  {name:'ÁGUA',title:'Infraestrutura encontra território.',text:'Os recursos que sustentam a vida também sustentam a tecnologia. Essa relação precisa permanecer visível.'},
-  {name:'TRABALHO',title:'Tecnologia é trabalho coletivo.',text:'Automatizar tarefas pode ampliar capacidades quando as pessoas participam das decisões e dos benefícios.'},
-  {name:'TERRITÓRIO',title:'Cada lugar faz perguntas próprias.',text:'A conexão cai? O celular é compartilhado? A rotina acontece fora de uma mesa? As condições do lugar ajudam a decidir como a ferramenta deve funcionar.'},
-  {name:'CULTURA',title:'Imaginar é construir possibilidades.',text:'A cultura transforma o que desejamos. O que desejamos orienta os sistemas que construímos.'},
-  {name:'CONHECIMENTO',title:'Conhecimento cresce em circulação.',text:'Documentação, pesquisa e troca de experiências permitem que mais pessoas compreendam e transformem a tecnologia.'}
-];
+const nodes = [{"name": "DEMANDAS", "title": "Uma necessidade real.", "text": "É dela que o projeto parte."}, {"name": "CÓDIGO", "title": "Regras que escolhemos.", "text": "Quem pode acessar, decidir e transformar?"}, {"name": "DADOS", "title": "Memória do trabalho.", "text": "Coletar o necessário. Manter o contexto."}, {"name": "ENERGIA", "title": "A internet tem chão.", "text": "Máquinas e energia sustentam cada tarefa."}, {"name": "ÁGUA", "title": "Tecnologia ocupa território.", "text": "Recursos da vida também sustentam sistemas."}, {"name": "TRABALHO", "title": "Capacidade compartilhada.", "text": "As pessoas decidem como automatizar."}, {"name": "TERRITÓRIO", "title": "Cada lugar tem condições.", "text": "A conexão e a rotina importam."}, {"name": "CULTURA", "title": "Criar outros caminhos.", "text": "A cultura também transforma o código."}, {"name": "CONHECIMENTO", "title": "Saber em circulação.", "text": "Aprender. Documentar. Compartilhar."}];
 ---
-<section id="espiral" class="section spiral-section dark" data-number="11">
+<section id="espiral" class="section spiral-section dark concise-spiral" data-number="11">
   <div class="sequence spiral-sequence" data-kind="spiral" data-states="4">
     <div class="scene-frame">
       <div class="prose-section section-intro spiral-intro"><div class="section-label"><span>11</span><span>Conexões</span></div><h2>Nada existe <em>isolado.</em></h2></div>
@@ -24,16 +14,16 @@ const nodes = [
         </div>
         <div class="spiral-reading">
           <div class="spiral-captions">
-            <article class="spiral-caption"><span class="small-label">01 / Organizar</span><p>A demanda vira processo.<br/>O processo encontra o software.</p></article>
-            <article class="spiral-caption"><span class="small-label">02 / Sustentar</span><p>O software usa energia.<br/>A energia vem do território.</p></article>
-            <article class="spiral-caption"><span class="small-label">03 / Nutrir</span><p>O território sustenta a vida.<br/>A vida sustenta a comunidade.</p></article>
-            <article class="spiral-caption"><span class="small-label">04 / Imaginar</span><p>A comunidade cria cultura.<br/>A cultura transforma o código.</p></article>
+            <article class="spiral-caption"><span class="small-label">01 / Organizar</span><p>Da necessidade ao código.</p></article>
+            <article class="spiral-caption"><span class="small-label">02 / Sustentar</span><p>Do código à energia.</p></article>
+            <article class="spiral-caption"><span class="small-label">03 / Nutrir</span><p>Da energia ao território.</p></article>
+            <article class="spiral-caption"><span class="small-label">04 / Imaginar</span><p>Do território à cultura.</p></article>
           </div>
           <div class="orbit-note" id="orbit-note" aria-live="polite" aria-atomic="true"><h3 id="orbit-note-title">{nodes[0].title}</h3><p id="orbit-note-text">{nodes[0].text}</p></div>
-          <p class="orbit-instruction">Toque em uma palavra para seguir a conexão.</p>
+          <p class="orbit-instruction">Toque numa palavra.</p>
         </div>
       </div>
-      <footer class="scene-foot"><span class="scene-hint">O sistema nunca é apenas digital.</span><div class="scene-progress" aria-hidden="true"><i></i></div><div class="scene-controls"><button type="button" data-prev aria-label="Conexão anterior">←</button><button type="button" data-next aria-label="Próxima conexão">→</button></div></footer>
+      <footer class="scene-foot"><span class="scene-hint"><a href="/caderno/nada-existe-isolado/">As relações no Caderno</a></span><div class="scene-progress" aria-hidden="true"><i></i></div><div class="scene-controls"><button type="button" data-prev aria-label="Conexão anterior">←</button><button type="button" data-next aria-label="Próxima conexão">→</button></div></footer>
     </div>
   </div>
 </section>

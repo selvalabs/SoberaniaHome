@@ -33,3 +33,5 @@ conteúdo completo, SEO, Pages e servidor Wi-Fi. Sem merge, release, VPS ou mirr
 - Entrega: gravura central com três falas; documentos e tabs preservados num inspetor nativo sob escolha. Argumentos originais em /caderno/capacidade-de-continuar/. As cinco gravuras agora mantêm reveal também em viewports baixos.
 
 - Soberania: diagrama animado e três rotas/tabs preservados; caminhos e resultados curtos assumem a explicação. Contexto técnico, formação e infraestrutura brasileira preservados em /caderno/construir-no-brasil/.
+
+- Espiral: órbitas, nove palavras, vida no centro e trajeto da folha preservados. Conexões narradas por frases curtas; textos longos de cada palavra em /caderno/nada-existe-isolado/.
