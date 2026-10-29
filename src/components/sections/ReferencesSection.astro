@@ -7,10 +7,10 @@ import references from "../../data/references.json";
   <h2>Não começamos <em>do zero.</em></h2>
   <div class="reference-search-top">
     <p>110 vozes. Referências de estudo, sem endosso.</p>
-    <div><button type="button" class="text-link" id="open-map">ABRIR O MAPA ↗</button></div>
+    <div data-reference-interactive hidden><button type="button" class="text-link" id="open-map">ABRIR O MAPA ↗</button></div>
   </div>
   <div class="reference-search" data-reference-search>
-    <div class="reference-toolbar">
+    <div class="reference-toolbar" data-reference-interactive hidden>
       <span data-reference-round>Encontre as referências</span>
       <button type="button" class="reference-shuffle" data-reference-shuffle>
         <span>Cobrir e embaralhar</span>
@@ -18,24 +18,36 @@ import references from "../../data/references.json";
       </button>
     </div>
     <div class="reference-search-layout">
-      <div class="reference-board-shell" data-reference-board>
+      <div class="reference-board-shell" data-reference-board data-reference-interactive hidden>
         <div class="reference-grid" data-reference-grid role="img" aria-label="Caça-palavras com nomes da curadoria"></div>
         <div class="reference-ink" aria-hidden="true"></div>
       </div>
       <aside class="reference-clues">
-        <div class="reference-clues-head">
+        <div class="reference-clues-head" data-reference-interactive hidden>
           <span>Nesta rodada</span>
           <span data-reference-found>0 encontrados</span>
         </div>
-        <ul data-reference-targets></ul>
-        <details class="reference-library">
+        <ul data-reference-targets data-reference-interactive hidden></ul>
+        <details class="reference-library" open>
           <summary>Ver as 110 pessoas da curadoria</summary>
           <div data-reference-library-list class="reference-library-list">{references.map(group => <section><h4>{group.field}</h4><p>{group.people.join(" · ")}</p></section>)}</div>
         </details>
       </aside>
     </div>
-    <p class="reference-status" data-reference-status aria-live="polite">Passe ou toque num nome para iluminar.</p>
+    <p class="reference-status" data-reference-status aria-live="polite">A curadoria completa está disponível na lista acima.</p>
   </div>
 </section>
 
 <script id="reference-data" type="application/json" set:html={JSON.stringify(references)} />
+
+<style>
+  [data-reference-interactive][hidden] { display: none !important; }
+  .reference-search:not([data-ready]) .reference-search-layout { display: block; }
+  .reference-search:not([data-ready]) .reference-library > div { max-height: none; overflow: visible; }
+  @media print {
+    [data-reference-interactive], .reference-status { display: none !important; }
+    .reference-search-layout { display: block; }
+    .reference-library > div { max-height: none; overflow: visible; }
+    .reference-library::details-content { display: block; }
+  }
+</style>
