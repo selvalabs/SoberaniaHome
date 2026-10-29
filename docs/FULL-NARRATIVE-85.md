@@ -45,3 +45,5 @@ conteúdo completo, SEO, Pages e servidor Wi-Fi. Sem merge, release, VPS ou mirr
 - Mesa: ferramenta funcional preservada, sem alterar os quatro roteiros ou o contrato da IA. Passos viram etapas expansíveis de uma sequência; explicações, dados/decisões e próximo teste ficam sob escolha. Privacidade, origem e estados continuam visíveis; exportação preserva o resultado completo.
 
 - Contato e rodapé: pergunta direta, três campos de oferta e duas ações. Localização, navegação, modo de leitura e a chegada da folha ao monte final preservados; apresentação original arquivada junto do texto Sobre.
+
+- Conferência visual: bússola explicitamente visível no celular, ponteiro no anel externo e link de aprofundamento com contraste no fundo escuro.

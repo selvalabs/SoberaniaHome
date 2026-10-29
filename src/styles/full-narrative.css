@@ -1,10 +1,10 @@
 /* Full narrative #85: existing visual instruments lead, copy names the action. */
-#manifesto.manifesto-restored{display:block;text-align:center;min-height:0;padding:36px var(--pad)!important}
+#manifesto.manifesto-restored{--ink:#eee9df;--paper:#202724;--muted:#bac7b3;--rust:#e9b983;--rule:#a7b59a55;display:block;text-align:center;min-height:0;padding:36px var(--pad)!important}
 #manifesto.manifesto-restored .manifesto-heading{position:static;text-align:center}
 #manifesto.manifesto-restored .manifesto-heading .section-label{margin-bottom:18px}
 #manifesto.manifesto-restored h2{font-size:clamp(34px,4.5vw,64px);margin-inline:auto}
 .manifesto-control{max-width:1000px;margin:24px auto 0;min-width:0}
-#manifesto .manifesto-compass{width:clamp(170px,24vw,290px);margin:0 auto 24px}
+#manifesto.manifesto-restored .manifesto-compass{display:grid;width:clamp(170px,24vw,290px);margin:0 auto 24px}
 #manifesto .manifesto-compass svg{transform:rotate(var(--compass-angle,0deg));transition:transform 1s cubic-bezier(.2,.75,.3,1);opacity:1}
 #manifesto .compass-needle{fill:var(--rust);stroke:var(--rust);filter:drop-shadow(0 0 7px #e9ba7b80)}
 .manifesto-tabs{display:flex;justify-content:center;flex-wrap:wrap;gap:8px}
