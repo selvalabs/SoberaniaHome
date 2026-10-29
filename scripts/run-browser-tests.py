@@ -13,19 +13,19 @@ ROOT_TESTS = [
     'test_leaf_reveal_origin.py', 'test_leaf_gallery_spiral.py', 'test_theme_orbit.py',
     'test_leaf_contrast.py', 'test_horizontal_viewports.py', 'test_project_galleries.py',
     'test_site_edition.py', 'test_landing_touch.py', 'test_atelier_edge_ui.py',
-    'test_brand_signature.py', 'test_hero_print.py', 'test_choices_print.py', 'test_work_marquee.py',
+    'test_brand_signature.py', 'test_work_marquee.py',
     'test_mobile_viewport_fit.py',
     'test_mobile_safe_area.py',
     'test_mobile_reading_resize.py',
     'test_mobile_process_gallery.py',
-    'test_knowledge_print.py',
-    'test_digital_commons.py',
+    'test_visual_narrative.py',
+    'test_full_narrative.py',
     'test_ink_notebook.py',
     'test_generated_ink.py',
     'test_landing_ink.py',
     'test_editor_demo_layout.py',
 ]
-PAGES_TESTS = ['test_mobile_process_gallery.py', 'test_pages_edition.py', 'test_project_galleries.py', 'test_hero_print.py', 'test_choices_print.py', 'test_digital_commons.py', 'test_ink_notebook.py', 'test_generated_ink.py', 'test_landing_ink.py', 'test_editor_demo_layout.py']
+PAGES_TESTS = ['test_mobile_process_gallery.py', 'test_pages_edition.py', 'test_project_galleries.py', 'test_visual_narrative.py', 'test_full_narrative.py', 'test_ink_notebook.py', 'test_generated_ink.py', 'test_landing_ink.py', 'test_editor_demo_layout.py']
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--directory', required=True)

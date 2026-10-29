@@ -4,11 +4,11 @@ import '../../styles/editorial-atelier.css';
 const edgeEnabled = import.meta.env.PUBLIC_EDGE_AI === 'true';
 const initial = scenarios.cooperativa;
 ---
-<section id="possibilidades" class="section atelier-section" data-number="16" aria-labelledby="atelier-title" data-atelier data-edge-enabled={String(edgeEnabled)}>
-  <div class="section-label"><span>16</span><span>Mesa de possibilidades / do problema ao primeiro teste</span></div>
+<section id="possibilidades" class="section atelier-section atelier-concise" data-number="16" aria-labelledby="atelier-title" data-atelier data-edge-enabled={String(edgeEnabled)}>
+  <div class="section-label"><span>16</span><span>Mesa de possibilidades</span></div>
   <div class="atelier-heading">
-    <h2 id="atelier-title">E se o próximo sistema<br/><em>começasse aqui?</em></h2>
-    <p>Escolha uma situação, examine um caminho possível e leve um esboço para conversar com sua equipe. Comece pelo que precisa mudar na rotina.</p>
+    <h2 id="atelier-title">Vamos ao<br/><em>primeiro teste.</em></h2>
+    <p>Escolha um campo. Explore um caminho.</p>
   </div>
   <ol class="atelier-guide" aria-label="Como usar esta mesa"><li><span>01</span> Escolha um exemplo</li><li><span>02</span> Anote sua situação</li><li><span>03</span> Leve um primeiro passo</li></ol>
   <div class="atelier-workspace">
@@ -18,11 +18,11 @@ const initial = scenarios.cooperativa;
       <label for="atelier-sector">01 / De onde vem a pergunta?</label>
       <select id="atelier-sector" name="sector">{Object.entries(sectorLabels).map(([value,label])=><option value={value}>{label}</option>)}</select>
       <label for="atelier-context">02 / O que precisa funcionar melhor? <span>(opcional no exemplo local)</span></label>
-      <p id="atelier-context-hint" class="atelier-help">Quem enfrenta a dificuldade? Como resolve hoje? O que gostaria de mudar?</p>
-      <textarea id="atelier-context" name="context" rows="5" maxlength="1800" aria-describedby="atelier-context-hint atelier-context-error" placeholder="Por exemplo: organizar os pedidos da feira sem perder a conversa com quem produz."></textarea>
+      <p id="atelier-context-hint" class="atelier-help">Quem participa? O que precisa funcionar?</p>
+      <textarea id="atelier-context" name="context" rows="5" maxlength="1800" aria-describedby="atelier-context-hint atelier-context-error" placeholder="Ex.: reunir os pedidos da feira."></textarea>
       <div class="atelier-input-tools"><button type="button" data-atelier-example>Usar um exemplo de situação</button><span data-atelier-count>0 / 1800</span></div>
       <p id="atelier-context-error" class="atelier-field-error" data-atelier-error hidden></p>
-      <div class="atelier-actions"><button type="submit" class="atelier-primary">Montar meu esboço local ↗</button><button type="button" data-atelier-ai hidden>Explorar com IA ↗</button></div>
+      <div class="atelier-actions"><button type="submit" class="atelier-primary">Montar esboço local</button><button type="button" data-atelier-ai hidden>Explorar com IA</button></div>
       <p class="atelier-privacy" data-atelier-privacy>O exemplo local é um roteiro preparado para o campo escolhido. Sua anotação acompanha o esboço, mas não altera esse roteiro. Não há inferência de IA nem envio do texto. Evite dados pessoais ou confidenciais.</p>
       </fieldset>
       <div class="atelier-connection"><strong>IA nesta versão</strong><p data-atelier-connection role="status">{edgeEnabled ? 'Aguardando verificação da conexão. O exemplo local está disponível.' : 'Não conectada. Você pode explorar os quatro exemplos locais e baixar seu esboço.'}</p><button type="button" data-atelier-retry hidden>Verificar conexão novamente</button></div>
@@ -32,14 +32,14 @@ const initial = scenarios.cooperativa;
     <div class="atelier-output" data-atelier-output>
       <span class="atelier-mode" data-atelier-output-mode>Demonstração local / cenário preparado</span>
       <h3 id="atelier-result" data-atelier-title tabindex="-1">{initial.title}</h3>
-      <p class="atelier-summary" data-atelier-summary>{initial.summary}</p>
-      <div class="atelier-context-note"><strong>Sua situação neste esboço</strong><p data-atelier-result-context>Nenhuma anotação incluída. Este é o exemplo de cooperativa.</p><small data-atelier-context-origin>Anotação de contexto; o roteiro local é preparado.</small></div>
+      <details class="atelier-explanation"><summary>Sobre este exemplo</summary><p class="atelier-summary" data-atelier-summary>{initial.summary}</p></details>
+      <div class="atelier-context-note" hidden><strong>Sua situação neste esboço</strong><p data-atelier-result-context>Nenhuma anotação incluída. Este é o exemplo de cooperativa.</p><small data-atelier-context-origin>Anotação de contexto; o roteiro local é preparado.</small></div>
       <p class="atelier-draft" data-atelier-draft role="status" hidden>Há uma anotação nova. Atualize o esboço para incorporá-la. O download mantém o último resultado.</p>
-      <ol class="atelier-flow" data-atelier-steps>{initial.steps.map((step,index)=><li data-step={String(index+1).padStart(2,'0')}><strong>{step.title}</strong><p>{step.detail}</p></li>)}</ol>
-      <div class="atelier-boundaries"><div><h4>Dados que fazem sentido</h4><ul data-atelier-data>{initial.data.map(item=><li>{item}</li>)}</ul></div><div><h4>Decisões que continuam humanas</h4><ul data-atelier-human>{initial.human.map(item=><li>{item}</li>)}</ul></div></div>
-      <p class="atelier-next" data-atelier-next>{initial.next}</p>
-      <button class="atelier-export" type="button" data-atelier-export hidden>Levar este esboço ↓</button>
-      <p class="atelier-continuation">Para levar à conversa: quem precisa participar desse primeiro teste? <a href="#laboratorio" data-jump>Conheça outras ferramentas do laboratório ↗</a></p>
+      <ol class="atelier-flow" data-atelier-steps>{initial.steps.map((step,index)=><li data-step={String(index+1).padStart(2,'0')}><details name="atelier-steps" open={index===0}><summary><strong>{step.title}</strong></summary><p>{step.detail}</p></details></li>)}</ol>
+      <details class="atelier-explanation"><summary>Dados e decisões humanas</summary><div class="atelier-boundaries"><div><h4>Dados que fazem sentido</h4><ul data-atelier-data>{initial.data.map(item=><li>{item}</li>)}</ul></div><div><h4>Decisões que continuam humanas</h4><ul data-atelier-human>{initial.human.map(item=><li>{item}</li>)}</ul></div></div>
+      </details><details class="atelier-explanation"><summary>Como testar este caminho</summary><p class="atelier-next" data-atelier-next>{initial.next}</p></details>
+      <button class="atelier-export" type="button" data-atelier-export hidden>Baixar esboço</button>
+      <p class="atelier-continuation"><a href="/caderno/mesa-de-possibilidades/">Como funciona esta Mesa · Caderno</a></p>
     </div>
   </div>
   <noscript><p class="atelier-privacy">Este cenário pode ser lido sem JavaScript. Para combinar outros contextos e exportar um esboço, ative os recursos interativos do navegador.</p></noscript>

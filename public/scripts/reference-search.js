@@ -75,7 +75,7 @@
     }));
     roundLabel.textContent = `${names.length} vozes · rodada ${String(round).padStart(2,'0')}`;
     foundCount.textContent = `0 / ${activeWords.length} encontrados`;
-    status.textContent = `Passe pelas letras para acender as referências. ${names.length} pessoas na curadoria.`;
+    status.textContent = `Passe ou toque para iluminar. ${names.length} referências.`;
 
     function reveal(id) {
       if (busy || found.has(id)) return;
@@ -106,7 +106,7 @@
     renderRound();
     await pause(120);
     board.dataset.inked = 'false';
-    status.textContent = 'Nova rodada. Os nomes e as letras mudaram de lugar.';
+    status.textContent = 'Nova rodada. Encontre outros nomes.';
     await pause(450);
     busy = false; shuffleButton.disabled = false;
   }

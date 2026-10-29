@@ -24,7 +24,7 @@ export function createLandingInk() {
   scenes.forEach(scene=>observer?observer.observe(scene.svg):scene.cache());
   function render(progress:Record<string,number>,active:boolean) {
     for(const scene of scenes){
-      const enabled=active&&(innerHeight>=580||scene.key==='network'||scene.key==='network-solution');
+      const enabled=active;
       const p=enabled?(progress[scene.key]??0):1;
       const state=scene.painter.paint(p,enabled);
       scene.svg.dataset.inkProgress=state.progress.toFixed(6);
@@ -33,10 +33,10 @@ export function createLandingInk() {
       Object.assign(scene.debug,{progress:state.progress,index:state.index,enabled,tip:state.tip});
     }
   }
-  let last:Record<string,number>={},active=false;
+  let last:Record<string,number>={},active=false,printing=false;
   return {
-    render(progress:Record<string,number>,enabled:boolean){last=progress;active=enabled;render(progress,enabled);},
-    print(){render({},false);}, restore(){render(last,active);},
+    render(progress:Record<string,number>,enabled:boolean){if(printing)return;last=progress;active=enabled;render(progress,enabled);},
+    print(){printing=true;render({},false);}, restore(){printing=false;render(last,active);},
     debug:Object.fromEntries(scenes.map(scene=>[scene.key,scene.debug])),
   };
 }

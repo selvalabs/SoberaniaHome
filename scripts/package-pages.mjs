@@ -8,7 +8,7 @@ import { resolveSitePolicy } from '../src/lib/site-policy.mjs';
 // source files and the root development build are preserved.
 export function relocatePages(text, extension, base) {
   if (base === '/') return text;
-  let result = text.replace(/(["'`])\/(?=(?:assets|scripts|demos|_astro|perguntas|favicon\.svg|robots\.txt|sitemap\.xml|llms\.txt|api)(?:\/|["'`?#]))/g, `$1${base}`);
+  let result = text.replace(/(["'`])\/(?=(?:assets|scripts|demos|_astro|perguntas|caderno|favicon\.svg|robots\.txt|sitemap\.xml|llms\.txt|api)(?:\/|["'`?#]))/g, `$1${base}`);
   if (['.html', '.svg'].includes(extension)) {
     result = result.replace(/(\b(?:src|href|poster|data-[\w-]+)\s*=\s*["'])\/(?!\/)/g,
       (match, prefix, offset, source) => source.slice(offset + prefix.length).startsWith(base) ? match : prefix + base);

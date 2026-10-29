@@ -1,3 +1,4 @@
+import {journalArticles,articlePath} from '../data/journal';
 import { localPath, resolveSitePolicy } from './site-policy.mjs';
 
 export const publication = resolveSitePolicy(import.meta.env, import.meta.env.PROD);
@@ -11,7 +12,7 @@ export const siteIdentity = {
   imageAlt: 'Soberania Labs. Tecnologia a serviço da humanidade: software, conhecimento e autonomia.',
 };
 
-export const publicPages = ['/', '/perguntas/'];
+export const publicPages = ['/', '/perguntas/', ...journalArticles.map(article=>articlePath(article.slug))];
 
 export function publicUrl(path: string) {
   const local = localPath(path, publication.basePath);

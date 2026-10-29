@@ -1,26 +1,11 @@
 ---
-import '../../styles/choices-print.css';
 import WorkGeneratedScene from '../WorkGeneratedScene.astro';
 ---
-
-<section id="folha" class="section prose-section choices" data-number="2">
-  <div class="choices-print-stage">
-  <div class="section-label"><span>02</span><span>Ferramentas para quem trabalha</span></div>
-  <div class="choices-editorial">
-    <div class="choices-copy">
-    <h2>O <span class="choices-pencil">tempo</span> que a tecnologia poupa<br /><em>precisa chegar a <span class="choices-paper">quem trabalha.</span></em></h2>
-    <div class="choices-print-body">
-    <div class="choices-opening">
-      <p>Automatizar tarefas pode reduzir o trabalho repetitivo e o esforço. Para nós, esse ganho deve melhorar a vida de quem sustenta a operação.</p>
-      <p class="choices-turn"><strong><span class="choices-ink">Mais produtividade.</span> Quem recebe os benefícios?</strong></p>
-    </div>
-    <p class="choices-benefit">Queremos que o ganho vire <span class="choices-pencil">tempo disponível</span>, menos desgaste e melhores condições de trabalho.</p>
-    </div>
-    <div class="choices-resolution">
-      <p class="choices-closing"><strong>Automatizar para viver melhor.</strong></p>
-    </div>
-    </div>
+<section id="folha" class="section choices narrative-section" data-number="2" aria-labelledby="choices-title" data-narrative="time">
+  <div class="choices-print-stage narrative-stage">
+    <div class="narrative-meta"><div class="section-label"><span>02</span><span>Ferramentas para quem trabalha</span></div><span data-narrative-counter aria-hidden="true">01 / 03</span></div>
+    <h2 id="choices-title">O tempo que a tecnologia poupa<br /><em>precisa chegar a <span class="choices-paper">quem trabalha.</span></em></h2>
     <WorkGeneratedScene />
-  </div>
+    <footer class="narrative-footer"><a href="/caderno/tempo-de-quem-trabalha/">Jornada, salário e o tempo poupado · Ler no Caderno</a><span class="narrative-meter" aria-hidden="true"><i></i></span></footer>
   </div>
 </section>

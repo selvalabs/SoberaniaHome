@@ -9,7 +9,7 @@ with sync_playwright() as pw:
  # computed padding and mast height used by env(safe-area-inset-*) on devices.
  q.add_style_tag(content=':root{--mobile-safe-bottom:34px}#mast{height:95px;padding-top:35px}')
  q.evaluate("document.dispatchEvent(new CustomEvent('sl:layout-change'))");q.wait_for_timeout(350)
- for sid,closing in [('hero','.text-actions'),('folha','.choices-closing'),('deslocamento-2','.knowledge-cover-closing')]:
+ for sid,closing in [('hero','.text-actions'),('folha','.scene-narration'),('deslocamento-2','.scene-narration')]:
   q.locator('#'+sid).evaluate('(e)=>scrollTo({top:Number(e.dataset.printStart)+Number(e.dataset.printRun)*.96,behavior:"instant"})');q.wait_for_timeout(150)
   title=q.locator('#'+sid+' h1,#'+sid+' h2').bounding_box();r=q.locator('#'+sid+' '+closing).bounding_box()
   assert title['y']>=95 and r['y']+r['height']<=844-34,(sid,title,r)

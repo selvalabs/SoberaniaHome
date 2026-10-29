@@ -8,16 +8,16 @@ with sync_playwright() as pw:
   q=browser.new_page(viewport={'width':w,'height':h},is_mobile=True,has_touch=True)
   q.goto(args.url,wait_until='networkidle');q.wait_for_function('window.__SL_DEBUG?.ready')
   q.wait_for_timeout(300)
-  for selector in ['.knowledge-cover-copy>p','#sobre .about-copy p','.field-note-body p','#footer .footer-details p']:
+  for selector in ['#deslocamento-2 .scene-narration p[data-current=true]','#sobre .about-copy p','.journal-featured h3','#footer .footer-details p']:
    target=q.locator(selector).first
-   if selector=='.knowledge-cover-copy>p':
+   if selector=='#deslocamento-2 .scene-narration p[data-current=true]':
     section=q.locator('#deslocamento-2')
     section.evaluate('(e)=>scrollTo({top:+e.dataset.printStart + +e.dataset.printRun*.3,behavior:"instant"})');q.wait_for_timeout(200)
-    before=section.locator('[data-print-progress]').evaluate_all('es=>es.map(e=>Number(e.dataset.printProgress))')
+    before=section.evaluate('e=>[Number(e.dataset.narrativeProgress)]')
     q.set_viewport_size({'width':w,'height':next_height});q.wait_for_timeout(500)
-    after=section.locator('[data-print-progress]').evaluate_all('es=>es.map(e=>Number(e.dataset.printProgress))')
+    after=section.evaluate('e=>[Number(e.dataset.narrativeProgress)]')
     assert all(abs(a-b)<.015 for a,b in zip(before,after)),('knowledge reveal moved on resize',before,after)
-    box=section.locator('.knowledge-cover-copy').bounding_box()
+    box=section.locator('.scene-narration').bounding_box()
     assert box['y']>=60 and box['y']+box['height']<=next_height+1
     q.set_viewport_size({'width':w,'height':h});q.wait_for_timeout(450)
     continue

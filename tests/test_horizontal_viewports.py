@@ -35,7 +35,7 @@ with sync_playwright() as p:
             assert 0<state['raw']<1,('vertical scroll did not scrub',w,h,sid,state,page.evaluate('({y:scrollY,dy:__SL_DEBUG.scroll,active:__SL_DEBUG.activeId,hit:document.elementFromPoint(innerWidth*.45,52)?.outerHTML,mast:document.documentElement.dataset.mastHidden})'),before)
             jump(page,sid,0)
             # On short screens all content is reachable by scrolling the card.
-            if h<620:
+            if h<620 and card.evaluate('e=>e.scrollHeight>e.clientHeight+1'):
                 bounds=card.bounding_box();y=bounds['y']+min(70,bounds['height']/2)
                 page.mouse.move(bounds['x']+5,y);outer=page.evaluate('scrollY');page.mouse.wheel(0,120);page.wait_for_timeout(150)
                 assert card.evaluate('e=>e.scrollTop')>0,('card cannot scroll',w,h,sid)

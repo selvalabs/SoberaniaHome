@@ -16,11 +16,10 @@ with sync_playwright() as pw:
     page.goto(args.url,wait_until='load')
     page.wait_for_function('window.__SL_DEBUG?.ready')
     assert page.locator('h1').count()==1
-    # Preserve the complete opening argument and its three distinct editorial roles.
+    # The short offer stays on the landing; the original argument has a reading route.
     assert 'quem trabalha, produz e se organiza' in page.locator('#hero .hero-lead').inner_text()
-    argument=page.locator('#hero .hero-argument').inner_text()
-    assert all(phrase in argument for phrase in ['Quem trabalha', 'poder sobre a tecnologia', 'Ferramentas e conhecimento', 'decidir e transformar a própria realidade'])
-    assert 'cooperativas, comunidades e negócios sociais' in page.locator('#hero .hero-method').inner_text()
+    assert 'Sites, software e automações' in page.locator('#hero .hero-lead').inner_text()
+    assert '/caderno/manifesto/' in page.locator('.manifesto-readout a').first.get_attribute('href')
     assert 'Sistemas brasileiros' in page.locator('.brand-signature .eyebrow-tech-label').inner_text()
     assert page.locator('section[data-number]').count()==17
     assert page.locator('meta[name="robots"]').get_attribute('content')=='noindex,follow'
@@ -103,7 +102,7 @@ with sync_playwright() as pw:
     assert page.locator('[data-atelier-form] button[type="submit"]').is_disabled()
     assert page.locator('h1').count()==1 and page.locator('.work-uve img').count()==1
     assert 'Paulo Freire' in page.locator('[data-reference-library-list]').text_content()
-    assert page.locator('#caderno details').count()==6
+    assert page.locator('#caderno .journal-library a.journal-read').count()>=18
     assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
     page.goto(args.url+'perguntas/',wait_until='load')
     assert page.locator('h1').count()==1

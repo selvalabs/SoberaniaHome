@@ -81,7 +81,10 @@ with sync_playwright() as pw:
     page.goto(args.url)
     assert page.locator('section[data-number]').count() == 17
     assert page.locator('[data-atelier-form] button[type=submit]').is_disabled()
-    assert 'Paulo Freire' in page.locator('.knowledge-reference').inner_text()
+    assert 'Paulo Freire' in page.locator('#deslocamento-2 .narrative-footer').inner_text()
     assert page.locator('a[href="/SoberaniaHome/perguntas/"]').count() > 0
-    print('PASS public Pages without JavaScript: full content, safe form and prefixed links', flush=True)
+    page.goto(urljoin(args.url, 'caderno/saberes-em-comum/'))
+    assert 'Paulo Freire' in page.locator('.reading-sources').inner_text()
+    assert 'dominiopublico.mec.gov.br' in page.locator('.reading-sources a').first.get_attribute('href')
+    print('PASS public Pages without JavaScript: full content, preserved source, safe form and prefixed links', flush=True)
     browser.close()

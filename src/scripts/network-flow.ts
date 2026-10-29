@@ -6,7 +6,7 @@ export function createNetworkFlow(){
   const groups=networkWires.map(wire=>({wire,group:section?.querySelector<SVGGElement>(`[data-network-wire="${wire.id}"]`)}));
   const local=section?.querySelector<SVGGElement>('[data-network-local-light]');
   const plates=Array.from(section?.querySelectorAll<HTMLElement>('[data-network-plate]')||[]);
-  const debug={progress:1,act:3,collective:1,transition:1,enabled:false};
+  const debug={progress:1,act:2,collective:1,transition:1,enabled:false};
   let old=-1,wasActive=false;
   function render(progress:number,active:boolean){
     if(!section||old===progress&&wasActive===active)return;
@@ -15,7 +15,7 @@ export function createNetworkFlow(){
     section.dataset.networkAct=String(state.act);
     section.dataset.networkProgress=state.progress.toFixed(6);
     const counter=section.querySelector('[data-network-counter]');
-    if(counter)counter.textContent=`0${state.act+1} / 04`;
+    if(counter)counter.textContent=`0${state.act+1} / 03`;
     for(const plate of plates){
       const opacity=plate.dataset.networkPlate==='response'?state.responseOpacity:state.primaryOpacity;
       plate.style.opacity=String(opacity);
@@ -39,5 +39,10 @@ export function createNetworkFlow(){
     Object.assign(debug,{progress:state.progress,act:state.act,collective:state.collective,transition:state.transition,enabled:active});
     return state;
   }
-  return {render,debug};
+  let printing=false,lastProgress=1,lastActive=false;
+  return {
+    render(progress:number,active:boolean){if(printing)return;lastProgress=progress;lastActive=active;return render(progress,active);},
+    print(){printing=true;render(1,false);},
+    restore(){printing=false;render(lastProgress,lastActive);},debug
+  };
 }
