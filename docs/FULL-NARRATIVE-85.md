@@ -27,3 +27,5 @@ conteúdo completo, SEO, Pages e servidor Wi-Fi. Sem merge, release, VPS ou mirr
 - Trabalho: quatro interfaces, seletores e estados preservados; resumo de uma frase e tags por produto. Recursos MCP, proteção de dados, personalização e condições do programa de parceiros continuam identificáveis. Descrições completas em /caderno/ferramentas-em-uso/.
 
 - Laboratório: cinco cards e todas as telas/landings preservados, ELARA continua primeiro; resumos de uma frase, recursos e estágio visíveis. Phones mantêm scroll independente e proporção; explicação completa em /caderno/outras-ferramentas/.
+
+- Tecnologia: colagem e interface cooperativa preservadas no centro; tarefa em foco acompanha três falas curtas no scroll nativo, sem nova duração pinned. Contexto integral em /caderno/tecnologia-no-trabalho/.

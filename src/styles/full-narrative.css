@@ -52,3 +52,22 @@ html.motion-edition.motion :is(#trabalho,#laboratorio) .work-project.concise-pro
 /* Phone proportions and their independent internal scrolling stay intact. */
 html.motion-edition.motion #laboratorio .landing-project.concise-project .work-evidence{height:360px!important;min-height:360px!important;flex:none}
 @media(min-width:1100px) and (min-height:800px){html.motion-edition.motion #laboratorio .landing-project.concise-project .work-evidence{height:430px!important;min-height:430px!important}}
+
+/* Natural-flow scenes narrate without adding another long pinned runway. */
+.field-narration{display:grid;min-height:3em;max-width:900px;margin:16px auto;text-align:center;font:italic clamp(22px,2.7vw,36px)/1.2 var(--serif)}
+.field-narration p{grid-area:1/1;align-self:center;margin:0;font:inherit;color:var(--ink)}
+html.motion .field-narration p:not([data-current=true]){visibility:hidden;opacity:0}
+html:not(.motion) .field-narration p{grid-area:auto;margin:6px 0;opacity:1;visibility:visible}
+.field-footer{display:flex;align-items:center;justify-content:space-between;gap:18px;border-top:1px solid var(--rule);padding-top:14px;font:11px/1.5 var(--mono)}
+.field-footer a{text-decoration:underline;text-underline-offset:4px}
+#deslocamento-1.technology-concise{padding:28px var(--pad);min-height:0}
+#deslocamento-1.technology-concise .technology-stage{display:block;min-height:0;padding:0}
+#deslocamento-1.technology-concise h2{max-width:30ch;margin:20px auto;text-align:center;font-size:clamp(32px,4vw,62px)}
+#deslocamento-1.technology-concise .technology-collage{width:min(100%,920px);height:clamp(240px,48svh,500px);margin:0 auto;max-width:100%}
+#deslocamento-1.technology-concise .technology-copy{display:grid;max-width:none;margin:12px auto}
+#deslocamento-1.technology-concise .technology-copy p{font:inherit;max-width:none}
+.technology-concise .cooperative-tasks li{transition:background .25s,box-shadow .25s}
+.technology-concise[data-field-phase="0"] .cooperative-tasks li:nth-child(1),.technology-concise[data-field-phase="1"] .cooperative-tasks li:nth-child(2),.technology-concise[data-field-phase="2"] .cooperative-tasks li:nth-child(4){background:#b6d99844;box-shadow:inset 3px 0 #809c43}
+@media(max-width:759px){.field-footer{font-size:10px;gap:12px}#deslocamento-1.technology-concise{padding:24px 20px}#deslocamento-1.technology-concise .technology-collage{height:clamp(220px,38svh,360px)}.field-narration{font-size:24px}}
+@media(prefers-reduced-motion:reduce){.technology-concise .cooperative-tasks li{transition:none}}
+@media print{.field-narration p{grid-area:auto!important;visibility:visible!important;opacity:1!important}}

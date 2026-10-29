@@ -161,5 +161,20 @@ export const expandedArticles:JournalArticle[] = [
         ]
       }
     ]
+  },
+  {
+    "slug": "tecnologia-no-trabalho",
+    "category": "Trabalho / operação coletiva",
+    "title": "A equipe decide. O sistema acompanha.",
+    "deck": "Ferramentas que tornam a organização coletiva visível.",
+    "sections": [
+      {
+        "paragraphs": [
+          "Planejamento, acompanhamento e partilha.",
+          "Uma produção compartilhada precisa combinar tarefas, registros e decisões. O sistema deve tornar esse trabalho mais claro e permitir que a equipe ajuste o caminho.",
+          "Mais capacidade. Menos dependência."
+        ]
+      }
+    ]
   }
 ];

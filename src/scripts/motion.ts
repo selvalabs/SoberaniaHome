@@ -10,6 +10,7 @@ import { createLandingInk } from './landing-ink';
 import { createNetworkFlow } from './network-flow';
 import { sampleNetwork } from './network-flow-model';
 import { createSceneNarration } from './scene-narration';
+import { createFieldNarration } from './field-narration';
 
 /** One source of movement: the document's native scroll position.
  * Scenes use CSS sticky, never JS pin spacers. All rendering sleeps at rest. */
@@ -46,6 +47,7 @@ export function initMotion() {
   const landingInk = createLandingInk();
   const networkPrint = createSceneNarration(document.getElementById('meios-digitais'),'.network-stage','network');
   const networkFlow = createNetworkFlow();
+  const fieldNarration = createFieldNarration();
   const knowledgePrint = createSceneNarration(document.getElementById('deslocamento-2'),'.knowledge-narrative-stage','knowledge');
   const handoverPrint = createHeroPrint(document.getElementById('handover-drawing'), {
     stage: '.handover-ink-stage', message: '.handover-ink-message',
@@ -231,6 +233,7 @@ export function initMotion() {
       }
     });
     sections=all<HTMLElement>('main > .section').map(element=>{const r=element.getBoundingClientRect();return{element,top:r.top+y,bottom:r.bottom+y};});
+    fieldNarration.measure(enabled,height);
     maxScroll=Math.max(1,document.documentElement.scrollHeight-height);
     const o=(document.getElementById('leaf-origin')||document.getElementById('cover-origin'))?.getBoundingClientRect();
     const d=document.getElementById('leaf-dock')?.getBoundingClientRect();
@@ -274,6 +277,7 @@ export function initMotion() {
     const networkState=sampleNetwork(networkProgress,enabled);
     landingInk.render({workbench:choicesProgress,knowledge:knowledgeProgress,handover:handoverProgress,network:networkState.ink,'network-solution':networkState.responseInk},enabled);
     networkFlow.render(networkProgress,enabled);
+    fieldNarration.render(y);
     debug.network=networkFlow.debug;
     const networkMeter=document.querySelector<HTMLElement>('[data-network-meter]');
     if(networkMeter)networkMeter.style.transform=`scaleX(${enabled?networkProgress:1})`;
