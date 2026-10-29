@@ -46,10 +46,7 @@ export function initMotion() {
   const landingInk = createLandingInk();
   const networkPrint = createSceneNarration(document.getElementById('meios-digitais'),'.network-stage','network');
   const networkFlow = createNetworkFlow();
-  const knowledgePrint = createHeroPrint(document.getElementById('deslocamento-2'), {
-    stage: '.knowledge-cover-stage', message: '.knowledge-cover-copy',
-    blocks: '.knowledge-cover-copy > p', keepHeading: true
-  });
+  const knowledgePrint = createSceneNarration(document.getElementById('deslocamento-2'),'.knowledge-narrative-stage','knowledge');
   const handoverPrint = createHeroPrint(document.getElementById('handover-drawing'), {
     stage: '.handover-ink-stage', message: '.handover-ink-message',
     blocks: '.handover-ink-message > p', keepHeading: true

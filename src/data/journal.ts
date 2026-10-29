@@ -1,3 +1,4 @@
+import {expandedArticles} from './expanded-journal';
 import { principles, examples } from './manifesto';
 export interface JournalArticle {
   slug:string; category:string; title:string; deck:string;
@@ -153,7 +154,8 @@ export const journalArticles:JournalArticle[] = [
     ],
     "sources": []
   }
-]
+],
+  ...expandedArticles
 ];
 export {principles,examples};
 export const articlePath=(slug:string)=>`/caderno/${slug}/`;

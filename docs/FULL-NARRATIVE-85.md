@@ -19,3 +19,5 @@ duas galerias, quebra-cabeça, espiral, bússola, caça-palavras, previews e Mes
 Conteúdo longo preservado no Caderno; instruções e limites funcionais visíveis.
 Validar leitura/reduced-motion/no-JS, teclado, contraste, desktop/mobile/landscape,
 conteúdo completo, SEO, Pages e servidor Wi-Fi. Sem merge, release, VPS ou mirror.
+
+- Saberes: gravura original centralizada, três falas ligadas à pesquisa/ofício/participação; argumentos e citação de Freire preservados em /caderno/saberes-em-comum/.

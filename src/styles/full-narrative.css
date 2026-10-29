@@ -18,3 +18,11 @@
 @media(max-width:599px){.manifesto-tabs{gap:6px}.manifesto-tabs a{font-size:10px;padding:9px}.manifesto-readout .journal-read{font-size:11px;max-width:90%;text-wrap:balance}}
 @media(prefers-reduced-motion:reduce){#manifesto .manifesto-compass svg{transition:none}}
 @media print{#manifesto .manifesto-tabs{display:none}.manifesto-readout article[hidden]{display:block!important}.manifesto-readout{color:black}}
+
+#deslocamento-2.knowledge-narrative{background:var(--paper);color:var(--ink);margin:0;padding:0!important}
+html.motion-edition #deslocamento-2.knowledge-narrative .narrative-stage{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr) auto;padding:20px var(--pad) max(16px,var(--mobile-safe-bottom));gap:14px}
+html.motion-edition #deslocamento-2.knowledge-narrative h2{grid-row:2;margin:0 auto;font-size:clamp(29px,3.2vw,49px);max-width:36ch;text-align:center}
+#deslocamento-2.knowledge-narrative .narrative-art{height:auto;min-height:0;max-height:none}
+@media(max-width:759px){html.motion-edition #deslocamento-2.knowledge-narrative .narrative-stage{padding:16px 20px max(14px,var(--mobile-safe-bottom))}html.motion-edition #deslocamento-2.knowledge-narrative h2{font-size:clamp(26px,min(7vw,4.2svh),37px)}}
+@media(max-height:619px) and (min-width:600px){html.motion-edition #deslocamento-2.knowledge-narrative .narrative-stage{grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);grid-template-rows:auto minmax(0,1fr) auto}html.motion-edition #deslocamento-2.knowledge-narrative h2{grid-row:2;grid-column:1;font-size:clamp(25px,3.4vw,36px)}}
+html:not(.motion) #deslocamento-2.knowledge-narrative{overflow-x:clip!important}

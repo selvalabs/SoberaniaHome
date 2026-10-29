@@ -5,7 +5,7 @@ export function narrationIndex(progress:number,kind:string){
   const p=clamp(progress);
   return kind==='network'?(p<.20?0:p<.64?1:2):(p<.29?0:p<.76?1:2);
 }
-export function createSceneNarration(section:HTMLElement|null,stageSelector:string,kind:'time'|'network'){
+export function createSceneNarration(section:HTMLElement|null,stageSelector:string,kind:'time'|'network'|'knowledge'|'handover'){
   const stage=section?.querySelector<HTMLElement>(stageSelector);
   if(!section||!stage)return null;
   const lines=Array.from(section.querySelectorAll<HTMLElement>('[data-narration-step]'));
