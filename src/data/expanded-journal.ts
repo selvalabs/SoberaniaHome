@@ -203,5 +203,43 @@ export const expandedArticles:JournalArticle[] = [
         ]
       }
     ]
+  },
+  {
+    "slug": "construir-no-brasil",
+    "category": "Brasil / soberania",
+    "title": "Construir capacidade no Brasil.",
+    "deck": "Infraestrutura, dados e conexões que podemos compreender e transformar.",
+    "sections": [
+      {
+        "heading": "Capacidade de decidir",
+        "paragraphs": [
+          "Desenvolver software, formar conhecimento e sustentar infraestrutura aqui amplia nossa capacidade de decidir. Queremos colocar essa capacidade também nas mãos de cooperativas, comunidades e negócios sociais."
+        ]
+      },
+      {
+        "id": "hospedar",
+        "heading": "Escolher onde o sistema roda.",
+        "paragraphs": [
+          "Saber instalar, operar e recuperar um sistema amplia a capacidade técnica local. A escolha da hospedagem precisa considerar quem administra, onde ficam os dados e como manter o serviço.",
+          "Conhecimento para operar. Critérios para escolher."
+        ]
+      },
+      {
+        "id": "migrar",
+        "heading": "Preservar a memória do trabalho.",
+        "paragraphs": [
+          "Dados, relações e histórico precisam continuar úteis quando uma ferramenta muda. Formatos conhecidos, documentação e conferência da migração ajudam a preservar esse trabalho.",
+          "Dados portáveis. Migração verificável."
+        ]
+      },
+      {
+        "id": "integrar",
+        "heading": "Construir sobre o que já existe.",
+        "paragraphs": [
+          "Software livre, padrões abertos e APIs permitem conectar ferramentas e compartilhar desenvolvimento. MCP pode organizar o acesso de agentes a essas integrações, com permissões definidas.",
+          "Conhecimento compartilhado. Capacidade coletiva."
+        ]
+      }
+    ]
   }
 ];

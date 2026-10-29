@@ -31,3 +31,5 @@ conteúdo completo, SEO, Pages e servidor Wi-Fi. Sem merge, release, VPS ou mirr
 - Tecnologia: colagem e interface cooperativa preservadas no centro; tarefa em foco acompanha três falas curtas no scroll nativo, sem nova duração pinned. Contexto integral em /caderno/tecnologia-no-trabalho/.
 
 - Entrega: gravura central com três falas; documentos e tabs preservados num inspetor nativo sob escolha. Argumentos originais em /caderno/capacidade-de-continuar/. As cinco gravuras agora mantêm reveal também em viewports baixos.
+
+- Soberania: diagrama animado e três rotas/tabs preservados; caminhos e resultados curtos assumem a explicação. Contexto técnico, formação e infraestrutura brasileira preservados em /caderno/construir-no-brasil/.
